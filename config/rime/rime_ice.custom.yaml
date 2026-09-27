@@ -1,4 +1,7 @@
 patch:
+  # Start new input sessions in English; existing sessions retain their mode.
+  switches/@0/reset: 1
+
   punctuator:
     full_shape:
       ",": ","

@@ -7,6 +7,19 @@ patch:
 
     font_face: "PingFang SC"
     font_point: 18
+    label_font_face: "PingFang SC"
+    label_font_point: 12
 
-    color_scheme: dark_temple
+    color_scheme: purity_of_essence
+    color_scheme_dark: purity_of_form
+    translucency: true
+    alpha: 0.85
+    corner_radius: 10
+    hilited_corner_radius: 6
+    # Insets include corner_radius: 5 pt vertically, 8 pt horizontally.
+    border_height: -5
+    border_width: -2
 
+  # AABBGGRR: translucent backgrounds based on the built-in themes.
+  preset_color_schemes/purity_of_essence/back_color: 0xD9FAFAFA
+  preset_color_schemes/purity_of_form/back_color: 0xD9444444
