@@ -1,0 +1,16 @@
+[init]
+    defaultBranch = main
+[fetch]
+    prune = true
+[push]
+    default = simple
+[pull]
+    ff = only
+[core]
+    editor = vim
+    excludesFile = ~/.gitignore_global
+[credential]
+    helper = osxkeychain
+[include]
+    path = ~/.gitconfig.local
+

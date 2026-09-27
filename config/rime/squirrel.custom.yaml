@@ -1,0 +1,12 @@
+patch:
+  style:
+    candidate_list_layout: linear
+    text_orientation: horizontal
+
+    inline_preedit: true
+
+    font_face: "PingFang SC"
+    font_point: 18
+
+    color_scheme: dark_temple
+

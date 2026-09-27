@@ -1,0 +1,162 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "template": "╭",
+          "foreground": "#fff4e1"
+        },
+        {
+          "properties": {
+            "cache_duration": "none",
+            "display_mode": "environment",
+            "fetch_version": true,
+            "fetch_virtual_env": true,
+            "home_enabled": true,
+            "postfix": " ",
+            "prefix": " ",
+            "display_default": true
+          },
+          "leading_diamond": "",
+          "trailing_diamond": "",
+          "template": "   {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}  ",
+          "foreground": "#585858",
+          "background": "#f2c6b4",
+          "type": "python",
+          "style": "diamond"
+        },
+        {
+          "background": "#f3e8cb",
+          "foreground": "#585858",
+          "background_templates": [
+            "{{ if or (.Working.Changed) (.Staging.Changed) }}#c1dda8{{ end }}",
+            "{{ if gt .Ahead 0 }}#cadefc{{ end }}",
+            "{{ if gt .Behind 0 }}#cf827c{{ end }}"
+          ],
+          "properties": {
+            "fetch_status": true,
+            "commit_icon": " "
+          },
+          "style": "diamond",
+          "template": " on {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}   {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} ",
+          "trailing_diamond": "",
+          "type": "git"
+        },
+        {
+          "properties": {
+            "always_enabled": true,
+            "cache_duration": "none",
+            "style": "austin"
+          },
+          "template": "  {{ .FormattedMs }} ",
+          "foreground": "#585858",
+          "trailing_diamond": "",
+          "background": "#99e1e5",
+          "type": "executiontime",
+          "style": "diamond"
+        }
+      ],
+      "newline": true
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "template": "├",
+          "foreground": "#fff4e1"
+        },
+        {
+          "properties": {
+            "cache_duration": "none"
+          },
+          "leading_diamond": "",
+          "template": " Hi, {{ .UserName }} ",
+          "foreground": "#e0d7c6",
+          "trailing_diamond": "",
+          "background": "#6c5b7c",
+          "type": "session",
+          "style": "diamond"
+        },
+        {
+          "type": "battery",
+          "style": "diamond",
+          "trailing_diamond": "",
+          "foreground": "#e0d7c6",
+          "background": "#88304e",
+          "template": " Battery: {{ if not .Error }}{{ .Icon }} {{ .Percentage }}{{ end }}  ",
+          "properties": {
+            "discharging_icon": " ",
+            "charging_icon": " ",
+            "charged_icon": " "
+          }
+        },
+        {
+          "properties": {
+            "cache_duration": "none",
+            "folder_icon": "…",
+            "folder_separator_icon": " <#f8b595></> ",
+            "max_depth": 2,
+            "style": "agnoster_short"
+          },
+          "template": "  {{ .Path }} ",
+          "foreground": "#e0d7c6",
+          "trailing_diamond": "",
+          "background": "#c06c84",
+          "type": "path",
+          "style": "diamond"
+        }
+      ],
+      "newline": true
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "template": "╰",
+          "foreground": "#fff4e1"
+        },
+        {
+          "properties": {
+            "alpine": "",
+            "arch": "",
+            "cache_duration": "none",
+            "centos": "",
+            "debian": "",
+            "elementary": "",
+            "fedora": "",
+            "gentoo": "",
+            "linux": "",
+            "macos": "",
+            "manjaro": "",
+            "mint": "",
+            "opensuse": "",
+            "raspbian": "",
+            "ubuntu": "",
+            "windows": ""
+          },
+          "template": " {{ .Icon }} {{ if .Root }}#{{else}}>{{end}}",
+          "foreground": "#585858",
+          "background": "#94d479",
+          "leading_diamond": "",
+          "trailing_diamond": "",
+          "type": "os",
+          "style": "diamond"
+        }
+      ],
+      "newline": true
+    }
+  ],
+  "version": 3,
+  "final_space": true
+}
