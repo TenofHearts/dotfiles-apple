@@ -9,3 +9,9 @@ patch:
       ";": ";"
 
   menu/page_size: 8
+
+  selector/linear/bindings:
+    Up: previous_candidate
+    Down: next_candidate
+    Left: noop
+    Right: noop
