@@ -14,7 +14,7 @@
         {
           "properties": {
             "cache_duration": "none",
-            "display_mode": "environment",
+            "display_mode": "always",
             "fetch_version": true,
             "fetch_virtual_env": true,
             "home_enabled": true,
