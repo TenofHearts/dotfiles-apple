@@ -63,9 +63,9 @@ export VISUAL=vim
 export HOMEBREW_BUNDLE_FILE="$HOME/.Brewfile"
 
 # Local proxy, matching the original setup. Override in ~/.zshrc.local.
-export http_proxy=http://127.0.0.1:7897
-export https_proxy=http://127.0.0.1:7897
-export all_proxy=http://127.0.0.1:7897
+# export http_proxy=http://127.0.0.1:7897
+# export https_proxy=http://127.0.0.1:7897
+# export all_proxy=http://127.0.0.1:7897
 
 if (( $+commands[oh-my-posh] )) && [[ -r ~/.config/oh-my-posh/theme.omp.json ]]; then
   export VIRTUAL_ENV_DISABLE_PROMPT=1
