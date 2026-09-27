@@ -14,3 +14,6 @@
 [include]
     path = ~/.gitconfig.local
 
+[user]
+	name = Eric
+	email = ye_jin2004@163.com
