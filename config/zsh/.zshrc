@@ -101,3 +101,9 @@ if [[ -r $_dotfiles_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlig
   ZSH_HIGHLIGHT_STYLES[precommand]='fg=035,bold'
 fi
 unset _dotfiles_brew_prefix
+
+# fnm
+FNM_PATH="/opt/homebrew/opt/fnm/bin"
+if [ -d "$FNM_PATH" ]; then
+  eval "$(fnm env --shell zsh)"
+fi

@@ -43,11 +43,11 @@ Rime only links the three custom YAML files. Dictionaries, schemas, build output
 
 ### zsh appearance and shortcuts
 
-The shell is adapted from [TenofHearts/dotfiles](https://github.com/TenofHearts/dotfiles/tree/c84e0cba5178348868ac5fd24b0dcb878f417231): the three-line pastel Oh My Posh theme, completion menu, autosuggestions, syntax colors, and fortune/cowsay/lolcat welcome artwork. Ghostty's main configuration is linked at `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`, using MesloLGM Nerd Font Mono and a dark background. The theme and cow artwork are linked under `~/.config/oh-my-posh/` and `~/.config/cowsay/`.
+The shell is adapted from [TenofHearts/dotfiles](https://github.com/TenofHearts/dotfiles/tree/c84e0cba5178348868ac5fd24b0dcb878f417231): the three-line pastel Oh My Posh theme, completion menu, autosuggestions, syntax colors, and fortune/cowsay/lolcat welcome artwork. Ghostty's main configuration is linked at `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`, using 0xProto Nerd Font and a dark background. The theme and cow artwork are linked under `~/.config/oh-my-posh/` and `~/.config/cowsay/`.
 
 Git shortcuts: `g`, `ga`, `gc`, `gca`, `gpu`, `gpl`, `glg`. uv shortcuts: `uva` (add), `uvr` (run), `uvac` (activate the current directory's `.venv`), `uvi` (initialize a bare project without README or Git initialization). Unlike the old `uvi`, this never deletes `main.py`; `uv init --bare` also omits the Python-version pin and other starter metadata. Both groups load only when their software exists. `ll`, `la`, `l` use macOS colored `ls`, and `cls` clears the screen.
 
-Cargo, Conda, Docker prompt integration, CUDA, Linux coursework paths, rbenv and fnm setup are omitted. The requested local proxy is enabled at `http://127.0.0.1:7897` for HTTP, HTTPS and all_proxy; the proxy app must be running for proxied commands. Override these variables in `~/.zshrc.local` as needed. Set `DOTFILES_WELCOME=0` there to suppress the welcome banner.
+fnm is installed during bootstrap and initialized by the zsh configuration. Cargo, Conda, Docker prompt integration, CUDA, Linux coursework paths and rbenv setup are omitted. The requested local proxy is enabled at `http://127.0.0.1:7897` for HTTP, HTTPS and all_proxy; the proxy app must be running for proxied commands. Override these variables in `~/.zshrc.local` as needed. Set `DOTFILES_WELCOME=0` there to suppress the welcome banner.
 
 After installation, reload Ghostty's configuration or reopen it and run `exec zsh -l` in an existing shell. Bootstrap installs the prompt, plugins, font and welcome tools. The prompt falls back to a basic readable prompt if Oh My Posh is unavailable.
 
