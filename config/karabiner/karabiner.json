@@ -4,7 +4,7 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Windows App: Right Command + Space -> Option + Space",
+                        "description": "Windows App: Left Option + Space -> Right Option + Space",
                         "manipulators": [
                             {
                                 "conditions": [
@@ -13,19 +13,23 @@
                                             "^com\\.microsoft\\.rdc\\.macos$"
                                         ],
                                         "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
+                                        "type": "expression_if"
                                     }
                                 ],
                                 "from": {
                                     "key_code": "spacebar",
                                     "modifiers": {
-                                        "mandatory": ["right_command"],
+                                        "mandatory": ["left_option"],
                                         "optional": ["any"]
                                     }
                                 },
                                 "to": [
                                     {
                                         "key_code": "spacebar",
-                                        "modifiers": ["left_option"]
+                                        "modifiers": ["right_option"]
                                     }
                                 ],
                                 "type": "basic"
