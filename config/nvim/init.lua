@@ -344,7 +344,16 @@ do
   -- We first install it from https://github.com/NMAC427/guess-indent.nvim
   -- and then call its `setup()` function to start it with default settings.
   vim.pack.add { gh 'NMAC427/guess-indent.nvim' }
-  require('guess-indent').setup {}
+  require('guess-indent').setup { filetype_exclude = { 'c', 'cpp' } }
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'c', 'cpp' },
+    callback = function()
+      vim.bo.expandtab = true
+      vim.bo.tabstop = 4
+      vim.bo.shiftwidth = 4
+      vim.bo.softtabstop = 4
+    end,
+  })
 
   -- Here is a more advanced configuration example that passes options to `gitsigns.nvim`
   --
@@ -732,8 +741,7 @@ do
   --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
   --  See `:help lsp-config` for information about keys and how to configure
   ---@type table<string, vim.lsp.Config>
-  -- Language servers and external tools will be chosen later.
-  local servers = {}
+  local servers = require('custom.languages').servers
 
   vim.pack.add {
     gh 'neovim/nvim-lspconfig',
@@ -757,7 +765,9 @@ do
   --    :Mason
   --
   -- You can press `g?` for help in this menu.
-  local ensure_installed = vim.tbl_keys(servers or {})
+  -- Rust tooling is managed by rustup, keeping it matched to the compiler.
+  local ensure_installed = { 'pyright', 'black', 'clang-format' }
+  if vim.fn.executable 'clangd' ~= 1 then table.insert(ensure_installed, 'clangd') end
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
   })
@@ -795,8 +805,20 @@ do
       lsp_format = 'fallback', -- Use external formatters if configured below, otherwise use LSP formatting. Set to `false` to disable LSP formatting entirely.
     },
     -- You can also specify external formatters in here.
+    formatters = {
+      clang_format = {
+        prepend_args = function(_, ctx)
+          local project_style = vim.fs.find({ '.clang-format', '_clang-format' }, { path = ctx.dirname, upward = true })[1]
+          local style = project_style and 'file' or ('file:' .. vim.fs.joinpath(vim.fn.stdpath 'config', 'formatters', 'clang-format.yaml'))
+          return { '--style=' .. style }
+        end,
+      },
+    },
     formatters_by_ft = {
-      -- rust = { 'rustfmt' },
+      c = { 'clang_format' },
+      cpp = { 'clang_format' },
+      python = { 'black' },
+      rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
@@ -852,7 +874,8 @@ do
       -- <c-k>: Toggle signature help
       --
       -- See `:help blink-cmp-config-keymap` for defining your own keymap
-      preset = 'default',
+      preset = 'enter',
+      ['<CR>'] = { 'select_and_accept', 'fallback' },
 
       -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
       --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -890,7 +913,10 @@ do
   }
 end
 
--- Language parsers are deferred. Neovim's built-in syntax highlighting remains enabled.
+-- Advertise completion capabilities after Blink has been installed and configured.
+vim.lsp.config('*', { capabilities = require('blink.cmp').get_lsp_capabilities() })
+
+-- Neovim's built-in syntax highlighting remains enabled; no extra parser downloads.
 
 -- ============================================================
 -- SECTION 10: OPTIONAL EXAMPLES / NEXT STEPS

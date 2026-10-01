@@ -1,6 +1,11 @@
 # Adapted from TenofHearts/dotfiles for macOS.
 typeset -U path
 [[ -d "$HOME/.local/bin" ]] && path=("$HOME/.local/bin" $path)
+# Also support non-login terminal shells; keep rustup's proxies ahead of system tools.
+[[ ! -d "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/rustup/bin" ]] ||
+  path=("${HOMEBREW_PREFIX:-/opt/homebrew}/opt/rustup/bin" $path)
+[[ ! -d "${CARGO_HOME:-$HOME/.cargo}/bin" ]] ||
+  path=("${CARGO_HOME:-$HOME/.cargo}/bin" $path)
 
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
 HISTSIZE=50000
@@ -58,8 +63,39 @@ if (( $+commands[uv] )); then
   uvi() { uv init --bare --no-readme --vcs none "$@"; }
 fi
 
-export EDITOR=vim
-export VISUAL=vim
+if (( $+commands[cargo] )); then
+  alias cg='cargo'
+  alias cgi='cargo init --vcs none'
+  alias cgn='cargo new --vcs none'
+  alias cgb='cargo build'
+  alias cgbr='cargo build --release'
+  alias cgr='cargo run'
+  alias cgrr='cargo run --release'
+  alias cga='cargo add'
+fi
+
+# On macOS, gcc/g++ normally invoke Apple Clang. Prefer GNU GCC when installed.
+# Discover the version so aliases continue to work after Homebrew upgrades.
+if [[ $OSTYPE == darwin* ]]; then
+  _dotfiles_gcc_version=0
+  for _dotfiles_gcc in "${HOMEBREW_PREFIX:-/opt/homebrew}"/bin/gcc-<->(N); do
+    _dotfiles_gcc_candidate=${_dotfiles_gcc##*-}
+    if (( _dotfiles_gcc_candidate > _dotfiles_gcc_version )); then
+      _dotfiles_gcc_version=$_dotfiles_gcc_candidate
+      alias gcc="$_dotfiles_gcc"
+      alias g++="${_dotfiles_gcc%gcc-*}g++-$_dotfiles_gcc_version"
+    fi
+  done
+  unset _dotfiles_gcc _dotfiles_gcc_candidate _dotfiles_gcc_version
+fi
+
+if (( $+commands[nvim] )); then
+  export EDITOR=nvim
+  export VISUAL=nvim
+else
+  export EDITOR=vim
+  export VISUAL=vim
+fi
 export HOMEBREW_BUNDLE_FILE="$HOME/.Brewfile"
 
 # Local proxy, matching the original setup. Override in ~/.zshrc.local.
