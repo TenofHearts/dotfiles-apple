@@ -7,7 +7,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2026-09-26T17:49:00Z</date>
+	<date>2026-10-01T04:16:40Z</date>
 	<key>SUUpdateGroupIdentifier</key>
 	<integer>3800393827</integer>
 	<key>allowAnyShortcut</key>
@@ -65,13 +65,18 @@
 	<key>lastTwoThirds</key>
 	<dict/>
 	<key>lastVersion</key>
-	<string>108</string>
+	<string>109</string>
 	<key>launchOnLogin</key>
 	<true/>
 	<key>leftHalf</key>
 	<dict/>
 	<key>maximize</key>
-	<dict/>
+	<dict>
+		<key>keyCode</key>
+		<integer>126</integer>
+		<key>modifierFlags</key>
+		<integer>524288</integer>
+	</dict>
 	<key>maximizeHeight</key>
 	<dict/>
 	<key>missionControlDragging</key>
@@ -87,7 +92,12 @@
 	<key>previousDisplay</key>
 	<dict/>
 	<key>restore</key>
-	<dict/>
+	<dict>
+		<key>keyCode</key>
+		<integer>125</integer>
+		<key>modifierFlags</key>
+		<integer>524288</integer>
+	</dict>
 	<key>rightHalf</key>
 	<dict/>
 	<key>smaller</key>

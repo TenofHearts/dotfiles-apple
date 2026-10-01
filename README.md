@@ -29,13 +29,25 @@ Quit Rectangle and Karabiner Settings before linking, then reopen them. Python 3
 | zsh | `~/.zprofile`, `~/.zshrc` | `config/zsh/` |
 | Git | `~/.gitconfig`, `~/.gitignore_global` | `config/git/` |
 | Homebrew | `~/.Brewfile` | `Brewfile` |
-| Rectangle | `~/Library/Preferences/com.knollsoft.Rectangle.plist` | `config/rectangle/` |
+| Rectangle (manual import/export; no symlink) | `~/Library/Preferences/com.knollsoft.Rectangle.plist` | `config/rectangle/` |
 | Karabiner | `~/.config/karabiner` | `config/karabiner/` |
 | Rime | `~/Library/Rime/*.custom.yaml` (only files in this repository) | `config/rime/` |
 
 Karabiner needs a **directory** symlink for its file watcher to reload edits reliably; its main `karabiner.json` is tracked. Existing assets and automatic backups are copied into ignored directories before linking; their originals remain in the backup. Put any future portable complex modifications directly in `karabiner.json`, or deliberately add their asset files to Git.
 
-Rectangle uses macOS NSUserDefaults. Its main plist is linked as requested, but macOS may replace that link or cache old preferences. If settings fail to refresh, log out and back in. After changing Rectangle settings, quit Rectangle, run `python3 scripts/links.py status`, and if the link was replaced, copy the current plist back to `config/rectangle/com.knollsoft.Rectangle.plist`, convert it with `plutil -convert xml1`, then rerun the installer. Review the diff before committing. Reference: [Rectangle preferences](https://github.com/rxhanson/Rectangle#preferences-storage), [Karabiner symlinks](https://karabiner-elements.pqrs.org/docs/manual/misc/configuration-file-path/).
+Rectangle uses macOS NSUserDefaults and must **not** be symlinked. Its tracked plist is a snapshot, restored separately after quitting Rectangle:
+
+```sh
+defaults import com.knollsoft.Rectangle "$PWD/config/rectangle/com.knollsoft.Rectangle.plist"
+```
+
+If migrating an old installation, remove only the symlink at `~/Library/Preferences/com.knollsoft.Rectangle.plist` before importing (keep its target in this repository). Reopen Rectangle after importing. Changes in the app are saved locally, not automatically to Git. To capture them, quit Rectangle and run:
+
+```sh
+./config/rectangle/export.sh
+```
+
+Rectangle also offers JSON import/export in its Preferences window. See [Rectangle preferences](https://github.com/rxhanson/Rectangle#preferences-storage).
 
 Rime only links the three custom YAML files. Dictionaries, schemas, build output, installation IDs, sync data and learned words remain local. `custom_phrase.txt` currently matches upstream and is left local. The baseline revision is pinned in `scripts/rime-setup.py`; existing Rime Ice installations are never updated by bootstrap. Learned words require separate migration if desired.
 

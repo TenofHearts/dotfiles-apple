@@ -19,7 +19,6 @@ FILES = {
     ".gitignore_global": "config/git/.gitignore_global",
     ".Brewfile": "Brewfile",
     ".config/karabiner": "config/karabiner",
-    "Library/Preferences/com.knollsoft.Rectangle.plist": "config/rectangle/com.knollsoft.Rectangle.plist",
 }
 for source in sorted((ROOT / "config/rime").glob("*.custom.yaml")):
     FILES[f"Library/Rime/{source.name}"] = str(source.relative_to(ROOT))
@@ -87,7 +86,7 @@ def install(home, dry_run):
                 shutil.move(record["backup"], str(dest))
         raise
     print(f"Backup manifest: {manifest}")
-    print("Restart Rectangle and Karabiner; use Squirrel > Deploy. Log out/in if Rectangle caches old preferences.")
+    print("Restart Karabiner; use Squirrel > Deploy. Restore Rectangle separately; see README.")
 
 
 def restore(manifest, dry_run):
