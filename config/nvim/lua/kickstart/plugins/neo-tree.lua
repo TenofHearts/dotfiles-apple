@@ -9,7 +9,10 @@ vim.pack.add {
 
 vim.keymap.set('n', '\\', '<Cmd>Neotree reveal<CR>', { desc = 'NeoTree reveal', silent = true })
 
+vim.keymap.set('n', '<leader>e', '<Cmd>Neotree toggle filesystem left<CR>', { desc = 'Toggle file [E]xplorer', silent = true })
+
 require('neo-tree').setup {
+  window = { position = 'left', width = 32 },
   filesystem = {
     window = {
       mappings = {

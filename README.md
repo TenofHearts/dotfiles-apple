@@ -134,3 +134,7 @@ Restart the terminal or run `exec zsh -l` to load the toolchain PATH and aliases
 C/C++ defaults use four spaces, Allman block braces, an 80-column limit and traditional pointers (`int *pointer`). The style lives in `config/nvim/formatters/clang-format.yaml`; project `.clang-format` / `_clang-format` files take precedence. C/C++ Tab inserts four spaces, and indentation guessing is disabled for those filetypes. Python uses Black defaults; Rust uses rustfmt defaults.
 
 Completion: Enter accepts a suggestion while the menu is visible and inserts a newline otherwise. Use Up/Down or Ctrl-N/Ctrl-P to choose, Ctrl-Space to open the menu, and Ctrl-E to dismiss it before inserting a newline.
+
+File tree: `Space e` toggles Neo-tree on the left for the current working directory; `\` reveals the current file. Within the tree, Enter opens a file or expands a directory, `a` creates an entry, `r` renames, and `?` shows available actions. Use `:cd /path/to/project` to change the workspace root.
+
+Automatic pairing inserts matching parentheses, square/curly brackets and quotes while typing. Enter remains controlled by completion.
