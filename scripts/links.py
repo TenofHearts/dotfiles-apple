@@ -18,6 +18,7 @@ FILES = {
     ".gitconfig": "config/git/.gitconfig",
     ".gitignore_global": "config/git/.gitignore_global",
     ".Brewfile": "Brewfile",
+    ".config/nvim": "config/nvim",
     ".config/karabiner": "config/karabiner",
 }
 for source in sorted((ROOT / "config/rime").glob("*.custom.yaml")):

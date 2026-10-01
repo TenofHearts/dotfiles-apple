@@ -28,6 +28,7 @@ Quit Rectangle and Karabiner Settings before linking, then reopen them. Python 3
 | --- | --- | --- |
 | zsh | `~/.zprofile`, `~/.zshrc` | `config/zsh/` |
 | Git | `~/.gitconfig`, `~/.gitignore_global` | `config/git/` |
+| Neovim | `~/.config/nvim` | `config/nvim/` |
 | Homebrew | `~/.Brewfile` | `Brewfile` |
 | Rectangle (manual import/export; no symlink) | `~/Library/Preferences/com.knollsoft.Rectangle.plist` | `config/rectangle/` |
 | Karabiner | `~/.config/karabiner` | `config/karabiner/` |
@@ -95,3 +96,15 @@ bash -n install.sh scripts/bootstrap.sh
 zsh -n config/zsh/.zprofile config/zsh/.zshrc
 plutil -lint config/rectangle/com.knollsoft.Rectangle.plist
 ```
+
+## Neovim
+
+The personal configuration starts from [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), revision `80743df53d8f7058fc5b60e41f1081d11df9c880`. Requires Neovim 0.12 or newer (uses built-in `vim.pack`), Git, ripgrep and fd. A compiler and make enable the optional native Telescope search extension. The existing Ghostty Nerd Font enables icons.
+
+Run `nvim` after installing the configuration. Core features include Tokyo Night, Telescope search, Git change indicators, shortcut hints, statusline, surrounding/text objects, indentation detection and completion. No language servers, external formatters or Tree-sitter parsers are automatically installed yet. Language configuration will follow separately; completion currently provides buffer words, paths and snippets. Save formatting is disabled.
+
+Space is the leader key: `<Space>sf` searches files, `<Space>sg` searches text, `<Space>sh` searches help, `<Space>sn` searches the configuration, and `<Space>/` searches the current buffer. Use `:Tutor` to learn the basics. Edit `config/nvim/init.lua`; optional plugin examples live in `lua/kickstart/plugins/`.
+
+Plugin versions are tracked in `config/nvim/nvim-pack-lock.json`. Review updates with `:lua vim.pack.update()` and apply them with `:write` in the update review buffer. Plugin downloads, caches, logs, undo history and Mason tools stay in Neovim's OS-specific data/state directories outside this repository.
+
+The Lua configuration uses portable paths. On Linux link this directory to `~/.config/nvim`; on Windows place it at `%LOCALAPPDATA%\nvim`. This repository's installation script remains macOS-oriented. Install external dependencies separately on other operating systems, and select a Nerd Font (or set `have_nerd_font = false`).
