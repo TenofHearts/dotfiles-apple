@@ -74,6 +74,9 @@ fi
 
 _dotfiles_brew_prefix=${HOMEBREW_PREFIX:-/opt/homebrew}
 [[ -d $_dotfiles_brew_prefix ]] || _dotfiles_brew_prefix=/usr/local
+if [[ -r $_dotfiles_brew_prefix/etc/profile.d/autojump.sh ]]; then
+  source "$_dotfiles_brew_prefix/etc/profile.d/autojump.sh"
+fi
 if [[ -r $_dotfiles_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
   source "$_dotfiles_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi

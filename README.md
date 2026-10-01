@@ -55,6 +55,8 @@ Rime only links the three custom YAML files. Dictionaries, schemas, build output
 
 ### zsh appearance and shortcuts
 
+`j <part-of-directory-name>` uses autojump, as in the Linux configuration. It learns directories as you visit them with `cd`; its history stays local to each Mac. Homebrew installs autojump and zsh loads its integration automatically.
+
 The shell is adapted from [TenofHearts/dotfiles](https://github.com/TenofHearts/dotfiles/tree/c84e0cba5178348868ac5fd24b0dcb878f417231): the three-line pastel Oh My Posh theme, completion menu, autosuggestions, syntax colors, and fortune/cowsay/lolcat welcome artwork. Ghostty's main configuration is linked at `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`, using 0xProto Nerd Font and a dark background. The theme and cow artwork are linked under `~/.config/oh-my-posh/` and `~/.config/cowsay/`.
 
 Git shortcuts: `g`, `ga`, `gc`, `gca`, `gpu`, `gpl`, `glg`. uv shortcuts: `uva` (add), `uvr` (run), `uvac` (activate the current directory's `.venv`), `uvi` (initialize a bare project without README or Git initialization). Unlike the old `uvi`, this never deletes `main.py`; `uv init --bare` also omits the Python-version pin and other starter metadata. Both groups load only when their software exists. `ll`, `la`, `l` use macOS colored `ls`, and `cls` clears the screen.
