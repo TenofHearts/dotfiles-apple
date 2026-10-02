@@ -20,6 +20,7 @@ FILES = {
     ".Brewfile": "Brewfile",
     ".config/nvim": "config/nvim",
     ".config/karabiner": "config/karabiner",
+    "Library/Keyboard Layouts/QWERTY no option.keylayout": "config/keyboard-layouts/QWERTY no option.keylayout",
 }
 for source in sorted((ROOT / "config/rime").glob("*.custom.yaml")):
     FILES[f"Library/Rime/{source.name}"] = str(source.relative_to(ROOT))

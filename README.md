@@ -33,6 +33,7 @@ Quit Rectangle and Karabiner Settings before linking, then reopen them. Python 3
 | Rectangle (manual import/export; no symlink) | `~/Library/Preferences/com.knollsoft.Rectangle.plist` | `config/rectangle/` |
 | Karabiner | `~/.config/karabiner` | `config/karabiner/` |
 | Rime | `~/Library/Rime/*.custom.yaml` (only files in this repository) | `config/rime/` |
+| Keyboard layout | `~/Library/Keyboard Layouts/QWERTY no option.keylayout` | `config/keyboard-layouts/` |
 
 Karabiner needs a **directory** symlink for its file watcher to reload edits reliably; its main `karabiner.json` is tracked. Existing assets and automatic backups are copied into ignored directories before linking; their originals remain in the backup. Put any future portable complex modifications directly in `karabiner.json`, or deliberately add their asset files to Git.
 
@@ -51,6 +52,8 @@ If migrating an old installation, remove only the symlink at `~/Library/Preferen
 Rectangle also offers JSON import/export in its Preferences window. See [Rectangle preferences](https://github.com/rxhanson/Rectangle#preferences-storage).
 
 Rime only links the three custom YAML files. Dictionaries, schemas, build output, installation IDs, sync data and learned words remain local. `custom_phrase.txt` currently matches upstream and is left local. The baseline revision is pinned in `scripts/rime-setup.py`; existing Rime Ice installations are never updated by bootstrap. Learned words require separate migration if desired.
+
+Squirrel uses **QWERTY no option** as its keyboard layout (`org.unknown.keylayout.QWERTYnooption`), configured in `config/rime/squirrel.custom.yaml`. The installer also links the custom `.keylayout` file. On a new Mac, log out and back in after installing the layout, add **QWERTY no option** in System Settings > Keyboard > Input Sources, then use Squirrel's **Deploy** command. To update the layout, edit the tracked file in `config/keyboard-layouts/`.
 
 ## Personal settings
 

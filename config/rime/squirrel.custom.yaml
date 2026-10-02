@@ -1,4 +1,6 @@
 patch:
+  keyboard_layout: org.unknown.keylayout.QWERTYnooption
+
   style:
     candidate_list_layout: linear
     text_orientation: horizontal
