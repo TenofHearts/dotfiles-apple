@@ -4,7 +4,7 @@ Portable zsh, Git, Homebrew, Rectangle, Karabiner and Rime settings, captured fr
 
 ## Install on another Mac
 
-Clone this repository to a permanent location, then run:
+Clone this repository to a permanent location with `git clone --recurse-submodules`. For an existing clone, run `git submodule update --init --recursive`, then run:
 
 ```sh
 ./install.sh --bootstrap
@@ -141,3 +141,25 @@ Completion: Enter accepts a suggestion while the menu is visible and inserts a n
 File tree: `Space e` toggles Neo-tree on the left for the current working directory; `\` reveals the current file. Within the tree, Enter opens a file or expands a directory, `a` creates an entry, `r` renames, and `?` shows available actions. Use `:cd /path/to/project` to change the workspace root.
 
 Automatic pairing inserts matching parentheses, square/curly brackets and quotes while typing. Enter remains controlled by completion.
+
+## Shared Neovim repository
+
+`config/nvim` is a Git submodule of [TenofHearts/nvim-config](https://github.com/TenofHearts/nvim-config), shared across machines and operating systems. The existing `~/.config/nvim` symlink still points to this directory. Dependency installation remains the responsibility of each platform's dotfiles bootstrap; downloads, caches and state remain outside the config repository.
+
+After pulling parent dotfiles changes, restore the pinned configuration with:
+
+```sh
+git submodule update --init --recursive
+```
+
+To adopt the latest published configuration deliberately:
+
+```sh
+git -C config/nvim fetch origin
+git -C config/nvim checkout main
+git -C config/nvim merge --ff-only origin/main
+git add config/nvim
+git commit -m "Update Neovim configuration"
+```
+
+For configuration edits, work on `main` inside `config/nvim`, commit and push there, then commit the updated submodule reference here. A normal submodule update checks out the pinned commit in detached HEAD mode; switch to `main` before editing. The remote clone URL is HTTPS; on this Mac the submodule's local push URL uses the existing GitHub SSH credentials. On other machines configure authentication separately.
