@@ -29,11 +29,10 @@ After installation:
        name = Your Name
        email = you@example.com
    ```
-2. Open Karabiner-Elements and Rectangle, complete their requested macOS permissions, and restart Karabiner after linking.
+2. Open Karabiner-Elements and AeroSpace, complete their requested macOS permissions, and restart Karabiner after linking.
 3. Enable Squirrel in macOS input sources and choose **Deploy** from its menu. Log out and back in if the input method or custom keyboard layout is not available yet.
-4. Restore the Rectangle snapshot using the commands below.
-5. Install a Node.js version with `fnm install --lts` and select it with `fnm use lts-latest` in a shell where fnm is initialized. Pyright needs Node/npm; bootstrap installs fnm but does not install Node. The current Zsh fnm initialization checks `/opt/homebrew/opt/fnm/bin`; Intel users should add suitable initialization to `~/.zshrc.local`.
-6. Follow the [Neovim README](config/nvim/README.md) for editor requirements and first-run setup.
+4. Install a Node.js version with `fnm install --lts` and select it with `fnm use lts-latest` in a shell where fnm is initialized. Pyright needs Node/npm; bootstrap installs fnm but does not install Node. The current Zsh fnm initialization checks `/opt/homebrew/opt/fnm/bin`; Intel users should add suitable initialization to `~/.zshrc.local`.
+5. Follow the [Neovim README](config/nvim/README.md) for editor requirements and first-run setup.
 
 Check the links with:
 
@@ -60,7 +59,6 @@ python3 scripts/links.py status
 │   ├── keyboard-layouts/    # QWERTY layout without Option characters
 │   ├── nvim/                # Separate, pinned Neovim Git submodule
 │   ├── oh-my-posh/          # Prompt theme
-│   ├── rectangle/           # Preferences snapshot and export script
 │   ├── rime/                # Rime/Squirrel customization patches
 │   └── zsh/                 # Login and interactive shell configuration
 ├── docs/                    # Reserved for additional documentation
@@ -77,7 +75,6 @@ Run these commands from the repository root.
 | `scripts/bootstrap.sh` | `bash scripts/bootstrap.sh` | Prepares Command Line Tools/Homebrew, installs the Brewfile, selects the minimal Rust profile, ensures stable Rust and `rust-analyzer`, `rust-src`, `rustfmt`, and `clippy`, then runs Rime setup. Does not create configuration links. |
 | `scripts/links.py` | `python3 scripts/links.py install\|status\|restore ...` | Uses only the Python standard library. Installs backed-up relative symlinks, reports link status, or restores a recorded installation. See examples below. |
 | `scripts/rime-setup.py` | `python3 scripts/rime-setup.py` | Copies missing, non-hidden Rime Ice files into `~/Library/Rime` from commit `3aea6d3694fb3d94ec663641f021f788822897ad`. Skips upstream `*.custom.yaml` files and existing destinations. If `rime_ice.schema.yaml` exists, leaves the entire baseline unchanged. |
-| `config/rectangle/export.sh` | `bash config/rectangle/export.sh` | Exports current Rectangle preferences, converts and validates the plist, replaces the repository snapshot, and displays its Git diff for review. |
 | `tests/test_links.py` | `python3 -m unittest discover -s tests -v` | Tests backup/restore, repeated installation, dry runs, Rime data isolation, changed-file protection, symlinked parents, and dangling links in temporary homes. |
 
 ### Link installation and restore
@@ -98,27 +95,9 @@ python3 scripts/links.py status --home /tmp/dotfiles-demo
 
 Backups and their manifests live under `~/.local/state/dotfiles/backups/<timestamp>/`. Correct links are left alone; conflicting files, directories, and dangling links are moved into the backup. The installer checks sources and rejects symlinked parent directories before linking, and attempts rollback if linking fails. `status` returns 0 when all links match and 1 otherwise.
 
-Restore reads the destinations stored in the manifest; `--home` does not redirect restoration. It removes installed links and returns original files, refusing to overwrite destinations changed since installation. Restore does not uninstall Homebrew packages, undo Rust setup, remove Rime baseline files, or revert Rectangle preferences.
+Restore reads the destinations stored in the manifest; `--home` does not redirect restoration. It removes installed links and returns original files, refusing to overwrite destinations changed since installation. Restore does not uninstall Homebrew packages, undo Rust setup, remove Rime baseline files.
 
-Neovim and Karabiner are linked as whole directories. Existing Karabiner `assets` and `automatic_backups` are copied into the checkout before replacement; conflicting runtime directories require manual review. Rime links only the customization patches, keeping dictionaries and learned data local. Rectangle uses a preferences import rather than a symlink. GNU Stow is included in the Brewfile, but installation uses `links.py`.
-
-### Rectangle import and export
-
-Quit Rectangle before importing its snapshot:
-
-```sh
-osascript -e 'tell application "Rectangle" to quit'
-defaults import com.knollsoft.Rectangle "$PWD/config/rectangle/com.knollsoft.Rectangle.plist"
-open -a Rectangle
-```
-
-To save later changes back into the repository:
-
-```sh
-bash config/rectangle/export.sh
-```
-
-The snapshot also contains application bookkeeping such as update timestamps and version numbers; review the exported diff before committing.
+Neovim and Karabiner are linked as whole directories. Existing Karabiner `assets` and `automatic_backups` are copied into the checkout before replacement; conflicting runtime directories require manual review. Rime links only the customization patches, keeping dictionaries and learned data local. GNU Stow is included in the Brewfile, but installation uses `links.py`.
 
 ## Configuration purposes and principles
 
@@ -158,14 +137,8 @@ The snapshot also contains application bookkeeping such as update timestamps and
 
 The [custom keyboard layout](config/keyboard-layouts) preserves familiar QWERTY typing while freeing Option combinations for shortcuts instead of special-character input. It complements the modifier remapping and gives Squirrel a consistent keyboard layout to use.
 
-### Rectangle
-
-[Rectangle](config/rectangle) favors convenient window snapping with a small shortcut set. Its configuration is stored as a preferences snapshot because macOS manages these settings through its preferences system. Explicit import and export keep the setup reproducible while allowing changes through the app; review exports before committing them.
-
 ### AeroSpace
 
-[AeroSpace](config/aerospace/aerospace.toml) provides i3-like tiling and workspaces. The Brewfile installs it from the official `nikitabobko/tap` tap, and the link installer connects `~/.config/aerospace/aerospace.toml` to the tracked file. Edits through either path update the same configuration. Avoid adding `~/.aerospace.toml`, since AeroSpace reports ambiguity when both locations exist.
+[AeroSpace](config/aerospace/aerospace.toml) migrates the GlazeWM hotkeys and command/move/adjust/admin modes from dotfiles-win with persistent workspaces 1–9. [Hotkey reference](config/aerospace/help.html) lists the migrated modes. In adjust mode, H/L shrink/grow width and J/K grow/shrink height using native 25-point steps. Space toggles native floating placement; admin P pauses until manually resumed.
 
-This initial configuration uses the bundled 0.21.3-Beta defaults. Start-at-login and automatic reload are disabled. GlazeWM shortcuts, gaps, workspaces, and window rules will be planned separately using [dotfiles-win](https://github.com/TenofHearts/dotfiles-win).
-
-Launch `open -a AeroSpace` and grant AeroSpace access in **System Settings → Privacy & Security → Accessibility** when prompted. After editing the config, run `aerospace reload-config`; use `aerospace reload-config --dry-run --no-gui` to validate it while AeroSpace is running. Default shortcuts include Option+H/J/K/L for focus, Option+1–9 for workspaces, and Option+Shift+1–9 to move windows. Review overlapping Rectangle shortcuts before using both managers.
+The Brewfile installs AeroSpace. The installer links its config into `~/.config`. Launch AeroSpace and grant Accessibility access when prompted. AeroSpace uses its native menu-bar icon and default gaps. Edit the tracked config, then run `aerospace reload-config`. Command → admin → R also reloads it.

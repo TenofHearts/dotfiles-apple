@@ -11,6 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 FILES = {
     ".config/aerospace/aerospace.toml": "config/aerospace/aerospace.toml",
+    ".config/aerospace/help.html": "config/aerospace/help.html",
     ".zprofile": "config/zsh/.zprofile",
     ".zshrc": "config/zsh/.zshrc",
     ".config/oh-my-posh/theme.omp.json": "config/oh-my-posh/theme.omp.json",
@@ -89,7 +90,7 @@ def install(home, dry_run):
                 shutil.move(record["backup"], str(dest))
         raise
     print(f"Backup manifest: {manifest}")
-    print("Restart Karabiner; use Squirrel > Deploy. Restore Rectangle separately; see README.")
+    print("Restart Karabiner; use Squirrel > Deploy.")
 
 
 def restore(manifest, dry_run):
