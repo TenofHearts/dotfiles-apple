@@ -1,26 +1,90 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><title>AeroSpace hotkeys</title><style>body{background:#222;color:#eee;font:16px system-ui;margin:40px}pre{white-space:pre-wrap;line-height:1.7}h1{color:#8dbcff}</style><h1>AeroSpace hotkeys</h1><pre>
-`Alt` means the Option modifier received after Karabiner remapping. Your left physical Command key currently sends Option. Release modifiers after entering a mode before pressing plain keys.
-
-| Context | Keys | Action |
-| --- | --- | --- |
-| Every mode | Option+H/J/K/L | Focus left/down/up/right |
-| Every mode | Option+M / Option+Q | Minimize / close window |
-| Every mode | Option+1–9 | Focus workspace 1–9 |
-| Main | Option+Shift+; | Enter command mode |
-| Command | H | Open local hotkey help, return to main |
-| Command | M / R / A | Enter move / adjust / admin |
-| Command | Option+Shift+; | Return to main |
-| Move | H/J/K/L | Move left/down/up/right |
-| Move | V | Toggle horizontal/vertical tiles |
-| Move | 1–9 | Move window to workspace and follow it |
-| Adjust | H / L | Shrink / grow width by 25 points |
-| Adjust | J / K | Grow / shrink height by 25 points |
-| Adjust | T / F / Space / M | Tile / fullscreen / toggle floating / minimize |
-| Admin | P | Return to main and pause; resume manually |
-| Admin | R | Return to main and reload AeroSpace |
-| Move, adjust, admin | Option+Shift+; | Return to command |
-| Any non-main mode | Escape / Enter | Return to main |
-
-AeroSpace modes replace the previous mode; common Option shortcuts are explicitly repeated in each mode.
-
-</pre></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AeroSpace shortcuts</title>
+  <style>
+    :root{color-scheme:light dark;--bg:#f3f5f9;--card:#fff;--text:#233047;--muted:#657187;--line:#dde3ed;--accent:#2563d1;--key:#edf2fa}
+    @media(prefers-color-scheme:dark){:root{--bg:#141922;--card:#1d2430;--text:#e7edf7;--muted:#a0adc0;--line:#354055;--accent:#8dbaff;--key:#293447}}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:1120px;margin:auto;padding:32px 24px 48px}h1{font-size:28px;letter-spacing:-.025em;margin:0 0 16px}h2{font-size:19px;margin:0}p{margin:0}
+    a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+    kbd{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:var(--key);font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .shared{color:var(--muted);margin-bottom:16px}nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}nav a{padding:5px 10px;border:1px solid var(--line);border-radius:7px;background:var(--card)}
+    .modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}section{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--card);scroll-margin-top:20px}
+    .activation{color:var(--muted);font-size:12px;margin:5px 0 14px}table{width:100%;border-collapse:collapse}th,td{text-align:left;vertical-align:top;padding:9px 0;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:12px;font-weight:600}th:first-child,td:first-child{width:38%;padding-right:12px}tr:last-child td{border-bottom:0}
+    .exit,.detail{color:var(--muted);font-size:12px;margin-top:12px}.exit{border-top:1px solid var(--line);padding-top:12px}
+    @media(max-width:760px){main{padding:24px 16px}.modes{grid-template-columns:1fr}section{padding:18px}h1{font-size:25px}}
+    @media print{nav{display:none}main{padding:0;max-width:none}body{background:#fff;color:#000}section{break-inside:avoid;background:#fff;color:#000}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>AeroSpace shortcuts</h1>
+    <p class="shared"><kbd>Option + H / J / K / L</kbd> focuses windows; <kbd>Option + 1–9</kbd> switches workspaces. <kbd>Option + M</kbd> minimizes; <kbd>Option + Q</kbd> closes. All work in every mode while management is active.</p>
+    <p class="shared">Option means the modifier received after Karabiner remapping; your left physical Command key currently sends Option. Release modifiers after entering a mode before pressing plain keys.</p>
+  </header>
+  <nav aria-label="Modes">
+    <a href="#main">Main</a><a href="#command">Command</a><a href="#move">Move</a><a href="#adjust">Adjust</a><a href="#admin">Admin</a>
+  </nav>
+  <div class="modes">
+    <section id="main" aria-labelledby="main-title">
+      <h2 id="main-title">Main</h2>
+      <p class="activation">Active by default</p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Option + H / J / K / L</kbd></td><td>Focus left / down / up / right.</td></tr>
+        <tr><td><kbd>Option + 1–9</kbd></td><td>Switch workspace.</td></tr>
+        <tr><td><kbd>Option + Shift + ;</kbd></td><td>Enter Command.</td></tr>
+      </tbody></table>
+    </section>
+    <section id="command" aria-labelledby="command-title">
+      <h2 id="command-title">Command</h2>
+      <p class="activation">Activate: <kbd>Option + Shift + ;</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>M</kbd></td><td>Enter Move.</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Enter Adjust.</td></tr>
+        <tr><td><kbd>A</kbd></td><td>Enter Admin.</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Open this guide in the default browser; exit Command.</td></tr>
+      </tbody></table>
+      <p class="exit">Escape, Enter or Option + Shift + ; → Main.</p>
+    </section>
+    <section id="move" aria-labelledby="move-title">
+      <h2 id="move-title">Move</h2>
+      <p class="activation">Activate: <kbd>Option + Shift + ; → M</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>H / J / K / L</kbd></td><td>Move left / down / up / right.</td></tr>
+        <tr><td><kbd>Shift + H / J / K / L</kbd></td><td>Move the whole workspace to the display left / down / up / right.</td></tr>
+        <tr><td><kbd>V</kbd></td><td>Toggle horizontal / vertical tiles.</td></tr>
+        <tr><td><kbd>1–9</kbd></td><td>Move to workspace and follow the window; stay in Move.</td></tr>
+      </tbody></table>
+      <p class="exit">Escape or Enter → Main. Option + Shift + ; → Command.</p>
+    </section>
+    <section id="adjust" aria-labelledby="adjust-title">
+      <h2 id="adjust-title">Adjust</h2>
+      <p class="activation">Activate: <kbd>Option + Shift + ; → R</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>H / L</kbd></td><td>Shrink / grow width by 25 points.</td></tr>
+        <tr><td><kbd>J / K</kbd></td><td>Grow / shrink height by 25 points.</td></tr>
+        <tr><td><kbd>T</kbd></td><td>Set tiled.</td></tr>
+        <tr><td><kbd>F</kbd></td><td>Toggle fullscreen.</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>Toggle floating / tiling.</td></tr>
+        <tr><td><kbd>M</kbd></td><td>Minimize.</td></tr>
+      </tbody></table>
+      <p class="exit">Escape or Enter → Main. Option + Shift + ; → Command.</p>
+    </section>
+    <section id="admin" aria-labelledby="admin-title">
+      <h2 id="admin-title">Admin</h2>
+      <p class="activation">Activate: <kbd>Option + Shift + ; → A</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>R</kbd></td><td>Reload configuration; exit Admin.</td></tr>
+        <tr><td><kbd>P</kbd></td><td>Return to Main and pause window management.</td></tr>
+      </tbody></table>
+      <p class="detail">Resume management manually from the AeroSpace menu-bar icon or CLI.</p>
+      <p class="exit">Escape or Enter → Main. Option + Shift + ; → Command.</p>
+    </section>
+  </div>
+</main>
+</body>
+</html>
