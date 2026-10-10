@@ -139,6 +139,6 @@ The [custom keyboard layout](config/keyboard-layouts) preserves familiar QWERTY 
 
 ### AeroSpace
 
-[AeroSpace](config/aerospace/aerospace.toml) migrates the GlazeWM hotkeys and command/move/adjust/admin modes from dotfiles-win with persistent workspaces 1–9. [Hotkey reference](config/aerospace/help.html) lists the migrated modes. In adjust mode, H/L shrink/grow width and J/K grow/shrink height using native 25-point steps. Space toggles native floating placement; admin P pauses until manually resumed.
+[AeroSpace](config/aerospace/aerospace.toml) migrates the GlazeWM hotkeys and command/move/adjust/admin modes from dotfiles-win with persistent workspaces 1–9. [Hotkey reference](config/aerospace/help.html) lists the migrated modes. In Move mode, H/J/K/L can move windows across display edges into the neighboring display’s visible workspace. V prepares an opposite-direction split around the focused destination tile. Focus another window with Option+H/J/K/L, then move it toward that destination with H/J/K/L. Container flattening is disabled to preserve prepared splits. In adjust mode, H/L shrink/grow width and J/K grow/shrink height using native 25-point steps. Space toggles native floating placement; admin P pauses until manually resumed.
 
 The Brewfile installs AeroSpace. The installer links its config into `~/.config`. Launch AeroSpace and grant Accessibility access when prompted. AeroSpace uses its native menu-bar icon and default gaps. Edit the tracked config, then run `aerospace reload-config`. Command → admin → R also reloads it.
