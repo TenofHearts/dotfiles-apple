@@ -26,6 +26,7 @@ fi
 skip=${HOMEBREW_BUNDLE_CASK_SKIP:-}
 [[ ! -d /Applications/Ghostty.app ]] || skip="$skip ghostty"
 [[ ! -d /Applications/Rectangle.app ]] || skip="$skip rectangle"
+[[ ! -d /Applications/AeroSpace.app ]] || skip="$skip aerospace"
 [[ ! -d /Applications/Karabiner-Elements.app ]] || skip="$skip karabiner-elements"
 [[ ! -d '/Library/Input Methods/Squirrel.app' && ! -d "$HOME/Library/Input Methods/Squirrel.app" ]] || skip="$skip squirrel"
 export HOMEBREW_BUNDLE_CASK_SKIP="$skip"

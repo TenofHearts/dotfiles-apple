@@ -10,6 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = {
+    ".config/aerospace/aerospace.toml": "config/aerospace/aerospace.toml",
     ".zprofile": "config/zsh/.zprofile",
     ".zshrc": "config/zsh/.zshrc",
     ".config/oh-my-posh/theme.omp.json": "config/oh-my-posh/theme.omp.json",

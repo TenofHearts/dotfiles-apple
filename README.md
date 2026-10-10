@@ -17,7 +17,7 @@ cd dotfiles
 ./install.sh --bootstrap
 ```
 
-If Command Line Tools are missing, bootstrap opens their installer and exits. Finish installing them, then rerun the command. Homebrew installation may request administrator access. Bootstrap installs missing Brewfile packages without upgrading existing ones and skips the four GUI apps when their expected installation paths already exist.
+If Command Line Tools are missing, bootstrap opens their installer and exits. Finish installing them, then rerun the command. Homebrew installation may request administrator access. Bootstrap installs missing Brewfile packages without upgrading existing ones and skips GUI apps when their expected installation paths already exist.
 
 For an existing checkout, initialize Neovim with `git submodule update --init --recursive`. If dependencies and Rime Ice are already installed, use `./install.sh` to install only the links. Put `--bootstrap` first when combining flags; `./install.sh --bootstrap --dry-run` still installs dependencies, so use the plain dry run above to preview only.
 
@@ -52,6 +52,7 @@ python3 scripts/links.py status
 │   ├── links.py             # Install, inspect, and restore symlinks
 │   └── rime-setup.py         # Add a pinned Rime Ice baseline
 ├── config/
+│   ├── aerospace/           # Tiling window manager configuration
 │   ├── cowsay/              # Terminal welcome artwork
 │   ├── ghostty/             # Terminal font and colors
 │   ├── git/                 # Shared Git defaults and global ignores
@@ -160,3 +161,11 @@ The [custom keyboard layout](config/keyboard-layouts) preserves familiar QWERTY 
 ### Rectangle
 
 [Rectangle](config/rectangle) favors convenient window snapping with a small shortcut set. Its configuration is stored as a preferences snapshot because macOS manages these settings through its preferences system. Explicit import and export keep the setup reproducible while allowing changes through the app; review exports before committing them.
+
+### AeroSpace
+
+[AeroSpace](config/aerospace/aerospace.toml) provides i3-like tiling and workspaces. The Brewfile installs it from the official `nikitabobko/tap` tap, and the link installer connects `~/.config/aerospace/aerospace.toml` to the tracked file. Edits through either path update the same configuration. Avoid adding `~/.aerospace.toml`, since AeroSpace reports ambiguity when both locations exist.
+
+This initial configuration uses the bundled 0.21.3-Beta defaults. Start-at-login and automatic reload are disabled. GlazeWM shortcuts, gaps, workspaces, and window rules will be planned separately using [dotfiles-win](https://github.com/TenofHearts/dotfiles-win).
+
+Launch `open -a AeroSpace` and grant AeroSpace access in **System Settings → Privacy & Security → Accessibility** when prompted. After editing the config, run `aerospace reload-config`; use `aerospace reload-config --dry-run --no-gui` to validate it while AeroSpace is running. Default shortcuts include Option+H/J/K/L for focus, Option+1–9 for workspaces, and Option+Shift+1–9 to move windows. Review overlapping Rectangle shortcuts before using both managers.
