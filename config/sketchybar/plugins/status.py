@@ -15,7 +15,6 @@ def aerospace():
                           '%{workspace} %{monitor-appkit-nsscreen-screens-id}', '--json'))
     occupied = set(run('aerospace', 'list-workspaces', '--monitor', 'all', '--empty', 'no').splitlines())
     visible = set(run('aerospace', 'list-workspaces', '--monitor', 'all', '--visible').splitlines())
-    mode = run('aerospace', 'list-modes', '--current').strip()
     existing = set(json.loads(run('sketchybar', '--query', 'bar'))['items'])
     desired = set()
     args = ['sketchybar']
@@ -44,8 +43,6 @@ def aerospace():
     for stale in sorted(existing - desired):
         if stale.startswith('aerospace.workspace.'):
             args += ['--remove', stale]
-    args += ['--set', 'aerospace.mode', 'label=' + mode.upper(),
-             'label.color=' + ('0xffffffff' if mode == 'main' else '0xfffab387')]
     run(*args)
 
 
@@ -77,7 +74,7 @@ if __name__ == '__main__':
         {'aerospace': aerospace, 'bluetooth': bluetooth, 'network': network}[name]()
     except (subprocess.SubprocessError, OSError, ValueError, KeyError) as error:
         # Avoid retaining a misleading successful status if a provider stops responding.
-        item = 'aerospace.mode' if name == 'aerospace' else name
+        item = 'aerospace.refresh' if name == 'aerospace' else name
         args = ['sketchybar', '--set', item, 'label=Unavailable']
         if name == 'aerospace':
             args += ['--set', '/aerospace.workspace.*/', 'drawing=off']
