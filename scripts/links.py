@@ -22,6 +22,7 @@ FILES = {
     ".gitignore_global": "config/git/.gitignore_global",
     ".Brewfile": "Brewfile",
     ".config/nvim": "config/nvim",
+    ".tmux.conf": "config/tmux/.tmux.conf",
     ".config/karabiner": "config/karabiner",
     "Library/Keyboard Layouts/QWERTY no option.keylayout": "config/keyboard-layouts/QWERTY no option.keylayout",
 }

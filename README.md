@@ -60,6 +60,7 @@ python3 scripts/links.py status
 │   ├── nvim/                # Separate, pinned Neovim Git submodule
 │   ├── oh-my-posh/          # Prompt theme
 │   ├── rime/                # Rime/Squirrel customization patches
+│   ├── tmux/                # Separate, pinned tmux Git submodule
 │   └── zsh/                 # Login and interactive shell configuration
 ├── docs/                    # Reserved for additional documentation
 └── tests/test_links.py      # Installer regression tests
@@ -126,6 +127,8 @@ The command line uses vi bindings: start typing in insert mode, press `Esc` for 
 ### Neovim
 
 [Neovim](config/nvim/README.md) is maintained as an independent, pinned submodule so the editor configuration can evolve separately and be reused across platforms. See its own README for setup, usage, and configuration principles.
+
+[tmux](config/tmux/README.md) is also maintained as a pinned submodule. The Brewfile installs tmux, and the installer links `~/.tmux.conf` to `config/tmux/.tmux.conf`. Its prefix is `Ctrl-a`, with mouse support and `Alt` + arrow keys for switching panes.
 
 ### Karabiner-Elements
 
