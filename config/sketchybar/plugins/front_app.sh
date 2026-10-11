@@ -7,4 +7,8 @@
 
 if [ "$SENDER" = "front_app_switched" ]; then
   sketchybar --set "$NAME" label="$INFO"
+else
+  app=$(/usr/bin/osascript -l JavaScript -e \
+    'ObjC.import("AppKit"); $.NSWorkspace.sharedWorkspace.frontmostApplication.localizedName.js')
+  sketchybar --set "$NAME" label="$app"
 fi
