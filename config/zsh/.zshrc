@@ -14,7 +14,10 @@ setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE
 setopt AUTO_CD INTERACTIVE_COMMENTS
 autoload -Uz compinit
 compinit
-bindkey -e
+# Vi command-line editing: Esc enters normal mode; i returns to insert mode.
+bindkey -v
+# Hundredths of a second; keep Esc responsive while allowing escape sequences.
+KEYTIMEOUT=10
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
@@ -146,3 +149,6 @@ FNM_PATH="/opt/homebrew/opt/fnm/bin"
 if [ -d "$FNM_PATH" ]; then
   eval "$(fnm env --shell zsh)"
 fi
+
+# aerospace
+alias as='aerospace'

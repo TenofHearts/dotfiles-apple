@@ -16,7 +16,14 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 default-root-container-layout = 'tiles'
 default-root-container-orientation = 'auto'
 
-# Gaps and margins inherit AeroSpace defaults (zero).
+# Space between tiles and around the workspace (macOS logical points).
+[gaps]
+inner.horizontal = 2
+inner.vertical = 2
+outer.left = 5
+outer.right = 5
+outer.top = 5
+outer.bottom = 5
 
 # Browser picture-in-picture windows float; Windows process/class rules do not apply.
 
@@ -133,6 +140,8 @@ alt-shift-semicolon = "mode command"
 # Native resizing in 25-point steps.
 # Space toggles floating without an added centering helper.
 [mode.adjust.binding]
+# Toggle the focused container (group, or workspace root) without flattening.
+a = "layout accordion tiles"
 h = "resize width -25"
 j = "resize height +25"
 k = "resize height -25"
@@ -153,7 +162,7 @@ alt-7 = "workspace 7"
 alt-8 = "workspace 8"
 alt-9 = "workspace 9"
 t = "layout tiling"
-f = "fullscreen"
+f = "fullscreen --no-outer-gaps"
 space = "layout floating tiling"
 m = "macos-native-minimize"
 esc = "mode main"

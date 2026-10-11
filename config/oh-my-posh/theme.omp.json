@@ -9,7 +9,7 @@
           "type": "text",
           "style": "plain",
           "template": "╭",
-          "foreground": "#fff4e1"
+          "foreground": "#6c7086"
         },
         {
           "properties": {
@@ -25,18 +25,18 @@
           "leading_diamond": "",
           "trailing_diamond": "",
           "template": "   {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}  ",
-          "foreground": "#585858",
-          "background": "#f2c6b4",
+          "foreground": "#1e1e2e",
+          "background": "#89b4fa",
           "type": "python",
           "style": "diamond"
         },
         {
-          "background": "#f3e8cb",
-          "foreground": "#585858",
+          "background": "#94e2d5",
+          "foreground": "#1e1e2e",
           "background_templates": [
-            "{{ if or (.Working.Changed) (.Staging.Changed) }}#c1dda8{{ end }}",
-            "{{ if gt .Ahead 0 }}#cadefc{{ end }}",
-            "{{ if gt .Behind 0 }}#cf827c{{ end }}"
+            "{{ if or (.Working.Changed) (.Staging.Changed) }}#f2cdcd{{ end }}",
+            "{{ if gt .Ahead 0 }}#b4befe{{ end }}",
+            "{{ if gt .Behind 0 }}#eba0ac{{ end }}"
           ],
           "properties": {
             "fetch_status": true,
@@ -54,9 +54,9 @@
             "style": "austin"
           },
           "template": "  {{ .FormattedMs }} ",
-          "foreground": "#585858",
+          "foreground": "#1e1e2e",
           "trailing_diamond": "",
-          "background": "#99e1e5",
+          "background": "#cba6f7",
           "type": "executiontime",
           "style": "diamond"
         }
@@ -71,7 +71,7 @@
           "type": "text",
           "style": "plain",
           "template": "├",
-          "foreground": "#fff4e1"
+          "foreground": "#6c7086"
         },
         {
           "properties": {
@@ -79,9 +79,9 @@
           },
           "leading_diamond": "",
           "template": " Hi, {{ .UserName }} ",
-          "foreground": "#e0d7c6",
+          "foreground": "#1e1e2e",
           "trailing_diamond": "",
-          "background": "#6c5b7c",
+          "background": "#f5c2e7",
           "type": "session",
           "style": "diamond"
         },
@@ -89,8 +89,8 @@
           "type": "battery",
           "style": "diamond",
           "trailing_diamond": "",
-          "foreground": "#e0d7c6",
-          "background": "#88304e",
+          "foreground": "#1e1e2e",
+          "background": "#fab387",
           "template": " Battery: {{ if not .Error }}{{ .Icon }} {{ .Percentage }}{{ end }}  ",
           "properties": {
             "discharging_icon": " ",
@@ -102,14 +102,14 @@
           "properties": {
             "cache_duration": "none",
             "folder_icon": "…",
-            "folder_separator_icon": " <#f8b595></> ",
+            "folder_separator_icon": " <#45475a></> ",
             "max_depth": 2,
             "style": "agnoster_short"
           },
           "template": "  {{ .Path }} ",
-          "foreground": "#e0d7c6",
+          "foreground": "#1e1e2e",
           "trailing_diamond": "",
-          "background": "#c06c84",
+          "background": "#f9e2af",
           "type": "path",
           "style": "diamond"
         }
@@ -124,7 +124,7 @@
           "type": "text",
           "style": "plain",
           "template": "╰",
-          "foreground": "#fff4e1"
+          "foreground": "#6c7086"
         },
         {
           "properties": {
@@ -145,9 +145,9 @@
             "ubuntu": "",
             "windows": ""
           },
-          "template": " {{ .Icon }} {{ if .Root }}#{{else}}>{{end}}",
-          "foreground": "#585858",
-          "background": "#94d479",
+          "template": " {{ .Icon }} {{ if .Root }}#{{else}}❯{{end}} ",
+          "foreground": "#1e1e2e",
+          "background": "#a6e3a1",
           "leading_diamond": "",
           "trailing_diamond": "",
           "type": "os",

@@ -105,6 +105,8 @@ Neovim and Karabiner are linked as whole directories. Existing Karabiner `assets
 
 [Zsh](config/zsh) makes everyday navigation and development convenient through completion, history, and shell shortcuts. Optional integrations load only when their tools are available, so the shell remains usable without the full dependency set. Shared defaults stay in the repository; machine-specific paths, environment variables, and preferences belong in `~/.zprofile.local` and `~/.zshrc.local`.
 
+The command line uses vi bindings: start typing in insert mode, press `Esc` for normal mode, and `i` or `a` to resume inserting. Open a new shell or run `exec zsh` after changing the configuration.
+
 ### Oh My Posh
 
 [Oh My Posh](config/oh-my-posh/theme.omp.json) keeps development and shell context visible at the prompt. The theme groups information across multiple lines so project state and system context are easy to scan while leaving a clear place to type commands. Its typography works together with Ghostty's Nerd Font.
@@ -139,6 +141,12 @@ The [custom keyboard layout](config/keyboard-layouts) preserves familiar QWERTY 
 
 ### AeroSpace
 
-[AeroSpace](config/aerospace/aerospace.toml) migrates the GlazeWM hotkeys and command/move/adjust/admin modes from dotfiles-win with persistent workspaces 1–9. [Hotkey reference](config/aerospace/help.html) lists the migrated modes. In Move mode, H/J/K/L can move windows across display edges into the neighboring display’s visible workspace. V prepares an opposite-direction split around the focused destination tile. Focus another window with Option+H/J/K/L, then move it toward that destination with H/J/K/L. Container flattening is disabled to preserve prepared splits. In adjust mode, H/L shrink/grow width and J/K grow/shrink height using native 25-point steps. Space toggles native floating placement; admin P pauses until manually resumed.
+[AeroSpace](config/aerospace/aerospace.toml) migrates the GlazeWM hotkeys and command/move/adjust/admin modes from dotfiles-win with persistent workspaces 1–9. [Hotkey reference](config/aerospace/help.html) lists the migrated modes. In Move mode, H/J/K/L can move windows across display edges into the neighboring display’s visible workspace. V prepares an opposite-direction split around the focused destination tile. Focus another window with Option+H/J/K/L, then move it toward that destination with H/J/K/L. Container flattening is disabled to preserve prepared splits. In Adjust mode, A toggles accordion/tiles for the focused group (or the workspace when ungrouped), preserving orientation and existing groups. H/L shrink/grow width and J/K grow/shrink height using native 25-point steps. Space toggles native floating placement; admin P pauses until manually resumed.
 
-The Brewfile installs AeroSpace. The installer links its config into `~/.config`. Launch AeroSpace and grant Accessibility access when prompted. AeroSpace uses its native menu-bar icon and default gaps. Edit the tracked config, then run `aerospace reload-config`. Command → admin → R also reloads it.
+The Brewfile installs AeroSpace. The installer links its config into `~/.config`. Launch AeroSpace and grant Accessibility access when prompted. AeroSpace uses its native menu-bar icon, 2-point gaps between tiles, and 5-point outer margins. Edit the tracked config, then run `aerospace reload-config`. Command → admin → R also reloads it.
+
+### SketchyBar
+
+[SketchyBar](config/sketchybar) contains the unchanged example configuration from SketchyBar 2.24.1. The installer links this directory to `~/.config/sketchybar`, so local configuration edits stay in this checkout. The Brewfile includes SketchyBar and the Hack Nerd Font used by the example.
+
+Run `brew services start sketchybar` to launch it and enable startup at login; use `brew services stop sketchybar` to stop it. After editing the configuration, run `sketchybar --reload`. SketchyBar requires **Displays have separate Spaces** in macOS settings. The stock example shows macOS Mission Control Spaces and uses yabai for space clicks; it does not yet integrate with AeroSpace. Native menu-bar settings are unchanged.
