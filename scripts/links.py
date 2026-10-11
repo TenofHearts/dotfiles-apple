@@ -10,6 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = {
+    ".config/sketchybar": "config/sketchybar",
     ".config/aerospace/aerospace.toml": "config/aerospace/aerospace.toml",
     ".config/aerospace/help.html": "config/aerospace/help.html",
     ".zprofile": "config/zsh/.zprofile",
