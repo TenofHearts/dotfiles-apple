@@ -83,27 +83,6 @@
                         ]
                     },
                     {
-                        "description": "Left Option + Space -> Control + Left Option + Space for Raycast",
-                        "manipulators": [
-                            {
-                                "from": {
-                                    "key_code": "spacebar",
-                                    "modifiers": {
-                                        "mandatory": ["left_option"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "spacebar",
-                                        "modifiers": ["left_control", "left_option"]
-                                    }
-                                ],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
                         "description": "Mapped Win + L -> Lock Mac, except active Windows App RDP",
                         "manipulators": [
                             {

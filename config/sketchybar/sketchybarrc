@@ -2,7 +2,8 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 
-sketchybar --bar position=top blur_radius=30 color=0x40000000 \
+# Share the native menu bar's position, above app windows but below the menu.
+sketchybar --bar display=all position=top topmost=window y_offset=0 blur_radius=30 color=0x40000000 \
   --default padding_left=5 padding_right=5 \
   icon.font="Hack Nerd Font:Bold:14.0" label.font="Hack Nerd Font:Bold:12.0" \
   icon.color=0xffffffff label.color=0xffffffff \
@@ -19,7 +20,7 @@ sketchybar --add item aerospace.mode left \
   script="python3 \"$PLUGIN_DIR/status.py\" aerospace" \
   --subscribe aerospace.refresh aerospace_workspace_change display_change system_woke \
   --add item bar.height left \
-  --set bar.height drawing=off script="\"$PLUGIN_DIR/height.sh\"" \
+  --set bar.height drawing=off update_freq=0 script="\"$PLUGIN_DIR/height.sh\"" \
   --subscribe bar.height display_change system_woke
 
 sketchybar --add item front_app left \

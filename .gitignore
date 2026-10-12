@@ -5,3 +5,4 @@ config/karabiner/automatic_backups/
 config/karabiner/assets/
 config/karabiner/*.local.*
 
+config/sketchybar/plugins/.display-layout.lock

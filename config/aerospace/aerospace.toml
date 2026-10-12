@@ -32,7 +32,8 @@ inner.horizontal = 2
 inner.vertical = 2
 outer.left = 5
 outer.right = 5
-outer.top = 5
+# Automatically measured menu/bar height minus the macOS inset, plus 5 points.
+outer.top = [{ monitor."1" = 6 }, { monitor."2" = 35 }, 38] # managed by sketchybar display-layout.py
 outer.bottom = 5
 
 # Browser picture-in-picture windows float; Windows process/class rules do not apply.
@@ -68,10 +69,10 @@ if.window-title-regex-substring = '[Pp]icture.in.[Pp]icture'
 run = 'layout floating'
 
 [mode.main.binding]
-alt-h = "focus left"
-alt-j = "focus down"
-alt-k = "focus up"
-alt-l = "focus right"
+alt-h = "focus --boundaries all-monitors-outer-frame left"
+alt-j = "focus --boundaries all-monitors-outer-frame down"
+alt-k = "focus --boundaries all-monitors-outer-frame up"
+alt-l = "focus --boundaries all-monitors-outer-frame right"
 alt-m = "macos-native-minimize"
 alt-q = "close"
 alt-1 = "workspace 1"
@@ -86,10 +87,10 @@ alt-9 = "workspace 9"
 alt-shift-semicolon = "mode command"
 
 [mode.command.binding]
-alt-h = "focus left"
-alt-j = "focus down"
-alt-k = "focus up"
-alt-l = "focus right"
+alt-h = "focus --boundaries all-monitors-outer-frame left"
+alt-j = "focus --boundaries all-monitors-outer-frame down"
+alt-k = "focus --boundaries all-monitors-outer-frame up"
+alt-l = "focus --boundaries all-monitors-outer-frame right"
 alt-m = "macos-native-minimize"
 alt-q = "close"
 alt-1 = "workspace 1"
@@ -110,10 +111,10 @@ enter = "mode main"
 alt-shift-semicolon = "mode main"
 
 [mode.move.binding]
-alt-h = "focus left"
-alt-j = "focus down"
-alt-k = "focus up"
-alt-l = "focus right"
+alt-h = "focus --boundaries all-monitors-outer-frame left"
+alt-j = "focus --boundaries all-monitors-outer-frame down"
+alt-k = "focus --boundaries all-monitors-outer-frame up"
+alt-l = "focus --boundaries all-monitors-outer-frame right"
 alt-m = "macos-native-minimize"
 alt-q = "close"
 alt-1 = "workspace 1"
@@ -149,10 +150,10 @@ alt-shift-semicolon = "mode command"
 
 # One-shot directional join, entered with V from Move mode.
 [mode.join.binding]
-alt-h = "focus left"
-alt-j = "focus down"
-alt-k = "focus up"
-alt-l = "focus right"
+alt-h = "focus --boundaries all-monitors-outer-frame left"
+alt-j = "focus --boundaries all-monitors-outer-frame down"
+alt-k = "focus --boundaries all-monitors-outer-frame up"
+alt-l = "focus --boundaries all-monitors-outer-frame right"
 alt-m = "macos-native-minimize"
 alt-q = "close"
 alt-1 = "workspace 1"
@@ -181,10 +182,10 @@ h = "resize width -25"
 j = "resize height +25"
 k = "resize height -25"
 l = "resize width +25"
-alt-h = "focus left"
-alt-j = "focus down"
-alt-k = "focus up"
-alt-l = "focus right"
+alt-h = "focus --boundaries all-monitors-outer-frame left"
+alt-j = "focus --boundaries all-monitors-outer-frame down"
+alt-k = "focus --boundaries all-monitors-outer-frame up"
+alt-l = "focus --boundaries all-monitors-outer-frame right"
 alt-m = "macos-native-minimize"
 alt-q = "close"
 alt-1 = "workspace 1"
@@ -197,7 +198,7 @@ alt-7 = "workspace 7"
 alt-8 = "workspace 8"
 alt-9 = "workspace 9"
 t = "layout tiling"
-f = "fullscreen --no-outer-gaps"
+f = "fullscreen"
 space = "layout floating tiling"
 m = "macos-native-minimize"
 esc = "mode main"
@@ -208,10 +209,10 @@ alt-shift-semicolon = "mode command"
 # Return to main before pausing so manual resume restores normal typing.
 [mode.admin.binding]
 p = ["mode main", "enable off"]
-alt-h = "focus left"
-alt-j = "focus down"
-alt-k = "focus up"
-alt-l = "focus right"
+alt-h = "focus --boundaries all-monitors-outer-frame left"
+alt-j = "focus --boundaries all-monitors-outer-frame down"
+alt-k = "focus --boundaries all-monitors-outer-frame up"
+alt-l = "focus --boundaries all-monitors-outer-frame right"
 alt-m = "macos-native-minimize"
 alt-q = "close"
 alt-1 = "workspace 1"
