@@ -9,16 +9,14 @@ sketchybar --bar display=all position=top topmost=window y_offset=0 blur_radius=
   icon.color=0xffffffff label.color=0xffffffff \
   icon.padding_left=4 icon.padding_right=4 label.padding_left=4 label.padding_right=4
 
-sketchybar --add event aerospace_workspace_change
-
 sketchybar --add item aerospace.mode left \
   --set aerospace.mode icon.drawing=off label="…" label.font="Hack Nerd Font:Bold:11.0" \
   script="/bin/bash \"$PLUGIN_DIR/aerospace-mode.sh\"" \
   --subscribe aerospace.mode display_change system_woke \
   --add item aerospace.refresh left \
-  --set aerospace.refresh drawing=off update_freq=0 \
-  script="python3 \"$PLUGIN_DIR/status.py\" aerospace" \
-  --subscribe aerospace.refresh aerospace_workspace_change display_change system_woke \
+  --set aerospace.refresh drawing=off update_freq=30 \
+  script="luajit \"$PLUGIN_DIR/aerospace-listener.lua\" ensure" \
+  --subscribe aerospace.refresh display_change system_woke \
   --add item bar.height left \
   --set bar.height drawing=off update_freq=0 script="\"$PLUGIN_DIR/height.sh\"" \
   --subscribe bar.height display_change system_woke
@@ -48,4 +46,6 @@ sketchybar --add item clock right \
   --subscribe volume volume_change
 
 "$PLUGIN_DIR/height.sh"
+# --update uses SENDER=routine, so explicitly rebuild workspace items on reload.
+SENDER=forced luajit "$PLUGIN_DIR/aerospace-listener.lua" ensure
 sketchybar --update

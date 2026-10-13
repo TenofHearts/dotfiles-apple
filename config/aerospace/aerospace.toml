@@ -9,10 +9,8 @@ on-mode-changed = [
     'exec-and-forget /bin/bash "$HOME/.config/sketchybar/plugins/aerospace-mode.sh"',
 ]
 
-# Refresh workspace indicators as soon as the focused workspace changes.
-exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change'
-]
+# Workspace indicators use a persistent `aerospace subscribe` listener,
+# started and supervised by SketchyBar.
 
 on-focused-monitor-changed = [
     'move-mouse monitor-lazy-center',
