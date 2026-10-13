@@ -2,6 +2,7 @@
 package.path = 'config/sketchybar/?.lua;' .. package.path
 require('runtime')
 local items, commands, delays = {}, {}, {}
+local item_order = {}
 local function merge(to, from)
   for key, value in pairs(from) do
     if type(value) == 'table' then
@@ -20,11 +21,42 @@ function mock.add(kind, name, props)
     for _, event in ipairs(events) do self.events[event] = callback end
   end
   items[name] = item
+  item_order[#item_order+1] = name
   return item
 end
-function mock.exec(command, callback) commands[#commands+1] = {command=command, callback=callback} end
+function mock.exec(command, callback)
+  commands[#commands+1] = {command=command, callback=callback}
+  -- Model CLI ordering: reorder only permutes the named slots; move inserts.
+  if command:match('^sketchybar %-%-reorder ') then
+    local order, selected = {}, {}
+    for name in command:gsub("'", ''):gmatch('%S+') do
+      if items[name] then order[#order+1] = name; selected[name] = true end
+    end
+    local next_index = 1
+    for i, name in ipairs(item_order) do
+      if selected[name] then item_order[i] = order[next_index]; next_index = next_index + 1 end
+    end
+  end
+  for name, anchor in command:gmatch("%-%-move '([^']+)' before (%S+)") do
+    for i, existing in ipairs(item_order) do
+      if existing == name then table.remove(item_order, i); break end
+    end
+    for i, existing in ipairs(item_order) do
+      if existing == anchor then table.insert(item_order, i, name); break end
+    end
+  end
+end
 function mock.delay(_, callback) delays[#delays+1] = callback end
-function mock.remove(item) for name, value in pairs(items) do if item == value then items[name] = nil end end end
+function mock.remove(item)
+  for name, value in pairs(items) do
+    if item == value then
+      items[name] = nil
+      for i, existing in ipairs(item_order) do
+        if existing == name then table.remove(item_order, i); break end
+      end
+    end
+  end
+end
 function mock.bar() end
 package.loaded.sketchybar = mock
 local function flush_delays()
@@ -55,6 +87,7 @@ assert(not pcall(layout.plan, {{screen=1, notch=false, inset=0}}, {}))
 assert(not pcall(layout.plan, {{screen=1, notch=false, inset=0, height=30}}, {}))
 print('Display geometry: mixed monitors, ordering, smallest menu, incomplete topology passed')
 require('plugins.aerospace').setup()
+require('plugins.front_app')
 local control = items['aerospace.refresh']
 local function snapshot(active)
   return {{workspace='1', ['monitor-appkit-nsscreen-screens-id']=1, ['workspace-is-visible']=active=='1'},
@@ -103,3 +136,29 @@ items.bluetooth.events.forced(); respond('system_profiler', {SPBluetoothDataType
   controller_properties={controller_state='attrib_on'}, device_connected={{Mouse={}}, {Keyboard={}}}}}})
 assert(items.bluetooth.props.label == '2 connected')
 print('System plugins: event ordering, volume mute, battery/charging, reachability, device counts passed')
+
+local function check_order(workspaces)
+  control.events.routine({SENDER='routine'}); flush_delays()
+  local rows = {}
+  local expected = {}
+  for _, workspace in ipairs(workspaces) do
+    rows[#rows+1] = {workspace=workspace, ['monitor-appkit-nsscreen-screens-id']=1,
+      ['workspace-is-visible']=true}
+    expected[#expected+1] = 'aerospace.workspace.' .. require('plugins.util').hex(workspace)
+  end
+  respond('--all', rows); respond('--empty no', rows); flush_delays()
+  expected[#expected+1] = 'aerospace.mode'
+  expected[#expected+1] = 'front_app'
+  local actual = {}
+  for _, name in ipairs(item_order) do
+    if name:match('^aerospace%.workspace%.') or name == 'aerospace.mode' or name == 'front_app' then
+      actual[#actual+1] = name
+    end
+  end
+  assert(table.concat(actual, ',') == table.concat(expected, ','), table.concat(actual, ','))
+end
+check_order({'1', '2', '3', 'A'})
+check_order({'1', '2', '3', 'A', 'B'})
+check_order({'1', '2', '3', 'B'})
+check_order({'1', '2', '3', 'A', 'B'})
+print('AeroSpace ordering: workspace addition, removal and recreation preserve mode/front-app order passed')

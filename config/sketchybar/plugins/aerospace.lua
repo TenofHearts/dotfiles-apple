@@ -73,13 +73,17 @@ refresh = function()
     for workspace, item in pairs(items) do
       if not desired[workspace] then sbar.remove(item); items[workspace] = nil end
     end
-    -- Keep arbitrary new workspaces ahead of the mode indicator in numeric order.
-    -- SbarLua has no move domain, so use one reorder only when item membership changes.
+    -- Keep workspaces together before the mode indicator in AeroSpace's order.
+    -- Reorder only permutes existing slots, so move items in one CLI batch.
     local order = {}
     for _, row in ipairs(rows) do order[#order+1] = util.quote(name(row.workspace)) end
     local membership = table.concat(order, '\n')
     if M.membership ~= membership then
-      local command = 'sketchybar --reorder ' .. table.concat(order, ' ') .. ' aerospace.mode'
+      local moves = {'sketchybar'}
+      for _, item_name in ipairs(order) do
+        moves[#moves+1] = '--move ' .. item_name .. ' before aerospace.mode'
+      end
+      local command = table.concat(moves, ' ')
       sbar.delay(0, function() sbar.exec(command) end)
       M.membership = membership
     end
