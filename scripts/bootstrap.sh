@@ -30,6 +30,7 @@ skip=${HOMEBREW_BUNDLE_CASK_SKIP:-}
 [[ ! -d '/Library/Input Methods/Squirrel.app' && ! -d "$HOME/Library/Input Methods/Squirrel.app" ]] || skip="$skip squirrel"
 export HOMEBREW_BUNDLE_CASK_SKIP="$skip"
 brew bundle install --file="$ROOT/Brewfile" --no-upgrade
+"$ROOT/scripts/lua-setup.sh"
 # Minimal Rust: no local documentation. Extra components serve Neovim.
 export PATH="$(brew --prefix rustup)/bin:$PATH"
 rustup set profile minimal

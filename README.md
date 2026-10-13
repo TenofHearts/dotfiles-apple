@@ -152,4 +152,4 @@ Installed through the Brewfile. Launch AeroSpace and grant Accessibility access 
 
 [Configuration](config/sketchybar)
 
-Installed through the Brewfile. Enable **Displays have separate Spaces** in macOS settings. Start with `brew services start sketchybar`, stop with `brew services stop sketchybar`, and reload configuration with `sketchybar --reload`. Workspace updates use a LuaJIT listener with `luv`, started automatically.
+Installed through the Brewfile. Enable **Displays have separate Spaces** in macOS settings. Start with `brew services start sketchybar`, stop with `brew services stop sketchybar`, and reload configuration with `sketchybar --reload`. Plugins use SbarLua on Lua 5.5. Bootstrap installs pinned modules with LuaRocks; rerun `bash scripts/lua-setup.sh` to repair them.
