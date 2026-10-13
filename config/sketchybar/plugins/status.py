@@ -1,64 +1,12 @@
 #!/usr/bin/env python3
 """Read system state; send one batched update to SketchyBar."""
 import json
-import shlex
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor
 
 
 def run(*args):
     return subprocess.check_output(args, text=True, timeout=8, stderr=subprocess.DEVNULL)
-
-
-def aerospace():
-    # Independent reads overlap CLI startup; visibility shares the display query.
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        rows_result = pool.submit(run, 'aerospace', 'list-workspaces', '--all', '--format',
-                                  '%{workspace} %{monitor-appkit-nsscreen-screens-id} '
-                                  '%{workspace-is-visible}', '--json')
-        occupied_result = pool.submit(run, 'aerospace', 'list-workspaces', '--monitor',
-                                      'all', '--empty', 'no')
-        existing_result = pool.submit(run, 'sketchybar', '--query', 'bar')
-        rows = json.loads(rows_result.result())
-        occupied = set(occupied_result.result().splitlines())
-        existing = set(json.loads(existing_result.result())['items'])
-    desired = set()
-    args = ['sketchybar']
-    for row in rows:
-        workspace = row['workspace']
-        # Encoding keeps arbitrary workspace names safe as item identifiers.
-        name = 'aerospace.workspace.' + workspace.encode().hex()
-        desired.add(name)
-        if name not in existing:
-            args += ['--add', 'item', name, 'left', '--move', name, 'before', 'aerospace.mode']
-        active = row['workspace-is-visible']
-        args += ['--set', name, 'icon=' + workspace,
-                 'icon.font=SF Pro:Semibold:12.0', 'icon.width=20',
-                 'icon.align=center', 'icon.padding_left=5', 'icon.padding_right=5',
-                 'icon.color=' + ('0xff1e1e2e' if active else '0xffcdd6f4'),
-                 'label=●', 'label.drawing=' + ('on' if active else 'off'),
-                 'label.font=SF Pro:Regular:8.0', 'label.color=0xff1e1e2e',
-                 'label.padding_left=0', 'label.padding_right=7',
-                 'padding_left=3', 'padding_right=3',
-                 'display=' + str(row['monitor-appkit-nsscreen-screens-id']),
-                 'drawing=' + ('on' if workspace in occupied or active else 'off'),
-                 'background.drawing=on', 'background.height=22',
-                 'background.color=' + ('0xff89b4fa' if active else '0x30313244'),
-                 'background.corner_radius=11',
-                 'click_script=aerospace workspace -- ' + shlex.quote(workspace)]
-    for stale in sorted(existing - desired):
-        if stale.startswith('aerospace.workspace.'):
-            args += ['--remove', stale]
-    run(*args)
-    return rows, occupied
-
-
-def aerospace_snapshot():
-    rows, occupied = aerospace()
-    for row in rows:
-        print(row['workspace'].encode().hex(), row['monitor-appkit-nsscreen-screens-id'],
-              int(row['workspace'] in occupied), sep='\t')
 
 
 def bluetooth():
@@ -86,13 +34,10 @@ def network():
 if __name__ == '__main__':
     name = sys.argv[1]
     try:
-        {'aerospace': aerospace, 'aerospace-snapshot': aerospace_snapshot, 'bluetooth': bluetooth, 'network': network}[name]()
+        {'bluetooth': bluetooth, 'network': network}[name]()
     except (subprocess.SubprocessError, OSError, ValueError, KeyError) as error:
         # Avoid retaining a misleading successful status if a provider stops responding.
-        item = 'aerospace.refresh' if name.startswith('aerospace') else name
-        args = ['sketchybar', '--set', item, 'label=Unavailable']
-        if name.startswith('aerospace'):
-            args += ['--set', '/aerospace.workspace.*/', 'drawing=off']
+        args = ['sketchybar', '--set', name, 'label=Unavailable']
         subprocess.run(args, timeout=5, check=False)
         print(f'{name}: {error}', file=sys.stderr)
         sys.exit(1)
