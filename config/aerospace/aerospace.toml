@@ -25,10 +25,21 @@ inner.vertical = 2
 outer.left = 5
 outer.right = 5
 # Automatically measured menu/bar height minus the macOS inset, plus 5 points.
-outer.top = [{ monitor."1" = 6 }, 38] # managed by sketchybar display.lua
+outer.top = [{ monitor."1" = 6 }, { monitor."2" = 35 }, 38] # managed by sketchybar display.lua
 outer.bottom = 5
 
 # Browser picture-in-picture windows float; Windows process/class rules do not apply.
+
+# Call windows should keep their own size rather than participate in tiling.
+[[on-window-detected]]
+if.app-id = 'com.tencent.xinWeChat'
+if.window-title-regex-substring = '(?i)(视频通话|语音通话|视频聊天|语音聊天|video call|voice call)'
+run = 'layout floating'
+
+# Finder disk-image roots use the mounted volume name, not a .dmg suffix.
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = 'exec-and-forget lua "$HOME/.config/aerospace/scripts/float-dmg.lua"'
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'

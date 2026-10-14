@@ -4,7 +4,7 @@ require('runtime')
 local sbar = require('sketchybar')
 local spacing = require('plugins.spacing')
 sbar.begin_config()
-sbar.bar({display='all', position='top', topmost='window', y_offset=0,
+sbar.bar({display='all', position='top', topmost=false, y_offset=0,
   blur_radius=30, color=0x40000000})
 sbar.default({padding_left=math.floor(spacing.between/2), padding_right=math.ceil(spacing.between/2),
   icon={font='Hack Nerd Font:Bold:14.0', color=0xffffffff, padding_left=0, padding_right=0},
