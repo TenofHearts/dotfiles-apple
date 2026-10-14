@@ -1,17 +1,20 @@
 local sbar = require('sketchybar')
 local util = require('plugins.util')
-local item = sbar.add('item', 'volume', {position='right'})
+local item = sbar.add('item', 'volume', {position='right', update_freq=5, label='0%'})
 local version = 0
-local function set(volume)
-  volume = tonumber(volume)
-  if not volume then return end
-  local icon = volume >= 60 and '󰕾' or volume >= 30 and '󰖀' or volume > 0 and '󰕿' or '󰖁'
-  item:set({icon=icon, label=volume .. '%'})
-end
-item:subscribe('volume_change', function(env) version = version + 1; set(env.INFO) end)
-item:subscribe({'forced', 'system_woke'}, function()
+-- Read mute separately: macOS retains the previous output level while muted.
+item:subscribe({'volume_change', 'forced', 'routine', 'system_woke'}, function()
+  version = version + 1
   local current = version
-  util.exec("/usr/bin/osascript -e 'output volume of (get volume settings)'", function(result, code)
-    if code == 0 and version == current then set(result) end
+  util.macos('var app = Application.currentApplication(); app.includeStandardAdditions = true; JSON.stringify(app.getVolumeSettings())', function(result, code)
+    if version ~= current then return end
+    if code ~= 0 or type(result) ~= 'table' or type(result.outputVolume) ~= 'number'
+        or type(result.outputMuted) ~= 'boolean' then
+      item:set({icon={color=0xff9399b2}})
+      return
+    end
+    local volume, muted = result.outputVolume, result.outputMuted
+    local icon = (muted or volume == 0) and '󰖁' or volume >= 60 and '󰕾' or volume >= 30 and '󰖀' or '󰕿'
+    item:set({icon={string=icon, color=0xffffffff}, label=(muted and 0 or volume) .. '%'})
   end)
 end)
