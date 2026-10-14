@@ -1,5 +1,6 @@
 local sbar = require('sketchybar')
 local util = require('plugins.util')
+local spacing = require('plugins.spacing')
 local M = {}
 local items, rows, occupied = {}, {}, {}
 local mode, controller
@@ -15,9 +16,11 @@ local function style(workspace, active, monitor)
 end
 local function add(workspace)
   local item = sbar.add('item', name(workspace), {position='left', drawing=false,
-    icon={string=workspace, font='SF Pro:Semibold:12.0', width=20, align='center', padding_left=5, padding_right=5},
+    icon={string=workspace,
+      font={family='Menlo', style='Regular', size=12.0, typographical_width=true},
+      width='dynamic', align='center', padding_left=8, padding_right=8},
     label={string='●', drawing=false, font='SF Pro:Regular:8.0', color=0xff1e1e2e, padding_left=0, padding_right=7},
-    padding_left=3, padding_right=3,
+    padding_left=spacing.inside/2, padding_right=spacing.inside/2,
     background={drawing=true, height=22, color=0x30313244, corner_radius=11}})
   item:subscribe('mouse.clicked', function()
     sbar.exec('aerospace workspace -- ' .. util.quote(workspace))
@@ -96,8 +99,9 @@ refresh = function()
 end
 function M.setup()
   for i=1,9 do add(tostring(i)) end
-  mode = sbar.add('item', 'aerospace.mode', {position='left', icon={drawing=false},
-    label={string='…', font='Hack Nerd Font:Bold:11.0'}})
+  mode = sbar.add('item', 'aerospace.mode', {position='left',
+    padding_left=spacing.between-spacing.inside/2, icon={drawing=false},
+    label={string='…', font='Hack Nerd Font:Bold:11.0', padding_left=0}})
   sbar.add('event', 'aerospace_event')
   controller = sbar.add('item', 'aerospace.refresh', {position='left', drawing=false, update_freq=30})
   local config = os.getenv('CONFIG_DIR') or os.getenv('HOME') .. '/.config/sketchybar'

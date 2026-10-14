@@ -1,11 +1,18 @@
 local sbar = require('sketchybar')
+local spacing = require('plugins.spacing')
 local weekdays = {'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'}
+-- Right-side items are placed from right to left; time follows the date visually.
+local time = sbar.add('item', 'clock.time', {position='right',
+  padding_left=spacing.inside/2, padding_right=math.ceil(spacing.between/2),
+  icon={drawing=false}, label={padding_left=0}})
 local item = sbar.add('item', 'clock', {position='right', update_freq=10,
-  icon={font='SF Pro Text:Semibold:9.0', color=0xff1e1e2e,
+  padding_right=spacing.inside/2,
+  icon={font='Hack Nerd Font:Bold:9.0', color=0xff1e1e2e,
     padding_left=4, padding_right=4,
     background={drawing=true, color=0xff89b4fa, height=12, corner_radius=3}},
-  label={padding_left=7}})
+  label={padding_left=spacing.inside}})
 item:subscribe({'forced', 'routine', 'system_woke'}, function()
   local now = os.time()
-  item:set({icon=weekdays[os.date('*t', now).wday], label=os.date('%m/%d %H:%M', now)})
+  item:set({icon=weekdays[os.date('*t', now).wday], label=os.date('%m/%d', now)})
+  time:set({label=os.date('%H:%M', now)})
 end)
