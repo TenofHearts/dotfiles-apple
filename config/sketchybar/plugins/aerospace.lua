@@ -1,4 +1,5 @@
 local sbar = require('sketchybar')
+local theme = require('plugins.theme')
 local util = require('plugins.util')
 local spacing = require('plugins.spacing')
 local M = {}
@@ -11,17 +12,17 @@ local function style(workspace, active, monitor)
   local item = items[workspace]
   if not item then return end
   item:set({display=monitor, drawing=active or occupied[workspace] or false,
-    icon={color=active and 0xff1e1e2e or 0xffcdd6f4},
-    label={drawing=active}, background={color=active and 0xff89b4fa or 0x30313244}})
+    icon={color=active and theme.on_accent or theme.workspace_text},
+    label={drawing=active}, background={color=active and theme.accent or theme.workspace}})
 end
 local function add(workspace)
   local item = sbar.add('item', name(workspace), {position='left', drawing=false,
     icon={string=workspace,
       font={family='Menlo', style='Regular', size=12.0, typographical_width=true},
       width='dynamic', align='center', padding_left=8, padding_right=8},
-    label={string='●', drawing=false, font='SF Pro:Regular:8.0', color=0xff1e1e2e, padding_left=0, padding_right=7},
+    label={string='●', drawing=false, font='SF Pro:Regular:8.0', color=theme.on_accent, padding_left=0, padding_right=7},
     padding_left=spacing.inside/2, padding_right=spacing.inside/2,
-    background={drawing=true, height=22, color=0x30313244, corner_radius=11}})
+    background={drawing=true, height=22, color=theme.workspace, corner_radius=11}})
   item:subscribe('mouse.clicked', function()
     sbar.exec('aerospace workspace -- ' .. util.quote(workspace))
   end)
@@ -110,7 +111,7 @@ function M.setup()
   end
   controller:subscribe('aerospace_event', function(env)
     if env.EVENT == 'mode-changed' then
-      mode:set({label={string=env.MODE:upper(), color=env.MODE == 'main' and 0xffffffff or 0xfffab387}})
+      mode:set({label={string=env.MODE:upper(), color=env.MODE == 'main' and theme.text or theme.mode}})
       return
     end
     generation = generation + 1

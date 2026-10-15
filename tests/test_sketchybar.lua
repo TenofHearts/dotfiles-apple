@@ -1,6 +1,8 @@
 -- Run from the repo root: lua tests/test_sketchybar.lua
 package.path = 'config/sketchybar/?.lua;' .. package.path
 require('runtime')
+local theme = require('plugins.theme').palettes[arg[1] == 'light' and 'light' or 'dark']
+package.loaded['plugins.theme'] = theme
 local items, commands, delays = {}, {}, {}
 local item_order = {}
 local function merge(to, from)
@@ -96,15 +98,15 @@ local function snapshot(active)
 end
 control.events.forced({SENDER='forced'}); flush_delays()
 respond('--all', snapshot('1')); respond('--empty no', {{workspace='1'}})
-assert(items['aerospace.workspace.31'].props.background.color == 0xff89b4fa)
+assert(items['aerospace.workspace.31'].props.background.color == theme.accent)
 assert(not items['aerospace.workspace.32'].props.drawing)
 control.events.aerospace_event({EVENT='focused-workspace-changed', WORKSPACE='2'})
-assert(items['aerospace.workspace.32'].props.background.color == 0xff89b4fa)
-assert(items['aerospace.workspace.33'].props.background.color == 0xff89b4fa)
+assert(items['aerospace.workspace.32'].props.background.color == theme.accent)
+assert(items['aerospace.workspace.33'].props.background.color == theme.accent)
 flush_delays() -- Start a snapshot for workspace 2.
 control.events.aerospace_event({EVENT='focused-workspace-changed', WORKSPACE='1'})
 respond('--all', snapshot('2')); respond('--empty no', {{workspace='1'}})
-assert(items['aerospace.workspace.31'].props.background.color == 0xff89b4fa)
+assert(items['aerospace.workspace.31'].props.background.color == theme.accent)
 flush_delays(); respond('--all', snapshot('1')); respond('--empty no', {{workspace='1'}})
 control.events.aerospace_event({EVENT='mode-changed', MODE='move'})
 assert(items['aerospace.mode'].props.label.string == 'MOVE')
@@ -123,7 +125,7 @@ respond('getVolumeSettings', {outputVolume=0, outputMuted=false})
 assert(items.volume.props.icon.string == '󰖁')
 items.volume.events.routine()
 respond('getVolumeSettings', '', 1)
-assert(items.volume.props.label == '0%' and items.volume.props.icon.color == 0xff9399b2)
+assert(items.volume.props.label == '0%' and items.volume.props.icon.color == theme.muted)
 require('plugins.front_app')
 items.front_app.events.forced()
 items.front_app.events.front_app_switched({INFO='New app'})
@@ -159,7 +161,7 @@ items.bluetooth.events.routine(); respond('system_profiler', {SPBluetoothDataTyp
   controller_properties={controller_state='attrib_off'}, device_connected={{Mouse={}}}}}})
 assert(items.bluetooth.props.label == '0' and items.bluetooth.props.icon.string == '󰂲')
 items.bluetooth.events.routine(); respond('system_profiler', '', 1)
-assert(items.bluetooth.props.label == '0' and items.bluetooth.props.icon.color == 0xff9399b2)
+assert(items.bluetooth.props.label == '0' and items.bluetooth.props.icon.color == theme.muted)
 items.bluetooth.events.routine(); respond('system_profiler', {SPBluetoothDataType={{}}})
 assert(items.bluetooth.props.label == '0' and items.bluetooth.props.icon.string == '󰂲')
 

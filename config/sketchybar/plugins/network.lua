@@ -1,4 +1,5 @@
 local sbar = require('sketchybar')
+local theme = require('plugins.theme')
 local util = require('plugins.util')
 sbar.add('event', 'network_change')
 local item = sbar.add('item', 'network', {position='right', update_freq=0, icon='󰖪', label={drawing=false}})
@@ -32,7 +33,7 @@ item:subscribe({'forced', 'network_change', 'wifi_change', 'system_woke'}, funct
     end
     local connected = wifi or ethernet
     item:set({icon={string=ethernet and '󰈀' or wifi and '󰖩' or '󰖪',
-      color=connected and 0xffa6e3a1 or 0xff9399b2}})
+      color=connected and theme.connected or theme.muted}})
   end)
 end)
 ensure_listener()

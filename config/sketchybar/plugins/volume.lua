@@ -1,4 +1,5 @@
 local sbar = require('sketchybar')
+local theme = require('plugins.theme')
 local util = require('plugins.util')
 local item = sbar.add('item', 'volume', {position='right', update_freq=5, label='0%'})
 local version = 0
@@ -10,11 +11,11 @@ item:subscribe({'volume_change', 'forced', 'routine', 'system_woke'}, function()
     if version ~= current then return end
     if code ~= 0 or type(result) ~= 'table' or type(result.outputVolume) ~= 'number'
         or type(result.outputMuted) ~= 'boolean' then
-      item:set({icon={color=0xff9399b2}})
+      item:set({icon={color=theme.muted}})
       return
     end
     local volume, muted = result.outputVolume, result.outputMuted
     local icon = (muted or volume == 0) and '󰖁' or volume >= 60 and '󰕾' or volume >= 30 and '󰖀' or '󰕿'
-    item:set({icon={string=icon, color=0xffffffff}, label=(muted and 0 or volume) .. '%'})
+    item:set({icon={string=icon, color=theme.text}, label=(muted and 0 or volume) .. '%'})
   end)
 end)
