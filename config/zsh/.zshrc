@@ -164,3 +164,6 @@ fi
 
 # aerospace
 alias as='aerospace'
+
+# fzf
+source <(fzf --zsh)
