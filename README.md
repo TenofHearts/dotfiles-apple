@@ -30,9 +30,10 @@ After installation:
        email = you@example.com
    ```
 2. Open Karabiner-Elements and AeroSpace, complete their requested macOS permissions, and restart Karabiner after linking.
-3. Enable Squirrel in macOS input sources and choose **Deploy** from its menu. Log out and back in if the input method or custom keyboard layout is not available yet.
-4. Install a Node.js version with `fnm install --lts` and select it with `fnm use lts-latest` in a shell where fnm is initialized. Pyright needs Node/npm; bootstrap installs fnm but does not install Node. The current Zsh fnm initialization checks `/opt/homebrew/opt/fnm/bin`; Intel users should add suitable initialization to `~/.zshrc.local`.
-5. Follow the [Neovim README](config/nvim/README.md) for editor requirements and first-run setup.
+3. Start skhd with `./scripts/skhd-service.sh start`, grant Accessibility access, then run `./scripts/skhd-service.sh restart`.
+4. Enable Squirrel in macOS input sources and choose **Deploy** from its menu. Log out and back in if the input method or custom keyboard layout is not available yet.
+5. Install a Node.js version with `fnm install --lts` and select it with `fnm use lts-latest` in a shell where fnm is initialized. Pyright needs Node/npm; bootstrap installs fnm but does not install Node. The current Zsh fnm initialization checks `/opt/homebrew/opt/fnm/bin`; Intel users should add suitable initialization to `~/.zshrc.local`.
+6. Follow the [Neovim README](config/nvim/README.md) for editor requirements and first-run setup.
 
 Check the links with:
 
@@ -60,6 +61,7 @@ python3 scripts/links.py status
 │   ├── nvim/                # Separate, pinned Neovim Git submodule
 │   ├── oh-my-posh/          # Prompt theme
 │   ├── rime/                # Rime/Squirrel customization patches
+│   ├── skhd/                # Independent hotkey daemon configuration
 │   ├── tmux/                # Separate, pinned tmux Git submodule
 │   └── zsh/                 # Login and interactive shell configuration
 ├── docs/                    # Reserved for additional documentation
@@ -74,6 +76,7 @@ Run these commands from the repository root.
 | --- | --- | --- |
 | `install.sh` | `./install.sh [--bootstrap] [--dry-run] [--home PATH]` | Requires macOS and an initialized Neovim submodule. Optionally runs bootstrap, then forwards remaining arguments to `links.py install`. |
 | `scripts/bootstrap.sh` | `bash scripts/bootstrap.sh` | Prepares Command Line Tools/Homebrew, installs the Brewfile, selects the minimal Rust profile, ensures stable Rust and `rust-analyzer`, `rust-src`, `rustfmt`, and `clippy`, then runs Rime setup. Does not create configuration links. |
+| `scripts/skhd-service.sh` | `./scripts/skhd-service.sh start\|stop\|restart` | Manages skhd independently after its package and configuration are installed. |
 | `scripts/links.py` | `python3 scripts/links.py install\|status\|restore ...` | Uses only the Python standard library. Installs backed-up relative symlinks, reports link status, or restores a recorded installation. See examples below. |
 | `scripts/rime-setup.py` | `python3 scripts/rime-setup.py` | Copies missing, non-hidden Rime Ice files into `~/Library/Rime` from commit `3aea6d3694fb3d94ec663641f021f788822897ad`. Skips upstream `*.custom.yaml` files and existing destinations. If `rime_ice.schema.yaml` exists, leaves the entire baseline unchanged. |
 | `tests/test_links.py` | `python3 -m unittest discover -s tests -v` | Tests backup/restore, repeated installation, dry runs, Rime data isolation, changed-file protection, symlinked parents, and dangling links in temporary homes. |
@@ -149,6 +152,22 @@ The [custom keyboard layout](config/keyboard-layouts) preserves familiar QWERTY 
 [Configuration](config/aerospace/aerospace.toml) · [Hotkey reference](config/aerospace/help.html)
 
 Installed through the Brewfile. Launch AeroSpace and grant Accessibility access when prompted. Reload configuration with `aerospace reload-config`.
+
+### skhd
+
+[Configuration](config/skhd/skhdrc)
+
+skhd is an independent hotkey daemon with its own Homebrew package, configuration directory, Accessibility permission, and launchd service. Bootstrap installs the package; the link installer installs `~/.config/skhd`. Start the service separately after linking:
+
+```sh
+./scripts/skhd-service.sh start
+# Grant skhd Accessibility access in System Settings, then:
+./scripts/skhd-service.sh restart
+```
+
+Use `./scripts/skhd-service.sh stop` to stop it. The script locates skhd through PATH or either standard Homebrew prefix and checks that its configuration is installed before starting. Bootstrap and link installation do not start background services.
+
+The current left Option shortcuts (after Karabiner remapping) call AeroSpace commands directly: H/J/K/L focus, 1–9 select workspaces, M minimizes, Q closes, and Shift + semicolon toggles Command mode. These bindings live only in skhd; AeroSpace retains the plain keys in its modes. Right Option alone does not activate these shortcuts. Other application shortcuts can be added to skhd independently. Reload skhd with `skhd --reload` after editing its configuration; reload AeroSpace separately with `aerospace reload-config` after editing its bindings.
 
 ### SketchyBar
 

@@ -10,6 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = {
+    ".config/skhd": "config/skhd",
     ".config/sketchybar": "config/sketchybar",
     ".config/aerospace/aerospace.toml": "config/aerospace/aerospace.toml",
     ".config/aerospace/help.html": "config/aerospace/help.html",
@@ -92,7 +93,10 @@ def install(home, dry_run):
                 shutil.move(record["backup"], str(dest))
         raise
     print(f"Backup manifest: {manifest}")
-    print("Restart Karabiner; use Squirrel > Deploy.")
+    if ".config/karabiner" in FILES:
+        print("Restart Karabiner.")
+    if any(name.startswith("Library/Rime/") for name in FILES):
+        print("Use Squirrel > Deploy.")
 
 
 def restore(manifest, dry_run):

@@ -23,8 +23,8 @@
 <main>
   <header>
     <h1>AeroSpace shortcuts</h1>
-    <p class="shared"><kbd>Option + H / J / K / L</kbd> focuses windows across displays; <kbd>Option + 1–9</kbd> switches workspaces. <kbd>Option + M</kbd> minimizes; <kbd>Option + Q</kbd> closes. All work in every mode while management is active.</p>
-    <p class="shared">Option means the modifier received after Karabiner remapping; your left physical Command key currently sends Option. Release modifiers after entering a mode before pressing plain keys.</p>
+    <p class="shared"><kbd>Left Option + H / J / K / L</kbd> focuses windows across displays; <kbd>Left Option + 1–9</kbd> switches workspaces. <kbd>Left Option + M</kbd> minimizes; <kbd>Left Option + Q</kbd> closes. All work in every mode while management is active.</p>
+    <p class="shared">Left Option means the modifier received after Karabiner remapping; your left physical Command key currently sends Left Option. Release modifiers after entering a mode before pressing plain keys.</p>
   </header>
   <nav aria-label="Modes">
     <a href="#main">Main</a><a href="#command">Command</a><a href="#move">Move</a><a href="#adjust">Adjust</a><a href="#admin">Admin</a>
@@ -34,25 +34,25 @@
       <h2 id="main-title">Main</h2>
       <p class="activation">Active by default</p>
       <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
-        <tr><td><kbd>Option + H / J / K / L</kbd></td><td>Focus left / down / up / right, including across displays.</td></tr>
-        <tr><td><kbd>Option + 1–9</kbd></td><td>Switch workspace.</td></tr>
-        <tr><td><kbd>Option + Shift + ;</kbd></td><td>Enter Command.</td></tr>
+        <tr><td><kbd>Left Option + H / J / K / L</kbd></td><td>Focus left / down / up / right, including across displays.</td></tr>
+        <tr><td><kbd>Left Option + 1–9</kbd></td><td>Switch workspace.</td></tr>
+        <tr><td><kbd>Left Option + Shift + ;</kbd></td><td>Enter Command.</td></tr>
       </tbody></table>
     </section>
     <section id="command" aria-labelledby="command-title">
       <h2 id="command-title">Command</h2>
-      <p class="activation">Activate: <kbd>Option + Shift + ;</kbd></p>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ;</kbd></p>
       <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>M</kbd></td><td>Enter Move.</td></tr>
         <tr><td><kbd>R</kbd></td><td>Enter Adjust.</td></tr>
         <tr><td><kbd>A</kbd></td><td>Enter Admin.</td></tr>
         <tr><td><kbd>?</kbd></td><td>Open this guide in the default browser; exit Command.</td></tr>
       </tbody></table>
-      <p class="exit">Escape, Enter or Option + Shift + ; → Main.</p>
+      <p class="exit">Escape, Enter or Left Option + Shift + ; → Main.</p>
     </section>
     <section id="move" aria-labelledby="move-title">
       <h2 id="move-title">Move</h2>
-      <p class="activation">Activate: <kbd>Option + Shift + ; → M</kbd></p>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ; → M</kbd></p>
       <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>H / J / K / L</kbd></td><td>Move left / down / up / right, crossing display edges into the neighboring display’s visible workspace.</td></tr>
         <tr><td><kbd>Shift + H / J / K / L</kbd></td><td>Move the whole workspace to the display left / down / up / right.</td></tr>
@@ -60,11 +60,11 @@
         <tr><td><kbd>1–9</kbd></td><td>Move to workspace and follow the window; stay in Move.</td></tr>
       </tbody></table>
       <p class="detail">Press V, then a direction to group the focused window with its neighbor. Escape or Enter cancels Join and returns to Move. Single-child groups are removed automatically; multi-window groups are preserved.</p>
-      <p class="exit">Escape or Enter → Main. Option + Shift + ; → Command.</p>
+      <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
     </section>
     <section id="adjust" aria-labelledby="adjust-title">
       <h2 id="adjust-title">Adjust</h2>
-      <p class="activation">Activate: <kbd>Option + Shift + ; → R</kbd></p>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ; → R</kbd></p>
       <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>H / L</kbd></td><td>Shrink / grow width by 25 points.</td></tr>
         <tr><td><kbd>J / K</kbd></td><td>Grow / shrink height by 25 points.</td></tr>
@@ -74,17 +74,17 @@
         <tr><td><kbd>Space</kbd></td><td>Toggle floating / tiling.</td></tr>
         <tr><td><kbd>M</kbd></td><td>Minimize.</td></tr>
       </tbody></table>
-      <p class="exit">Escape or Enter → Main. Option + Shift + ; → Command.</p>
+      <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
     </section>
     <section id="admin" aria-labelledby="admin-title">
       <h2 id="admin-title">Admin</h2>
-      <p class="activation">Activate: <kbd>Option + Shift + ; → A</kbd></p>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ; → A</kbd></p>
       <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>R</kbd></td><td>Reload configuration; exit Admin.</td></tr>
         <tr><td><kbd>P</kbd></td><td>Return to Main and pause window management.</td></tr>
       </tbody></table>
       <p class="detail">Resume management manually from the AeroSpace menu-bar icon or CLI.</p>
-      <p class="exit">Escape or Enter → Main. Option + Shift + ; → Command.</p>
+      <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
     </section>
   </div>
 </main>
