@@ -108,6 +108,8 @@ Neovim and Karabiner are linked as whole directories. Existing Karabiner `assets
 
 The command line uses vi bindings: start typing in insert mode, press `Esc` for normal mode, and `i` or `a` to resume inserting. Open a new shell or run `exec zsh` after changing the configuration.
 
+Interactive terminal shells automatically attach to tmux session `main`. Set `export DOTFILES_TMUX=0` in `~/.zprofile.local` to disable before tmux starts.
+
 ### Oh My Posh
 
 [Oh My Posh](config/oh-my-posh/theme.omp.json) keeps development and shell context visible at the prompt. The theme groups information across multiple lines so project state and system context are easy to scan while leaving a clear place to type commands. Its typography works together with Ghostty's Nerd Font.

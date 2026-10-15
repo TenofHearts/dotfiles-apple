@@ -7,6 +7,18 @@ typeset -U path
 [[ ! -d "${CARGO_HOME:-$HOME/.cargo}/bin" ]] ||
   path=("${CARGO_HOME:-$HOME/.cargo}/bin" $path)
 
+# Attach terminal shells to a shared session; leave scripts, nested shells,
+# existing multiplexers, and editor terminals alone. Finish shell setup after
+# tmux detaches or exits (or if it fails to start).
+if [[ -o interactive && -t 0 && -t 1 && -t 2 &&
+      $SHLVL == 1 && $ZSH_SUBSHELL == 0 && -z ${ZSH_EXECUTION_STRING:-} &&
+      -z ${TMUX:-} && -z ${STY:-} &&
+      -z ${EMACS:-} && -z ${INSIDE_EMACS:-} &&
+      ${TERM:-dumb} != (dumb|emacs) && ${TERM_PROGRAM:-} != vscode &&
+      ${DOTFILES_TMUX:-1} == 1 ]] && (( $+commands[tmux] )); then
+  command tmux new-session -A -s main
+fi
+
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
 HISTSIZE=50000
 SAVEHIST=50000
