@@ -88,8 +88,10 @@ end
 function M.setup()
   local item = sbar.add('item', 'bar.height', {position='left', drawing=false})
   local busy, dirty = false, false
+  local generation, settling = 0, false
   local sync
   sync = function(attempt)
+    if settling then dirty = true; return end
     if busy then dirty = true; return end
     busy, dirty = true, false
     attempt = attempt or 1
@@ -137,6 +139,18 @@ function M.setup()
       end)
     end)
   end
-  item:subscribe({'forced', 'display_change', 'system_woke'}, function() sync() end)
+  item:subscribe('forced', function() sync() end)
+  -- Wake/Sidecar reconnection can emit several display changes. Wait for a
+  -- quiet interval before measuring menus and potentially reloading AeroSpace.
+  item:subscribe({'display_change', 'system_woke'}, function()
+    generation = generation + 1
+    local version = generation
+    settling = true
+    sbar.delay(3, function()
+      if version ~= generation then return end
+      settling = false
+      sync()
+    end)
+  end)
 end
 return M
