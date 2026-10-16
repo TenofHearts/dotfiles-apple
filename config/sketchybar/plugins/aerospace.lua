@@ -13,7 +13,7 @@ local function style(workspace, active, monitor)
   if not item then return end
   item:set({display=monitor, drawing=active or occupied[workspace] or false,
     icon={color=active and theme.on_accent or theme.workspace_text},
-    label={drawing=active}, background={color=active and theme.badge or theme.workspace}})
+    label={drawing=active}, background={color=active and theme.active_workspace or theme.workspace}})
 end
 local function add(workspace)
   local item = sbar.add('item', name(workspace), {position='left', drawing=false,
