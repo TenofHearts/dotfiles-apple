@@ -10,7 +10,7 @@ local item = sbar.add('item', 'clock', {position='right', update_freq=10,
   padding_right=spacing.inside/2,
   icon={font='Hack Nerd Font:Bold:9.0', color=theme.on_accent,
     padding_left=4, padding_right=4,
-    background={drawing=true, color=theme.accent, height=12, corner_radius=3}},
+    background={drawing=true, color=theme.badge, height=12, corner_radius=3}},
   label={padding_left=spacing.inside}})
 item:subscribe({'forced', 'routine', 'system_woke'}, function()
   local now = os.time()
