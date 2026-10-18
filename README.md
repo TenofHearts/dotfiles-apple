@@ -111,6 +111,8 @@ Neovim and Karabiner are linked as whole directories. Existing Karabiner `assets
 
 The command line uses vi bindings: start typing in insert mode, press `Esc` for normal mode, and `i` or `a` to resume inserting. Open a new shell or run `exec zsh` after changing the configuration.
 
+Directory jumping uses zoxide with `j` (for example, `j dotfiles`) and `ji` for interactive selection through fzf.
+
 Interactive terminal shells automatically attach to tmux session `main`. Set `export DOTFILES_TMUX=0` in `~/.zprofile.local` to disable before tmux starts.
 
 ### Oh My Posh
