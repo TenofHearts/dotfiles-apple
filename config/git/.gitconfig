@@ -10,7 +10,7 @@
     editor = vim
     excludesFile = ~/.gitignore_global
 [credential]
-    helper = osxkeychain
+	helper = store
 [include]
     path = ~/.gitconfig.local
 
