@@ -29,7 +29,7 @@ After installation:
        name = Your Name
        email = you@example.com
    ```
-2. Open Karabiner-Elements, restart it after linking, and start the selected window manager with `./scripts/window-manager.sh`. Complete its requested macOS permissions.
+2. Open Karabiner-Elements and AeroSpace, complete their requested macOS permissions, and restart Karabiner after linking.
 3. Start skhd with `./scripts/skhd-service.sh start`, grant Accessibility access, then run `./scripts/skhd-service.sh restart`.
 4. Enable Squirrel in macOS input sources and choose **Deploy** from its menu. Log out and back in if the input method or custom keyboard layout is not available yet.
 5. Install a Node.js version with `fnm install --lts` and select it with `fnm use lts-latest` in a shell where fnm is initialized. Pyright needs Node/npm; bootstrap installs fnm but does not install Node. The current Zsh fnm initialization checks `/opt/homebrew/opt/fnm/bin`; Intel users should add suitable initialization to `~/.zshrc.local`.
@@ -155,16 +155,6 @@ The [custom keyboard layout](config/keyboard-layouts) preserves familiar QWERTY 
 
 Installed through the Brewfile. Launch AeroSpace and grant Accessibility access when prompted. Reload configuration with `aerospace reload-config`.
 
-### Window manager selector / Rift trial
-
-Use `./scripts/window-manager.sh rift` or `./scripts/window-manager.sh aerospace` to
-switch and save the choice. The shared setting is [config/window-manager/manager](config/window-manager/manager).
-To apply a manually edited setting, run `./scripts/window-manager.sh` without arguments.
-The switch stops the other manager and reloads skhd and SketchyBar. AeroSpace remains installed.
-Rift uses [config/rift/config.toml](config/rift/config.toml), its [shortcut guide](config/rift/help.html),
-and helpers under [config/rift/scripts](config/rift/scripts). See the [comparison with AeroSpace](config/rift/MIGRATION.md)
-for preserved shortcuts, intentional differences, service behavior, and remaining limits.
-
 ### skhd
 
 [Configuration](config/skhd/skhdrc)
@@ -179,7 +169,7 @@ skhd is an independent hotkey daemon with its own Homebrew package, configuratio
 
 Use `./scripts/skhd-service.sh stop` to stop it. The script locates skhd through PATH or either standard Homebrew prefix and checks that its configuration is installed before starting. Bootstrap and link installation do not start background services.
 
-The current left Option shortcuts (after Karabiner remapping) use the selected window manager: H/J/K/L focus, 1–9 select workspaces, M sends the macOS minimize shortcut (Command + M), Q closes, and Shift + semicolon toggles Command mode. These bindings live only in skhd; each manager retains the plain keys in its modes. Right Option alone does not activate these shortcuts. Other application shortcuts can be added to skhd independently. Reload skhd with `skhd --reload` after editing its configuration; reload the selected manager separately after editing its bindings (Admin mode → R).
+The current left Option shortcuts (after Karabiner remapping) call AeroSpace directly: H/J/K/L focus, 1–9 select workspaces, M sends the macOS minimize shortcut (Command + M), Q closes, and Shift + semicolon toggles Command mode. These bindings live only in skhd; AeroSpace retains the plain keys in its modes. Right Option alone does not activate these shortcuts. Other application shortcuts can be added to skhd independently. Reload skhd with `skhd --reload` after editing its configuration; reload AeroSpace separately after editing its bindings (Admin mode → R).
 
 ### SketchyBar
 

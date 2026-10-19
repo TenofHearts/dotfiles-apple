@@ -11,7 +11,7 @@ sbar.default({padding_left=math.floor(spacing.between/2), padding_right=math.cei
   icon={font='Hack Nerd Font:Bold:14.0', color=theme.text, padding_left=0, padding_right=0},
   label={font='Hack Nerd Font:Bold:12.0', color=theme.text, padding_left=spacing.inside, padding_right=0}})
 -- Precreate persistent workspaces so their position precedes the mode indicator.
-require('plugins.window_manager').setup()
+require('plugins.aerospace').setup()
 require('plugins.front_app')
 require('plugins.clock')
 require('plugins.battery')

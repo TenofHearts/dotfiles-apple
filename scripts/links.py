@@ -10,8 +10,6 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = {
-    ".config/window-manager": "config/window-manager",
-    ".config/rift": "config/rift",
     ".config/skhd": "config/skhd",
     ".config/sketchybar": "config/sketchybar",
     ".config/aerospace/aerospace.toml": "config/aerospace/aerospace.toml",

@@ -1,19 +1,21 @@
-# Left Option after Karabiner remapping. One selector routes both WMs.
-# Include Homebrew prefixes for launchd and the shared shell dispatcher.
+# Left Option shortcuts, received after Karabiner remapping.
+# Include both Homebrew prefixes for launchd.
 
-lalt - h : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" focus left
-lalt - j : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" focus down
-lalt - k : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" focus up
-lalt - l : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" focus right
+lalt - h : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace focus --boundaries all-monitors-outer-frame left
+lalt - j : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace focus --boundaries all-monitors-outer-frame down
+lalt - k : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace focus --boundaries all-monitors-outer-frame up
+lalt - l : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace focus --boundaries all-monitors-outer-frame right
 lalt - m : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH skhd -k "cmd - m"
-lalt - q : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" close
-lalt - 1 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 1
-lalt - 2 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 2
-lalt - 3 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 3
-lalt - 4 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 4
-lalt - 5 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 5
-lalt - 6 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 6
-lalt - 7 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 7
-lalt - 8 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 8
-lalt - 9 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" workspace 9
-lalt + shift - 0x29 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH "$HOME/.config/window-manager/hotkey.sh" command
+lalt - q : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace close
+lalt - 1 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 1
+lalt - 2 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 2
+lalt - 3 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 3
+lalt - 4 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 4
+lalt - 5 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 5
+lalt - 6 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 6
+lalt - 7 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 7
+lalt - 8 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 8
+lalt - 9 : PATH=/opt/homebrew/bin:/usr/local/bin:$PATH aerospace workspace 9
+
+# Preserve the Command-mode toggle from every AeroSpace mode.
+lalt + shift - 0x29 : export PATH=/opt/homebrew/bin:/usr/local/bin:$PATH; mode=$(aerospace list-modes --current) || exit; case "$mode" in command) aerospace mode main ;; *) aerospace mode command ;; esac
