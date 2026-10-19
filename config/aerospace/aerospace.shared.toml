@@ -24,8 +24,8 @@ inner.horizontal = 2
 inner.vertical = 2
 outer.left = 5
 outer.right = 5
-# Automatically measured menu/bar height minus the macOS inset, plus 5 points.
-outer.top = [{ monitor."1" = 6 }, { monitor."2" = 35 }, 38] # managed by sketchybar display.lua
+# SketchyBar stores per-screen measurements in ignored monitors.local.toml.
+outer.top = 38
 outer.bottom = 5
 
 # Browser picture-in-picture windows float; Windows process/class rules do not apply.
@@ -82,10 +82,6 @@ h = "move --boundaries all-monitors-outer-frame left"
 j = "move --boundaries all-monitors-outer-frame down"
 k = "move --boundaries all-monitors-outer-frame up"
 l = "move --boundaries all-monitors-outer-frame right"
-shift-h = "move-workspace-to-monitor left"
-shift-j = "move-workspace-to-monitor down"
-shift-k = "move-workspace-to-monitor up"
-shift-l = "move-workspace-to-monitor right"
 v = "mode join"
 esc = "mode main"
 enter = "mode main"
@@ -129,6 +125,6 @@ enter = "mode main"
 # Return to main before pausing so manual resume restores normal typing.
 [mode.admin.binding]
 p = ["mode main", "enable off"]
-r = ["mode main", "reload-config"]
+r = ["mode main", 'exec-and-forget "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" reload']
 esc = "mode main"
 enter = "mode main"

@@ -7,7 +7,7 @@ local config = os.getenv('CONFIG_DIR') or os.getenv('HOME') .. '/.config/sketchy
 local function ensure_listener()
   sbar.exec('lua ' .. util.quote(config .. '/plugins/network-stream.lua') .. ' ensure')
 end
-local version = 0
+local busy, pending = false, false
 -- Use hardware ports and their link status, never routes or DNS. This excludes
 -- Clash's utun interfaces and other virtual interfaces such as feth/bridge.
 local command = [[/usr/sbin/networksetup -listallhardwareports | /usr/bin/awk '
@@ -18,12 +18,13 @@ local command = [[/usr/sbin/networksetup -listallhardwareports | /usr/bin/awk '
     printf '%s\n' "$kind"
   fi
 done]]
-item:subscribe({'forced', 'network_change', 'wifi_change', 'system_woke'}, function(env)
-  if not env or env.SENDER == 'forced' or env.SENDER == 'system_woke' then ensure_listener() end
-  version = version + 1
-  local current = version
+local refresh
+refresh = function()
+  if busy then pending = true; return end
+  busy, pending = true, false
   util.exec(command, function(result, code)
-    if version ~= current then return end
+    busy = false
+    if pending then refresh(); return end
     local wifi, ethernet = false, false
     if code == 0 and type(result) == 'string' then
       for kind in result:gmatch('%S+') do
@@ -32,8 +33,11 @@ item:subscribe({'forced', 'network_change', 'wifi_change', 'system_woke'}, funct
       end
     end
     local connected = wifi or ethernet
-    item:set({icon={string=ethernet and '󰈀' or wifi and '󰖩' or '󰖪',
+    util.set(item, {icon={string=ethernet and '󰈀' or wifi and '󰖩' or '󰖪',
       color=connected and theme.connected or theme.muted}})
   end)
+end
+item:subscribe({'forced', 'network_change', 'wifi_change', 'system_woke'}, function(env)
+  if not env or env.SENDER == 'forced' or env.SENDER == 'system_woke' then ensure_listener() end
+  refresh()
 end)
-ensure_listener()

@@ -21,6 +21,8 @@ FILES = {
     ".config/wm/wm.sh": "scripts/wm.sh",
     ".config/wm/wm-mode.py": "scripts/wm-mode.py",
     ".config/wm/wm-window.py": "scripts/wm-window.py",
+    ".config/wm/wm-config.lua": "scripts/wm-config.lua",
+    ".config/wm/wm-close.lua": "scripts/wm-close.lua",
     ".config/wm/backend": "config/wm/aerospace",
     ".zprofile": "config/zsh/.zprofile",
     ".zshrc": "config/zsh/.zshrc",
@@ -61,7 +63,9 @@ def install(home, dry_run, files=None):
     # Never follow a parent directory link into an unrelated checkout.
     for dest, source in pending:
         if not source.exists():
-            raise RuntimeError(f"Missing source: {source}")
+            shared = source.with_name(source.stem + ".shared.toml")
+            if not (dry_run and source.suffix == ".toml" and shared.is_file()):
+                raise RuntimeError(f"Missing source: {source}")
         for parent in dest.parents:
             if parent == home:
                 break

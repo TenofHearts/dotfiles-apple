@@ -13,15 +13,33 @@ local socket_path = state .. '/events.sock'
 local function write(path, value)
   local file = assert(io.open(path, 'w')); file:write(value); file:close()
 end
-local state_api = require('plugins.omniwm-state')
+local state_api = require('plugins.omniwm.state')
 local previous_display
 local fingerprints = {}
+local window_fingerprints = {}
+local window_state = require('plugins.omniwm.window-state')
 local function forward(event, replay)
   if event.kind ~= 'event' or not event.ok then return end
+  local payload = event.result and event.result.payload or {}
+  local projected = window_state.project(event.channel, payload)
+  if projected then
+    local data = json.encode(projected, {keyorder={'window', 'windows', 'workspace', 'id', 'rawName',
+      'displayName', 'number', 'app', 'bundleId', 'name', 'title', 'isFocused', 'isVisible',
+      'columnIndex', 'mode', 'hiddenReason', 'position', 'x', 'top', 'width', 'height'}})
+    if replay or window_fingerprints[event.channel] ~= data then
+      window_fingerprints[event.channel] = data
+      sbar.trigger('omniwm_windows', {EVENT=event.channel, DATA=data})
+    end
+  end
+  -- Focus updates must not run workspace queries or JXA display measurements.
+  if event.channel == 'focus' then
+    local workspace = payload.window and payload.window.workspace
+    if workspace then sbar.trigger('omniwm_event', {EVENT='focus', WORKSPACE=workspace.rawName}) end
+    return
+  end
   local fingerprint = state_api.event_key(event)
   if not replay and fingerprint and fingerprints[event.channel] == fingerprint then return end
   fingerprints[event.channel] = fingerprint
-  local payload = event.result and event.result.payload or {}
   local workspace = payload.workspace or payload.activeWorkspace
   sbar.trigger('omniwm_event', {EVENT=event.channel,
     WORKSPACE=type(workspace) == 'table' and workspace.rawName or ''})
@@ -35,7 +53,7 @@ if arg[1] == 'ensure' then
   local client = uv.new_pipe(false)
   client:connect(socket_path, function(err)
     if not err then
-      client:write('initial', function() client:close() end)
+      client:write(arg[2] == 'replay' and 'initial' or 'check', function() client:close() end)
     else
       client:close(); uv.fs_mkdir(state, 448)
       local log = assert(uv.fs_open(state .. '/stream.log', 'w', 384))
@@ -62,7 +80,7 @@ local function subscribe()
   local buffer = ''
   output = uv.new_pipe(false)
   process = assert(uv.spawn(state_api.executable, {
-    args={'subscribe', 'active-workspace,focused-monitor,windows-changed,display-changed', '--format', 'ndjson'},
+    args={'subscribe', 'focus,active-workspace,focused-monitor,windows-changed,display-changed', '--format', 'ndjson'},
     stdio={nil, output, 2}
   }, function()
     process:close(); process = nil
@@ -92,7 +110,11 @@ assert(server:listen(16, function(err)
   assert(not err, err)
   local client = uv.new_pipe(false); server:accept(client)
   client:read_start(function(_, chunk)
-    if chunk then for _, event in pairs(latest) do forward(event, true) end end
+    if chunk == 'initial' then
+      for _, channel in ipairs({'active-workspace', 'focused-monitor', 'windows-changed', 'focus', 'display-changed'}) do
+        if latest[channel] then forward(latest[channel], true) end
+      end
+    end
     client:read_stop(); client:close()
   end)
 end))

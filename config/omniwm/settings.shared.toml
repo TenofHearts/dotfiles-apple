@@ -3,7 +3,7 @@
 hotkeys = []
 monitorBarOverrides = []
 monitorDwindleOverrides = []
-# SketchyBar generates connected-monitor gaps at runtime.
+# Machine-specific values are read from ignored monitors.local.toml.
 monitorGapOverrides = []
 monitorNiriOverrides = []
 monitorOrientationOverrides = []

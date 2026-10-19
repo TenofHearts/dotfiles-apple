@@ -13,13 +13,13 @@ sbar.default({padding_left=math.floor(spacing.between/2), padding_right=math.cei
 -- Precreate persistent workspaces so their position precedes the mode indicator.
 local backend = require('plugins.wm').backend
 require('plugins.' .. backend).setup()
-require('plugins.front_app')
+require(backend == 'omniwm' and 'plugins.omniwm.windows' or 'plugins.front_app')
 require('plugins.clock')
 require('plugins.battery')
 require('plugins.bluetooth')
 require('plugins.network')
 require('plugins.volume')
-require(backend == 'omniwm' and 'plugins.omniwm-display' or 'plugins.display').setup()
+require('plugins.' .. backend .. '.display').setup()
 -- macOS posts this distributed notification for both manual and scheduled changes.
 sbar.add('event', 'appearance_changed', 'AppleInterfaceThemeChangedNotification')
 local appearance = sbar.add('item', 'appearance.listener', {drawing=false})

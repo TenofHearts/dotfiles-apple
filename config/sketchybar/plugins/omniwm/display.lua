@@ -1,10 +1,11 @@
 -- Copy AeroSpace's measured-menu gaps, settling, retries, and atomic writes.
 local sbar = require('sketchybar')
 local util = require('plugins.util')
-local state = require('plugins.omniwm-state')
-local display = require('plugins.display')
+local state = require('plugins.omniwm.state')
+local display = require('plugins.wm.display')
 local uv = require('luv')
 local json = require('dkjson')
+local config_files = require('plugins.wm.config')
 local M = {}
 local first = '# BEGIN sketchybar managed OmniWM gaps'
 local last = '# END sketchybar managed OmniWM gaps'
@@ -31,7 +32,7 @@ function M.plan(screens, envelope)
     monitors[#monitors+1] = {['monitor-id']=screen, ['monitor-appkit-nsscreen-screens-id']=screen}
     by_id[screen] = monitor
   end
-  local properties, _, gaps = display.plan(screens, monitors)
+  local properties, gaps = display.plan(screens, monitors)
   local lines = {first}
   for _, gap in ipairs(gaps) do
     local monitor, screen = by_id[gap.id], screens[gap.id]
@@ -58,7 +59,7 @@ function M.update(source, block)
     if line == first then opened = opened + 1
     elseif line == last then closed = closed + 1
     elseif line:match('^monitorGapOverrides%s*=') then
-      assert(line:match('=%s*%[%]%s*$'), 'Expected canonical empty monitorGapOverrides array')
+      assert(line:match('=%s*%[.*%]%s*$'), 'Expected a single-line monitorGapOverrides array')
     else
       if line:match('^%s*%[') then skipping = line:match('^%s*%[%[monitorGapOverrides%]%]') ~= nil end
       if not skipping then lines[#lines+1] = line end
@@ -95,12 +96,16 @@ function M.setup()
         local ok, properties, block = pcall(M.plan, screens, envelope)
         if not ok then finish(properties); return end
         local config = os.getenv('XDG_CONFIG_HOME') or os.getenv('HOME') .. '/.config'
-        local path = uv.fs_realpath(config .. '/omniwm/settings.toml')
-        if not path then finish('Cannot resolve OmniWM config'); return end
+        local runtime_path = uv.fs_realpath(config .. '/omniwm/settings.toml')
+        if not runtime_path then finish('Cannot resolve OmniWM config'); return end
+        local directory = runtime_path:match('^(.*)/')
+        local shared_path, path = config_files.paths('omniwm', directory)
+        if not uv.fs_stat(shared_path) then finish('Run install.sh to install shared/local configs'); return end
         local success, error_message = pcall(function()
-          local original = display.read(path)
+          local original = config_files.read(path)
           local updated = M.update(original, block)
-          if updated ~= original then display.replace(path, updated) end
+          config_files.write(path, updated)
+          config_files.generate('omniwm', directory)
         end)
         finish(not success and error_message or nil)
       end)

@@ -48,15 +48,17 @@ I use AeroSpace and OmniWM as alternative window managers, with a familiar keybo
 
 ### AeroSpace
 
-[AeroSpace](config/aerospace/aerospace.toml) provides my tree-based tiling workflow. I use its modes to organize windows, adjust layouts, and move between tasks without reaching for the mouse.
+[AeroSpace](config/aerospace/aerospace.shared.toml) provides my tree-based tiling workflow. I use its modes to organize windows, adjust layouts, and move between tasks without reaching for the mouse.
 
 [Shortcut guide](config/aerospace/help.html)
 
 ### OmniWM
 
-[OmniWM](config/omniwm/settings.toml) gives me both tiled layouts and scrolling columns. I use it with the same core keyboard habits, plus gestures and visual effects for navigating my desktop.
+[OmniWM](config/omniwm/settings.shared.toml) gives me both tiled layouts and scrolling columns. I use it with the same core keyboard habits, plus gestures and visual effects for navigating my desktop.
 
 [Shortcut guide](config/omniwm/help.html)
+
+[Local screen settings and config generation](config/wm/README.md)
 
 ## skhd
 

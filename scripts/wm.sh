@@ -27,6 +27,10 @@ if [[ "$backend" == aerospace ]]; then
     focus) exec aerospace focus --boundaries all-monitors-outer-frame "$@" ;;
     workspace) exec aerospace workspace "$@" ;;
     close) exec aerospace close ;;
+    reload)
+      helper=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+      lua "$helper/wm-config.lua" aerospace
+      exec aerospace reload-config ;;
     *) echo "Unsupported AeroSpace action: $action" >&2; exit 2 ;;
   esac
 fi
@@ -34,10 +38,16 @@ case "$action" in
   focus) exec "$omniwmctl" command focus "$@" ;;
   # 0.7.6 commits keyboard/CLI workspace switches immediately. Its animated
   # workspace preview is gesture-only; animationsEnabled does not alter this.
-  workspace) exec "$omniwmctl" workspace focus-name "$@" ;;
-  close) exec "$omniwmctl" command close-focused-window ;;
+  workspace)
+    # Paint the requested pill immediately; the native stream confirms it.
+    sketchybar --trigger omniwm_event EVENT=workspace-requested WORKSPACE="$1" >/dev/null 2>&1 || true
+    if "$omniwmctl" workspace focus-name "$@"; then exit 0; fi
+    sketchybar --trigger omniwm_event EVENT=workspace-request-failed >/dev/null 2>&1
+    exit 1 ;;
+  close)
+    helper=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+    exec lua "$helper/wm-close.lua" ;;
   move) exec "$omniwmctl" command move "$@" ;;
-  move-workspace) exec "$omniwmctl" command swap-workspace-with-monitor "$@" ;;
   send) "$omniwmctl" command move-to-workspace "$@"; exec "$omniwmctl" workspace focus-name "$@" ;;
   resize)
     layout=$("$omniwmctl" query workspaces --current --fields layout --json |
@@ -59,7 +69,10 @@ case "$action" in
   # Released 0.7.6: Dwindle <-> Niri is the complete workspace-layout cycle.
   # "default" inherits a layout; floating/fullscreen are window states.
   layout) exec "$omniwmctl" command toggle-workspace-layout ;;
-  reload) exec skhd --reload ;; # OmniWM settings.toml is live-reloaded on save.
+  reload)
+    helper=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+    lua "$helper/wm-config.lua" omniwm
+    exec skhd --reload ;; # OmniWM live-reloads the generated settings.toml.
   pause) exec osascript -e 'tell application "OmniWM" to quit' ;;
   *) echo "Unsupported OmniWM action: $action" >&2; exit 2 ;;
 esac

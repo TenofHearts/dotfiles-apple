@@ -11,7 +11,7 @@ local function name(workspace) return 'aerospace.workspace.' .. util.hex(workspa
 local function style(workspace, active, monitor)
   local item = items[workspace]
   if not item then return end
-  item:set({display=monitor, drawing=active or occupied[workspace] or false,
+  util.set(item, {display=monitor, drawing=active or occupied[workspace] or false,
     icon={color=active and theme.on_accent or theme.workspace_text},
     label={drawing=active}, background={color=active and theme.active_workspace or theme.workspace}})
 end
@@ -59,12 +59,12 @@ refresh = function()
     refreshing = false
     if version ~= generation then schedule(); return end
     if failed or type(results.rows) ~= 'table' or type(results.occupied) ~= 'table' then
-      controller:set({label='Unavailable'})
-      for _, item in pairs(items) do item:set({drawing=false}) end
+      util.set(controller, {label='Unavailable'})
+      -- Keep the last valid pills visible during a transient IPC failure.
       sbar.delay(2, refresh)
       return
     end
-    controller:set({label=''})
+    util.set(controller, {label=''})
     rows, occupied = results.rows, {}
     for _, row in ipairs(results.occupied) do occupied[row.workspace] = true end
     local desired = {}
@@ -107,11 +107,11 @@ function M.setup()
   controller = sbar.add('item', 'aerospace.refresh', {position='left', drawing=false, update_freq=30})
   local config = os.getenv('CONFIG_DIR') or os.getenv('HOME') .. '/.config/sketchybar'
   local function ensure()
-    sbar.exec('lua ' .. util.quote(config .. '/plugins/aerospace-stream.lua') .. ' ensure')
+    sbar.exec('lua ' .. util.quote(config .. '/plugins/aerospace/stream.lua') .. ' ensure')
   end
   controller:subscribe('aerospace_event', function(env)
     if env.EVENT == 'mode-changed' then
-      mode:set({label={string=env.MODE:upper(), color=env.MODE == 'main' and theme.text or theme.mode}})
+      util.set(mode, {label={string=env.MODE:upper(), color=env.MODE == 'main' and theme.text or theme.mode}})
       return
     end
     generation = generation + 1

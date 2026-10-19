@@ -39,6 +39,7 @@ check() {
 }
 start() {
   check "$1" || return
+  lua "$ROOT/scripts/wm-config.lua" "$1"
   local other=aerospace
   [[ "$1" != aerospace ]] || other=omniwm
   stop "$other" || return
@@ -69,7 +70,7 @@ case "$action" in
       pid_file="/tmp/sketchybar-$backend-$(id -u)/stream.pid"
       if [[ -f "$pid_file" ]]; then
         pid=$(cat "$pid_file")
-        if [[ "$pid" =~ ^[0-9]+$ ]] && ps -p "$pid" -o command= | /usr/bin/grep -Fq "/plugins/$backend-stream.lua"; then
+        if [[ "$pid" =~ ^[0-9]+$ ]] && ps -p "$pid" -o command= | /usr/bin/grep -Eq "/plugins/$backend(/stream|-stream)\.lua"; then
           kill -TERM "$pid" || true
         fi
       fi

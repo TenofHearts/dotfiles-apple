@@ -1,21 +1,13 @@
 local sbar = require('sketchybar')
 local theme = require('plugins.theme')
 local util = require('plugins.util')
-local item = sbar.add('item', 'volume', {position='right', update_freq=5, label='0%'})
-local version = 0
--- Read mute separately: macOS retains the previous output level while muted.
-item:subscribe({'volume_change', 'forced', 'routine', 'system_woke'}, function()
-  version = version + 1
-  local current = version
-  util.macos('var app = Application.currentApplication(); app.includeStandardAdditions = true; JSON.stringify(app.getVolumeSettings())', function(result, code)
-    if version ~= current then return end
-    if code ~= 0 or type(result) ~= 'table' or type(result.outputVolume) ~= 'number'
-        or type(result.outputMuted) ~= 'boolean' then
-      item:set({icon={color=theme.muted}})
-      return
-    end
-    local volume, muted = result.outputVolume, result.outputMuted
-    local icon = (muted or volume == 0) and '󰖁' or volume >= 60 and '󰕾' or volume >= 30 and '󰖀' or '󰕿'
-    item:set({icon={string=icon, color=theme.text}, label=(muted and 0 or volume) .. '%'})
-  end)
+local item = sbar.add('item', 'volume', {position='right', update_freq=0, label='0%'})
+-- SketchyBar's CoreAudio listener includes mute and output-device changes;
+-- INFO is the effective level (zero while muted), already rounded to percent.
+item:subscribe('volume_change', function(env)
+  local volume = tonumber(env.INFO)
+  if not volume then return end
+  local icon = volume == 0 and '󰖁' or volume >= 60 and '󰕾' or volume >= 30 and '󰖀' or '󰕿'
+  util.set(item, {icon={string=icon, color=theme.text}, label=volume .. '%'})
 end)
+item:subscribe({'forced', 'system_woke'}, function() sbar.trigger('volume_change') end)

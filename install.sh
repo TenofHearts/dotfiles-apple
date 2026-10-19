@@ -14,5 +14,6 @@ if [[ ${1:-} == --bootstrap ]]; then
   shift
   "$ROOT/scripts/bootstrap.sh"
 fi
+if [[ " $* " != *' --dry-run '* ]]; then lua "$ROOT/scripts/wm-config.lua" all; fi
 exec python3 "$ROOT/scripts/links.py" install "$@"
 

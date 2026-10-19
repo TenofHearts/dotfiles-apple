@@ -4,3 +4,11 @@ __pycache__/
 config/karabiner/automatic_backups/
 config/karabiner/assets/
 config/karabiner/*.local.*
+config/omniwm/monitors.local.toml
+config/omniwm/monitors.local.toml.*
+config/omniwm/settings.toml
+config/omniwm/settings.toml.*
+config/aerospace/monitors.local.toml
+config/aerospace/monitors.local.toml.*
+config/aerospace/aerospace.toml
+config/aerospace/aerospace.toml.*

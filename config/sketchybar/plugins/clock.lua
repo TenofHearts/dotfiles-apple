@@ -1,3 +1,4 @@
+local util = require('plugins.util')
 local sbar = require('sketchybar')
 local theme = require('plugins.theme')
 local spacing = require('plugins.spacing')
@@ -14,6 +15,6 @@ local item = sbar.add('item', 'clock', {position='right', update_freq=10,
   label={padding_left=spacing.inside}})
 item:subscribe({'forced', 'routine', 'system_woke'}, function()
   local now = os.time()
-  item:set({icon=weekdays[os.date('*t', now).wday], label=os.date('%m/%d', now)})
-  time:set({label=os.date('%H:%M', now)})
+  util.set(item, {icon=weekdays[os.date('*t', now).wday], label=os.date('%m/%d', now)})
+  util.set(time, {label=os.date('%H:%M', now)})
 end)

@@ -6,13 +6,13 @@ local M = {}
 local items, rows, occupied = {}, {}, {}
 local mode, controller
 local generation, refreshing, pending = 0, false, false
-local refresh
+local refresh, highlight, schedule
 local screens_cache
 local function name(workspace) return 'omniwm.workspace.' .. util.hex(workspace) end
 local function style(workspace, active, monitor)
   local item = items[workspace]
   if not item then return end
-  item:set({display=monitor, drawing=active or occupied[workspace] or false,
+  util.set(item, {display=monitor, drawing=active or occupied[workspace] or false,
     icon={color=active and theme.on_accent or theme.workspace_text},
     label={drawing=active}, background={color=active and theme.active_workspace or theme.workspace}})
 end
@@ -25,28 +25,37 @@ local function add(workspace)
     padding_left=spacing.inside/2, padding_right=spacing.inside/2,
     background={drawing=true, height=22, color=theme.workspace, corner_radius=11}})
   item:subscribe('mouse.clicked', function()
-    sbar.exec(require('plugins.omniwm-state').cli .. ' workspace focus-name ' .. util.quote(workspace))
+    generation = generation + 1
+    highlight(workspace)
+    sbar.exec(require('plugins.omniwm.state').cli .. ' workspace focus-name ' .. util.quote(workspace), function(_, code)
+      if code ~= 0 then schedule() end
+    end)
   end)
   items[workspace] = item
 end
-local function schedule()
+schedule = function()
   pending = true
   local version = generation
   sbar.delay(0.05, function()
     if version == generation then refresh() end
   end)
 end
-local function highlight(workspace)
+highlight = function(workspace)
   local display
   for _, row in ipairs(rows) do
     if row.workspace == workspace then display = row['monitor-appkit-nsscreen-screens-id'] end
   end
-  if not display then return end
+  if not display then return false end
+  local changed = false
   for _, row in ipairs(rows) do
     if row['monitor-appkit-nsscreen-screens-id'] == display then
-      style(row.workspace, row.workspace == workspace, display)
+      local active = row.workspace == workspace
+      changed = changed or row['workspace-is-visible'] ~= active
+      row['workspace-is-visible'] = active
+      style(row.workspace, active, display)
     end
   end
+  return changed
 end
 refresh = function()
   if refreshing then pending = true; return end
@@ -60,12 +69,12 @@ refresh = function()
     refreshing = false
     if version ~= generation then schedule(); return end
     if failed or type(results.rows) ~= 'table' or type(results.occupied) ~= 'table' then
-      controller:set({label='Unavailable'})
-      for _, item in pairs(items) do item:set({drawing=false}) end
+      util.set(controller, {label='Unavailable'})
+      -- A transient query/display failure must not blank the last valid pills.
       sbar.delay(2, refresh)
       return
     end
-    controller:set({label=''})
+    util.set(controller, {label=''})
     rows, occupied = results.rows, {}
     for _, row in ipairs(results.occupied) do occupied[row.workspace] = true end
     local desired = {}
@@ -94,7 +103,7 @@ refresh = function()
     end
     if pending then schedule() end
   end
-  local state = require('plugins.omniwm-state')
+  local state = require('plugins.omniwm.state')
   local function query(screens, code)
     if code ~= 0 then received('rows', nil, code); received('occupied', nil, code); return end
     screens_cache = screens
@@ -120,24 +129,29 @@ function M.setup()
     local file = io.open(state_path, 'r')
     local current = file and file:read('*l') or 'main'
     if file then file:close() end
-    mode:set({label={string=current:upper(), color=current == 'main' and theme.text or theme.mode}})
+    util.set(mode, {label={string=current:upper(), color=current == 'main' and theme.text or theme.mode}})
   end
-  local function ensure()
+  local function ensure(replay)
     refresh_mode()
-    sbar.exec('lua ' .. util.quote(config .. '/plugins/omniwm-stream.lua') .. ' ensure')
+    sbar.exec('lua ' .. util.quote(config .. '/plugins/omniwm/stream.lua') .. ' ensure' .. (replay and ' replay' or ''))
   end
   controller:subscribe('omniwm_event', function(env)
     if env.EVENT == 'mode-changed' then
       refresh_mode() -- Read authoritative state; callback notifications may arrive late.
       return
     end
+    local changed = env.WORKSPACE and env.WORKSPACE ~= '' and highlight(env.WORKSPACE)
+    if env.EVENT == 'focus' then
+      if changed then generation = generation + 1 end
+      return
+    end
     generation = generation + 1
-    if env.WORKSPACE and env.WORKSPACE ~= '' then highlight(env.WORKSPACE) end
+    if env.EVENT == 'workspace-requested' then return end
     schedule()
   end)
   controller:subscribe({'forced', 'routine', 'system_woke', 'display_change'}, function(env)
     if env.SENDER ~= 'routine' then screens_cache = nil end
-    ensure()
+    ensure(env.SENDER ~= 'routine')
     -- Routine refresh catches occupancy changes that have no OmniWM event.
     generation = generation + 1
     schedule()

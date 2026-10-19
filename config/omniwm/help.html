@@ -23,7 +23,7 @@
 <main>
   <header>
     <h1>OmniWM shortcuts</h1>
-    <p class="shared"><kbd>Left Option + H / J / K / L</kbd> focuses windows across displays; <kbd>Left Option + 1–9</kbd> switches workspaces. <kbd>Left Option + M</kbd> minimizes; <kbd>Left Option + Q</kbd> closes. All work in every mode while management is active.</p>
+    <p class="shared"><kbd>Left Option + H / J / K / L</kbd> focuses windows across displays; <kbd>Left Option + 1–9</kbd> switches workspaces. <kbd>Left Option + M</kbd> minimizes; <kbd>Left Option + Q</kbd> closes and keeps focus in the active workspace. All work in every mode while management is active.</p>
     <p class="shared">Left Option means the modifier received after Karabiner remapping; your left physical Command key currently sends Left Option. Release modifiers after entering a mode before pressing plain keys.</p>
     <p class="shared"><kbd>Left Option + Escape</kbd> always resets to Main, including with Shift held.</p>
   </header>
@@ -56,10 +56,9 @@
       <p class="activation">Activate: <kbd>Left Option + Shift + ; → M</kbd></p>
       <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>H / J / K / L</kbd></td><td>Native Dwindle move: join a touching tile or extract the active tab; cross monitors at an edge. This changes group membership.</td></tr>
-        <tr><td><kbd>Shift + H / J / K / L</kbd></td><td>Swap the active workspace with the adjacent display’s active workspace (both displays change).</td></tr>
         <tr><td><kbd>1–9</kbd></td><td>Move to workspace and follow the window; stay in Move.</td></tr>
       </tbody></table>
-      <p class="detail">Dwindle groups use tabs. Joining two existing groups requires extracting the active tab, then joining it. Arbitrary AeroSpace container trees cannot be reproduced.</p>
+      <p class="detail">Dwindle groups use tabs. Move a window toward a neighboring tile to join it, or away from its group to extract it.</p>
       <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
     </section>
     <section id="adjust" aria-labelledby="adjust-title">
@@ -80,10 +79,10 @@
       <h2 id="admin-title">Admin</h2>
       <p class="activation">Activate: <kbd>Left Option + Shift + ; → A</kbd></p>
       <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
-        <tr><td><kbd>R</kbd></td><td>Reload skhd bindings; exit Admin. OmniWM settings reload automatically when saved.</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Apply shared and local screen settings, reload skhd bindings, and exit Admin.</td></tr>
         <tr><td><kbd>P</kbd></td><td>Return to Main and quit OmniWM, leaving window management stopped.</td></tr>
       </tbody></table>
-      <p class="detail">Resume by launching OmniWM or running scripts/wm-service.sh start. There is no stable CLI command for pausing management.</p>
+      <p class="detail">Resume by launching OmniWM or running scripts/wm-service.sh start.</p>
       <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
     </section>
     <section id="effects" aria-labelledby="effects-title">
@@ -95,7 +94,7 @@
         <tr><td>Three fingers ← / →</td><td>Momentum-scroll Niri columns (when using Niri).</td></tr>
         <tr><td>Option + drag / right-drag</td><td>Swap tiled windows / resize.</td></tr>
       </tbody></table>
-      <p class="detail">Overview is disabled because its search bar overlaps the camera notch. Niri scrolling and workspace swipe animations remain enabled. Captured swipe previews need OmniWM Screen Recording permission. Gradient focus borders, subtle glow, app icons in tab rails, and tiling animations are enabled. Keyboard workspace selection remains immediate in OmniWM 0.7.6.</p>
+      <p class="detail">Workspace swipes and Niri scrolling animate; keyboard workspace switches are immediate. The bar’s app icons show the workspace layout. Hover for window titles; use +N to view additional windows.</p>
     </section>
   </div>
 </main>

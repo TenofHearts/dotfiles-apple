@@ -14,10 +14,12 @@
 default, command, move, adjust, admin, help, reload, pause < lalt - escape ; default
 # Option-Escape also works while Shift is held.
 default, command, move, adjust, admin, help, reload, pause < lalt + shift - escape ; default
-default, command, move, adjust, admin, help, reload, pause < lalt - h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus left
-default, command, move, adjust, admin, help, reload, pause < lalt - j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus down
-default, command, move, adjust, admin, help, reload, pause < lalt - k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus up
-default, command, move, adjust, admin, help, reload, pause < lalt - l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus right
+# Keep repeated focus keys on the native CLI path in every mode. Exec avoids
+# another shell, backend lookup, and wrapper process on each keypress.
+default, command, move, adjust, admin, help, reload, pause < lalt - h : exec "${DOTFILES_OMNIWMCTL:-/Applications/OmniWM.app/Contents/MacOS/omniwmctl}" command focus left
+default, command, move, adjust, admin, help, reload, pause < lalt - j : exec "${DOTFILES_OMNIWMCTL:-/Applications/OmniWM.app/Contents/MacOS/omniwmctl}" command focus down
+default, command, move, adjust, admin, help, reload, pause < lalt - k : exec "${DOTFILES_OMNIWMCTL:-/Applications/OmniWM.app/Contents/MacOS/omniwmctl}" command focus up
+default, command, move, adjust, admin, help, reload, pause < lalt - l : exec "${DOTFILES_OMNIWMCTL:-/Applications/OmniWM.app/Contents/MacOS/omniwmctl}" command focus right
 default, command, move, adjust, admin, help, reload, pause < lalt - 1 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 1
 default, command, move, adjust, admin, help, reload, pause < lalt - 2 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 2
 default, command, move, adjust, admin, help, reload, pause < lalt - 3 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 3
@@ -47,13 +49,9 @@ command < r ; adjust
 command < a ; admin
 command < shift - 0x2C ; help
 move < h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move left
-move < shift - h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace left
 move < j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move down
-move < shift - j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace down
 move < k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move up
-move < shift - k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace up
 move < l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move right
-move < shift - l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace right
 move < 1 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 1
 move < 2 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 2
 move < 3 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 3
