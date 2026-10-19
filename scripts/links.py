@@ -10,10 +10,18 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = {
-    ".config/skhd": "config/skhd",
+    ".config/skhd/skhdrc": "config/skhd/skhdrc",
+    ".config/skhd/apps": "config/skhd/apps",
+    ".config/skhd/wm": "config/aerospace/skhdrc",
     ".config/sketchybar": "config/sketchybar",
     ".config/aerospace/aerospace.toml": "config/aerospace/aerospace.toml",
     ".config/aerospace/help.html": "config/aerospace/help.html",
+    ".config/omniwm/settings.toml": "config/omniwm/settings.toml",
+    ".config/omniwm/help.html": "config/omniwm/help.html",
+    ".config/wm/wm.sh": "scripts/wm.sh",
+    ".config/wm/wm-mode.py": "scripts/wm-mode.py",
+    ".config/wm/wm-window.py": "scripts/wm-window.py",
+    ".config/wm/backend": "config/wm/aerospace",
     ".zprofile": "config/zsh/.zprofile",
     ".zshrc": "config/zsh/.zshrc",
     ".config/oh-my-posh/theme.omp.json": "config/oh-my-posh/theme.omp.json",
@@ -39,9 +47,17 @@ def linked(dest, source):
     return dest.is_symlink() and dest.resolve() == source.resolve()
 
 
-def install(home, dry_run):
-    pending = [(home / name, ROOT / src) for name, src in FILES.items()
-               if not linked(home / name, ROOT / src)]
+def install(home, dry_run, files=None):
+    files = FILES if files is None else files
+    skhd = home / ".config/skhd"
+    migrate_skhd = skhd.is_symlink() and any(name.startswith(".config/skhd/") for name in files)
+    if migrate_skhd and skhd.resolve() not in {
+        ROOT / "config/skhd", ROOT / "config/aerospace", ROOT / "config/omniwm"
+    }:
+        raise RuntimeError(f"Symlinked parent needs manual review: {skhd}")
+    pending = [(home / name, ROOT / src) for name, src in files.items()
+               if not linked(home / name, ROOT / src)
+               or (migrate_skhd and name.startswith(".config/skhd/"))]
     # Never follow a parent directory link into an unrelated checkout.
     for dest, source in pending:
         if not source.exists():
@@ -49,11 +65,13 @@ def install(home, dry_run):
         for parent in dest.parents:
             if parent == home:
                 break
-            if parent.is_symlink():
+            if parent.is_symlink() and not (migrate_skhd and parent == skhd):
                 raise RuntimeError(f"Symlinked parent needs manual review: {parent}")
     if not pending:
         print("All configuration links are already installed.")
         return
+    if migrate_skhd:
+        print(f"Back up {skhd} and replace its managed directory link with individual file links")
     for dest, source in pending:
         print(f"{'Back up and link' if exists(dest) else 'Link'} {dest} -> {source}")
     if dry_run:
@@ -64,7 +82,8 @@ def install(home, dry_run):
     records = []
     # Retain Karabiner assets and automatic backups through directory linking.
     old_karabiner = home / ".config/karabiner"
-    if old_karabiner.is_dir() and not linked(old_karabiner, ROOT / "config/karabiner"):
+    if (".config/karabiner" in files and old_karabiner.is_dir()
+            and not linked(old_karabiner, ROOT / "config/karabiner")):
         for name in ("assets", "automatic_backups"):
             source = old_karabiner / name
             dest = ROOT / "config/karabiner" / name
@@ -73,6 +92,13 @@ def install(home, dry_run):
                     raise RuntimeError(f"Refusing to merge Karabiner runtime data: {dest}")
                 shutil.copytree(source, dest, symlinks=True)
     try:
+        if migrate_skhd:
+            saved = backup / ".config/skhd-directory"
+            saved.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(skhd), str(saved))
+            records.append({"dest": str(skhd), "kind": "directory", "backup": str(saved)})
+            manifest.write_text(json.dumps(records, indent=2) + "\n")
+            skhd.mkdir()
         for dest, source in pending:
             saved = backup / dest.relative_to(home)
             record = {"dest": str(dest), "source": str(source),
@@ -87,15 +113,18 @@ def install(home, dry_run):
     except Exception:
         for record in reversed(records):
             dest = Path(record["dest"])
-            if linked(dest, Path(record["source"])):
+            if record.get("kind") == "directory":
+                if dest.exists():
+                    dest.rmdir()
+            elif linked(dest, Path(record["source"])):
                 dest.unlink()
             if record["backup"] and exists(Path(record["backup"])) and not exists(dest):
                 shutil.move(record["backup"], str(dest))
         raise
     print(f"Backup manifest: {manifest}")
-    if ".config/karabiner" in FILES:
+    if ".config/karabiner" in files:
         print("Restart Karabiner.")
-    if any(name.startswith("Library/Rime/") for name in FILES):
+    if any(name.startswith("Library/Rime/") for name in files):
         print("Use Squirrel > Deploy.")
 
 
@@ -103,17 +132,25 @@ def restore(manifest, dry_run):
     records = json.loads(manifest.read_text())
     # Check every entry before changing anything.
     for record in records:
-        dest, source = Path(record["dest"]), Path(record["source"])
-        if exists(dest) and not linked(dest, source):
+        dest = Path(record["dest"])
+        if record.get("kind") == "directory":
+            children = {Path(child["dest"]) for child in records if Path(child["dest"]).parent == dest}
+            if exists(dest) and (dest.is_symlink() or not dest.is_dir()
+                                 or any(child not in children for child in dest.iterdir())):
+                raise RuntimeError(f"Refusing to overwrite a changed directory: {dest}")
+        elif exists(dest) and not linked(dest, Path(record["source"])):
             raise RuntimeError(f"Refusing to overwrite a changed file: {dest}")
         if record["backup"] and not exists(Path(record["backup"])):
             raise RuntimeError(f"Backup missing: {record['backup']}")
     for record in reversed(records):
-        dest, source = Path(record["dest"]), Path(record["source"])
+        dest = Path(record["dest"])
         print(f"Restore {dest}")
         if dry_run:
             continue
-        if linked(dest, source):
+        if record.get("kind") == "directory":
+            if dest.exists():
+                dest.rmdir()
+        elif linked(dest, Path(record["source"])):
             dest.unlink()
         if record["backup"]:
             shutil.move(record["backup"], str(dest))
@@ -130,14 +167,30 @@ def status(home):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("install", "status", "restore"))
+    parser.add_argument("action", choices=("install", "status", "restore", "select-wm"))
+    parser.add_argument("--wm", choices=("aerospace", "omniwm"), help="Window manager backend; defaults to the installed selection, then aerospace")
     parser.add_argument("manifest", nargs="?", type=Path)
     parser.add_argument("--home", type=Path, default=Path.home(), help="Alternate home for testing")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     home = args.home.absolute()
+    if args.action != "restore":
+        backend = args.wm
+        selected = home / ".config/wm/backend"
+        if backend is None:
+            backend = selected.read_text().strip() if selected.is_file() else "aerospace"
+        if backend not in ("aerospace", "omniwm"):
+            parser.error(f"Unknown installed backend: {backend!r}")
+        FILES[".config/wm/backend"] = f"config/wm/{backend}"
+        FILES[".config/skhd/wm"] = f"config/{backend}/skhdrc"
     if args.action == "install":
         install(home, args.dry_run)
+    elif args.action == "select-wm":
+        if not args.wm:
+            parser.error("select-wm requires --wm aerospace|omniwm")
+        install(home, args.dry_run, {name: FILES[name] for name in
+                                  (".config/wm/backend", ".config/skhd/skhdrc",
+                                   ".config/skhd/apps", ".config/skhd/wm")})
     elif args.action == "status":
         return status(home)
     else:

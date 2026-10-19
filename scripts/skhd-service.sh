@@ -19,4 +19,7 @@ if [[ "$action" != stop && ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/skhd/skhdrc" 
   echo 'Link the configuration first: ./install.sh' >&2
   exit 1
 fi
+if [[ "$action" != stop && -x "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" ]]; then
+  "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" mode main
+fi
 exec skhd "--${action}-service"

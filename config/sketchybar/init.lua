@@ -11,14 +11,15 @@ sbar.default({padding_left=math.floor(spacing.between/2), padding_right=math.cei
   icon={font='Hack Nerd Font:Bold:14.0', color=theme.text, padding_left=0, padding_right=0},
   label={font='Hack Nerd Font:Bold:12.0', color=theme.text, padding_left=spacing.inside, padding_right=0}})
 -- Precreate persistent workspaces so their position precedes the mode indicator.
-require('plugins.aerospace').setup()
+local backend = require('plugins.wm').backend
+require('plugins.' .. backend).setup()
 require('plugins.front_app')
 require('plugins.clock')
 require('plugins.battery')
 require('plugins.bluetooth')
 require('plugins.network')
 require('plugins.volume')
-require('plugins.display').setup()
+require(backend == 'omniwm' and 'plugins.omniwm-display' or 'plugins.display').setup()
 -- macOS posts this distributed notification for both manual and scheduled changes.
 sbar.add('event', 'appearance_changed', 'AppleInterfaceThemeChangedNotification')
 local appearance = sbar.add('item', 'appearance.listener', {drawing=false})

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OmniWM shortcuts</title>
+  <style>
+    :root{color-scheme:light dark;--bg:#f3f5f9;--card:#fff;--text:#233047;--muted:#657187;--line:#dde3ed;--accent:#2563d1;--key:#edf2fa}
+    @media(prefers-color-scheme:dark){:root{--bg:#141922;--card:#1d2430;--text:#e7edf7;--muted:#a0adc0;--line:#354055;--accent:#8dbaff;--key:#293447}}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:1120px;margin:auto;padding:32px 24px 48px}h1{font-size:28px;letter-spacing:-.025em;margin:0 0 16px}h2{font-size:19px;margin:0}p{margin:0}
+    a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+    kbd{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:var(--key);font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .shared{color:var(--muted);margin-bottom:16px}nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}nav a{padding:5px 10px;border:1px solid var(--line);border-radius:7px;background:var(--card)}
+    .modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}section{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--card);scroll-margin-top:20px}
+    .activation{color:var(--muted);font-size:12px;margin:5px 0 14px}table{width:100%;border-collapse:collapse}th,td{text-align:left;vertical-align:top;padding:9px 0;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:12px;font-weight:600}th:first-child,td:first-child{width:38%;padding-right:12px}tr:last-child td{border-bottom:0}
+    .exit,.detail{color:var(--muted);font-size:12px;margin-top:12px}.exit{border-top:1px solid var(--line);padding-top:12px}
+    @media(max-width:760px){main{padding:24px 16px}.modes{grid-template-columns:1fr}section{padding:18px}h1{font-size:25px}}
+    @media print{nav{display:none}main{padding:0;max-width:none}body{background:#fff;color:#000}section{break-inside:avoid;background:#fff;color:#000}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>OmniWM shortcuts</h1>
+    <p class="shared"><kbd>Left Option + H / J / K / L</kbd> focuses windows across displays; <kbd>Left Option + 1–9</kbd> switches workspaces. <kbd>Left Option + M</kbd> minimizes; <kbd>Left Option + Q</kbd> closes. All work in every mode while management is active.</p>
+    <p class="shared">Left Option means the modifier received after Karabiner remapping; your left physical Command key currently sends Left Option. Release modifiers after entering a mode before pressing plain keys.</p>
+    <p class="shared"><kbd>Left Option + Escape</kbd> always resets to Main, including with Shift held.</p>
+  </header>
+  <nav aria-label="Modes">
+    <a href="#main">Main</a><a href="#command">Command</a><a href="#move">Move</a><a href="#adjust">Adjust</a><a href="#admin">Admin</a><a href="#effects">Effects</a>
+  </nav>
+  <div class="modes">
+    <section id="main" aria-labelledby="main-title">
+      <h2 id="main-title">Main</h2>
+      <p class="activation">Active by default</p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Left Option + H / J / K / L</kbd></td><td>Focus left / down / up / right, including across displays.</td></tr>
+        <tr><td><kbd>Left Option + 1–9</kbd></td><td>Switch workspace.</td></tr>
+        <tr><td><kbd>Left Option + Shift + ;</kbd></td><td>Enter Command.</td></tr>
+      </tbody></table>
+    </section>
+    <section id="command" aria-labelledby="command-title">
+      <h2 id="command-title">Command</h2>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ;</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>M</kbd></td><td>Enter Move.</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Enter Adjust.</td></tr>
+        <tr><td><kbd>A</kbd></td><td>Enter Admin.</td></tr>
+        <tr><td><kbd>?</kbd></td><td>Open this guide in the default browser; exit Command.</td></tr>
+      </tbody></table>
+      <p class="exit">Escape, Enter or Left Option + Shift + ; → Main.</p>
+    </section>
+    <section id="move" aria-labelledby="move-title">
+      <h2 id="move-title">Move</h2>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ; → M</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>H / J / K / L</kbd></td><td>Native Dwindle move: join a touching tile or extract the active tab; cross monitors at an edge. This changes group membership.</td></tr>
+        <tr><td><kbd>Shift + H / J / K / L</kbd></td><td>Swap the active workspace with the adjacent display’s active workspace (both displays change).</td></tr>
+        <tr><td><kbd>1–9</kbd></td><td>Move to workspace and follow the window; stay in Move.</td></tr>
+      </tbody></table>
+      <p class="detail">Dwindle groups use tabs. Joining two existing groups requires extracting the active tab, then joining it. Arbitrary AeroSpace container trees cannot be reproduced.</p>
+      <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
+    </section>
+    <section id="adjust" aria-labelledby="adjust-title">
+      <h2 id="adjust-title">Adjust</h2>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ; → R</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>H / L</kbd></td><td>Shrink / grow width: native 10% split step in Dwindle, 25 points in Niri.</td></tr>
+        <tr><td><kbd>J / K</kbd></td><td>Grow / shrink height: native 10% split step in Dwindle, 25 points in Niri.</td></tr>
+        <tr><td><kbd>T</kbd></td><td>Set tiled. Use F again to exit fullscreen.</td></tr>
+        <tr><td><kbd>W</kbd></td><td>Toggle floating / tiling; stay in Adjust.</td></tr>
+        <tr><td><kbd>F</kbd></td><td>Toggle fullscreen without outer margins.</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>Cycle this workspace’s layouts: Dwindle → Niri → Dwindle; stay in Adjust.</td></tr>
+        <tr><td><kbd>M</kbd></td><td>Minimize.</td></tr>
+      </tbody></table>
+      <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
+    </section>
+    <section id="admin" aria-labelledby="admin-title">
+      <h2 id="admin-title">Admin</h2>
+      <p class="activation">Activate: <kbd>Left Option + Shift + ; → A</kbd></p>
+      <table><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>R</kbd></td><td>Reload skhd bindings; exit Admin. OmniWM settings reload automatically when saved.</td></tr>
+        <tr><td><kbd>P</kbd></td><td>Return to Main and quit OmniWM, leaving window management stopped.</td></tr>
+      </tbody></table>
+      <p class="detail">Resume by launching OmniWM or running scripts/wm-service.sh start. There is no stable CLI command for pausing management.</p>
+      <p class="exit">Escape or Enter → Main. Left Option + Shift + ; → Command.</p>
+    </section>
+    <section id="effects" aria-labelledby="effects-title">
+      <h2 id="effects-title">Effects &amp; gestures</h2>
+      <p class="activation">Keyboard shortcuts below start in Main. Option is received after Karabiner remapping.</p>
+      <table><thead><tr><th scope="col">Input</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Option + `</kbd></td><td>Toggle the sliding glass Quake terminal.</td></tr>
+        <tr><td>Three fingers ↑ / ↓</td><td>Swipe between workspaces with animated settling.</td></tr>
+        <tr><td>Three fingers ← / →</td><td>Momentum-scroll Niri columns (when using Niri).</td></tr>
+        <tr><td>Option + drag / right-drag</td><td>Swap tiled windows / resize.</td></tr>
+      </tbody></table>
+      <p class="detail">Overview is disabled because its search bar overlaps the camera notch. Niri scrolling and workspace swipe animations remain enabled. Captured swipe previews need OmniWM Screen Recording permission. Gradient focus borders, subtle glow, app icons in tab rails, and tiling animations are enabled. Keyboard workspace selection remains immediate in OmniWM 0.7.6.</p>
+    </section>
+  </div>
+</main>
+</body>
+</html>

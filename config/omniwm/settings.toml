@@ -1,0 +1,359 @@
+# OmniWM 0.7.6; skhd + SketchyBar own the hotkeys and bar.
+# Overview stays disabled until its search bar respects the camera-notch safe area.
+hotkeys = []
+monitorBarOverrides = []
+monitorDwindleOverrides = []
+# SketchyBar generates connected-monitor gaps at runtime.
+monitorGapOverrides = []
+monitorNiriOverrides = []
+monitorOrientationOverrides = []
+schemaVersion = 4
+
+[appearance]
+mode = "automatic"
+tabRailAppIcons = true
+
+[borders]
+enabled = true
+width = 1.0
+
+[borders.color]
+alpha = 1.0
+blue = 0.961
+green = 0.4
+red = 0.118
+
+[borders.darkColor]
+alpha = 1.0
+blue = 0.98
+green = 0.706
+red = 0.537
+
+[borders.glow]
+enabled = true
+opacity = 0.3
+radius = 7.0
+
+[borders.gradient]
+direction = "topLeftToBottomRight"
+enabled = true
+
+[borders.gradient.dark]
+
+[borders.gradient.dark.end]
+alpha = 1.0
+blue = 0.969
+green = 0.651
+red = 0.796
+
+[borders.gradient.dark.start]
+alpha = 1.0
+blue = 0.98
+green = 0.706
+red = 0.537
+
+[borders.gradient.end]
+alpha = 1.0
+blue = 0.956
+green = 0.337
+red = 0.533
+
+[borders.gradient.start]
+alpha = 1.0
+blue = 0.961
+green = 0.4
+red = 0.118
+
+[clipboard]
+historyEnabled = false
+ignoredTypes = []
+maxItemBytes = 8388608
+maxItems = 200
+maxTotalBytes = 67108864
+
+[dwindle]
+defaultSplitRatio = 1.0
+moveToRootStable = true
+# A large custom cap fills the tiled frame with gaps; "fill" ignores those gaps.
+singleWindowFit = "100000x100000"
+smartSplit = false
+splitWidthMultiplier = 1.0
+useGlobalGaps = true
+
+[focus]
+crossesMonitorAtEdge = true
+followsMouse = false
+followsWindowToMonitor = true
+lockModifier = "off"
+moveCrossesMonitorAtEdge = true
+moveMouseToFocusedWindow = false
+raiseOnMouseFocus = false
+
+[gaps]
+fullscreenUsesOuterGaps = false
+size = 2.0
+
+[gaps.outer]
+bottom = 5.0
+left = 5.0
+right = 5.0
+top = 38.0
+
+[general]
+animationSpeed = 1.0
+animationsEnabled = true
+defaultLayoutType = "dwindle"
+hotkeysEnabled = false
+hyperKeyModifiers = "Control+Option+Shift+Command"
+ipcEnabled = true
+preventSleepEnabled = false
+systemHyperTrigger = "None"
+updateChecksEnabled = true
+
+[gestures]
+fingerCount = 3
+invertDirection = true
+mouseMoveModifierKey = "option"
+mouseResizeModifierKey = "option"
+overviewGestureEnabled = false
+overviewGestureFingerCount = 4
+scrollEnabled = true
+scrollModifierKey = "optionShift"
+scrollSensitivity = 5.0
+trackpadScrollStyle = "momentum"
+windowGestureSensitivity = 1.0
+windowMoveEnabled = false
+windowMoveFingerCount = 4
+windowResizeEnabled = false
+windowResizeFingerCount = 3
+workspaceSwipeAxis = "vertical"
+workspaceSwipeEnabled = true
+workspaceSwipeFingerCount = 3
+
+[hiddenBar]
+enabled = false
+hiddenBundleIDs = []
+rehideIntervalSeconds = 5.0
+
+[mouseWarp]
+constrainToArrangement = false
+enabled = false
+margin = 1
+
+[niri]
+alwaysCenterSingleColumn = false
+centerFocusedColumn = "onOverflow"
+containerPrimarySpanPresets = [0.3333333333333333, 0.5, 0.6666666666666666]
+edgeGaps = true
+infiniteLoop = false
+resizeStepPercent = 5
+# Match Dwindle's gap-preserving single-window frame.
+singleWindowFit = "100000x100000"
+visibleContainerCount = 2
+
+[overview]
+# 0.7.6 has no search-only visibility/offset setting; keep notch-side space usable.
+enabled = false
+invertScrollDirection = false
+matchFocusBorder = true
+mouseScrollSpeed = 1.0
+zoom = 0.9
+
+[overview.backdrop]
+alpha = 1.0
+blue = 0.08
+green = 0.05
+red = 0.05
+
+[overview.windowBorders]
+
+[overview.windowBorders.hovered]
+alpha = 1.0
+blue = 1.0
+green = 0.6
+red = 0.4
+
+[overview.windowBorders.normal]
+alpha = 0.5
+blue = 0.35
+green = 0.3
+red = 0.3
+
+[overview.windowBorders.selected]
+alpha = 1.0
+blue = 0.4
+green = 0.8
+red = 0.3
+
+[quakeTerminal]
+animationDuration = 0.25
+autoHide = true
+backgroundBlurRadius = 20
+backgroundEffect = "glassRegular"
+enabled = true
+heightPercent = 50.0
+monitorMode = "focusedWindow"
+opacity = 0.92
+position = "top"
+widthPercent = 80.0
+
+[routing]
+arrangements = []
+mode = "macOS"
+
+[scratchpads]
+
+[scratchpads.labels]
+
+[statusBar]
+showAppNames = false
+showIcon = true
+showWorkspaceName = false
+useWorkspaceId = false
+
+[workspaceBar]
+autoHide = false
+autoHideHideDelayMilliseconds = 0.0
+autoHideRevealDelayMilliseconds = 0.0
+backgroundOpacity = 0.1
+deduplicateAppIcons = false
+enabled = false
+excludedBundleIDs = []
+height = 24.0
+hideEmptyWorkspaces = false
+hideInNativeFullscreen = false
+hoverPreviewsEnabled = true
+notchActiveZoneWidth = 180.0
+notchMode = "moveBelowMenuBar"
+notificationBadgeRefreshIntervalSeconds = 5.0
+notificationBadges = "off"
+position = "overlappingMenuBar"
+reserveLayoutSpace = false
+revealHoldMilliseconds = 200.0
+revealModifier = "off"
+showAccentHighlights = true
+showFloatingWindows = false
+showItemBackgrounds = true
+showLabels = true
+solidBlackBackground = false
+systemStatsButton = false
+transparentBackground = false
+windowLevel = "popup"
+xOffset = 0.0
+yOffset = 0.0
+
+[workspaceBar.iconOverrides]
+
+[[appRules]]
+bundleId = "com.tencent.xinWeChat"
+id = "4F019BBB-8EBB-457D-A7A0-B34AF16ACA37"
+layout = "float"
+titleRegex = "(?i)(视频通话|语音通话|视频聊天|语音聊天|video call|voice call)"
+
+[[appRules]]
+bundleId = "com.google.Chrome"
+id = "D0DDB6A1-E2D5-4843-AD52-5E0494A076FF"
+layout = "float"
+titleRegex = "[Pp]icture.in.[Pp]icture"
+
+[[appRules]]
+bundleId = "org.mozilla.firefox"
+id = "3E3BBE78-925D-44AC-997F-141586EB423F"
+layout = "float"
+titleRegex = "[Pp]icture.in.[Pp]icture"
+
+[[appRules]]
+bundleId = "com.apple.Safari"
+id = "DC766041-38C5-41BE-A7BD-D2E5E96BC7DA"
+layout = "float"
+titleRegex = "[Pp]icture.in.[Pp]icture"
+
+[[appRules]]
+bundleId = "com.microsoft.edgemac"
+id = "F01D7F22-290E-43DF-8878-AA873CA3539E"
+layout = "float"
+titleRegex = "[Pp]icture.in.[Pp]icture"
+
+[[appRules]]
+bundleId = "com.brave.Browser"
+id = "2748D756-915A-426A-BC0A-581E428CF28B"
+layout = "float"
+titleRegex = "[Pp]icture.in.[Pp]icture"
+
+[[appRules]]
+bundleId = "app.zen-browser.zen"
+id = "4C4120A9-6CED-4F77-9EBB-58A8D5D7C815"
+layout = "float"
+titleRegex = "[Pp]icture.in.[Pp]icture"
+
+[[workspaces]]
+id = "81F80975-AE08-5E39-9D39-4ED8B2E079DC"
+layoutType = "dwindle"
+name = "1"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "51D9F97D-7213-5EFA-9547-0AF15E82D4C4"
+layoutType = "dwindle"
+name = "2"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "85A2AA78-92E1-50C4-9685-21ADF0CB38E6"
+layoutType = "dwindle"
+name = "3"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "F898409A-7F2A-5C12-A964-BC2064D62B25"
+layoutType = "dwindle"
+name = "4"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "FD06AB0A-0FC0-5EB7-8029-A02F26368C1B"
+layoutType = "dwindle"
+name = "5"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "296A220A-0448-54AF-BC9E-24E49E7DC2F4"
+layoutType = "dwindle"
+name = "6"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "8317141C-0C87-57A4-ABE0-F7880DCCC6AF"
+layoutType = "dwindle"
+name = "7"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "F4B4624B-DC12-5B7E-89C1-D9682530D249"
+layoutType = "dwindle"
+name = "8"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "2D6B288E-235F-54FB-B433-1056A4A39DA8"
+layoutType = "dwindle"
+name = "9"
+
+[workspaces.monitorAssignment]
+type = "main"

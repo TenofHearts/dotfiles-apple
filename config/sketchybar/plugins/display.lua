@@ -68,7 +68,7 @@ function M.plan(screens, monitors)
     maximum = math.max(maximum, height)
   end
   rules[#rules+1] = tostring(math.ceil(maximum + 5))
-  return properties, 'outer.top = [' .. table.concat(rules, ', ') .. '] ' .. marker
+  return properties, 'outer.top = [' .. table.concat(rules, ', ') .. '] ' .. marker, gaps
 end
 local function read(path)
   local file = assert(io.open(path, 'r')); local content = file:read('*a'); file:close(); return content
@@ -85,6 +85,8 @@ local function replace(path, content)
   if not ok then uv.fs_unlink(temporary); error(err) end
   assert(uv.fs_rename(temporary, path))
 end
+-- Reuse the proven measurement and atomic-write path for the OmniWM backend.
+M.metrics, M.read, M.replace = metrics, read, replace
 function M.setup()
   local item = sbar.add('item', 'bar.height', {position='left', drawing=false})
   local busy, dirty = false, false

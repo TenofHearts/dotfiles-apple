@@ -1,0 +1,78 @@
+# Left Option is received after Karabiner remapping.
+# Native OmniWM hotkeys are disabled in settings.toml.
+
+# Entry actions never synthesize keys. Action modes have complete Main bindings.
+# Pass the callback shell PID so delayed callbacks cannot overwrite a newer mode.
+:: default : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter main "$$"
+:: command @ : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter command "$$"
+:: move @ : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter move "$$"
+:: adjust @ : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter adjust "$$"
+:: admin @ : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter admin "$$"
+:: help : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter main "$$" help
+:: reload : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter main "$$" reload
+:: pause : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" enter main "$$" pause
+default, command, move, adjust, admin, help, reload, pause < lalt - escape ; default
+# Option-Escape also works while Shift is held.
+default, command, move, adjust, admin, help, reload, pause < lalt + shift - escape ; default
+default, command, move, adjust, admin, help, reload, pause < lalt - h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus left
+default, command, move, adjust, admin, help, reload, pause < lalt - j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus down
+default, command, move, adjust, admin, help, reload, pause < lalt - k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus up
+default, command, move, adjust, admin, help, reload, pause < lalt - l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" focus right
+default, command, move, adjust, admin, help, reload, pause < lalt - 1 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 1
+default, command, move, adjust, admin, help, reload, pause < lalt - 2 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 2
+default, command, move, adjust, admin, help, reload, pause < lalt - 3 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 3
+default, command, move, adjust, admin, help, reload, pause < lalt - 4 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 4
+default, command, move, adjust, admin, help, reload, pause < lalt - 5 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 5
+default, command, move, adjust, admin, help, reload, pause < lalt - 6 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 6
+default, command, move, adjust, admin, help, reload, pause < lalt - 7 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 7
+default, command, move, adjust, admin, help, reload, pause < lalt - 8 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 8
+default, command, move, adjust, admin, help, reload, pause < lalt - 9 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" workspace 9
+default, command, move, adjust, admin, help, reload, pause < lalt - m : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" minimize
+default, command, move, adjust, admin, help, reload, pause < lalt - q : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" close
+default, move, adjust, admin, help, reload, pause < lalt + shift - 0x29 ; command
+command < lalt + shift - 0x29 ; default
+# Visual features in Main; existing modal keys retain their behavior.
+# Overview is disabled: its search bar overlaps the camera notch in 0.7.6.
+default, help, reload, pause < lalt - 0x32 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" quake
+command < escape ; default
+command < return ; default
+move < escape ; default
+move < return ; default
+adjust < escape ; default
+adjust < return ; default
+admin < escape ; default
+admin < return ; default
+command < m ; move
+command < r ; adjust
+command < a ; admin
+command < shift - 0x2C ; help
+move < h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move left
+move < shift - h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace left
+move < j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move down
+move < shift - j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace down
+move < k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move up
+move < shift - k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace up
+move < l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move right
+move < shift - l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" move-workspace right
+move < 1 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 1
+move < 2 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 2
+move < 3 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 3
+move < 4 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 4
+move < 5 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 5
+move < 6 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 6
+move < 7 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 7
+move < 8 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 8
+move < 9 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" send 9
+adjust < h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize horizontal shrink
+adjust < l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize horizontal grow
+adjust < j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize vertical grow
+adjust < k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize vertical shrink
+adjust < f : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" fullscreen
+adjust < t : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" tile
+adjust < w : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" floating
+adjust < m : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" minimize
+# OmniWM 0.7.6 has two workspace layouts. Cycle both and stay in Adjust.
+# AeroSpace's focused accordion action (A) has no equivalent and is unbound.
+adjust < space : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" layout
+admin < r ; reload
+admin < p ; pause
