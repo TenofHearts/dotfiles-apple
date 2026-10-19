@@ -36,11 +36,6 @@ if.app-id = 'com.tencent.xinWeChat'
 if.window-title-regex-substring = '(?i)(视频通话|语音通话|视频聊天|语音聊天|video call|voice call)'
 run = 'layout floating'
 
-# Finder disk-image roots use the mounted volume name, not a .dmg suffix.
-[[on-window-detected]]
-if.app-id = 'com.apple.finder'
-run = 'exec-and-forget lua "$HOME/.config/aerospace/scripts/float-dmg.lua"'
-
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
 if.window-title-regex-substring = '[Pp]icture.in.[Pp]icture'

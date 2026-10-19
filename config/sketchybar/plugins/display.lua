@@ -29,6 +29,8 @@ for (var i = 0; i < screens.count; i++) {
     });
     result.push({
         screen: i + 1,
+        raw_top: top,
+        screen_id: ObjC.unwrap(screen.deviceDescription.objectForKey("NSScreenNumber")),
         notch: screen.safeAreaInsets.top > 0,
         inset: Math.max(0, frame.origin.y + frame.size.height -
             visible.origin.y - visible.size.height),
@@ -85,6 +87,59 @@ local function replace(path, content)
   if not ok then uv.fs_unlink(temporary); error(err) end
   assert(uv.fs_rename(temporary, path))
 end
+function M.rift_plan(screens, monitors)
+  assert(#screens > 0, 'No display measurements')
+  local heights, ids, seen = {}, {}, {}
+  for _, screen in ipairs(screens) do
+    assert(type(screen.height) == 'number', 'Native menu height is unavailable')
+    local kind = screen.notch and 'notch' or 'plain'
+    heights[kind] = math.min(heights[kind] or screen.height, screen.height)
+  end
+  for _, monitor in ipairs(monitors) do ids[monitor.screen_id] = monitor end
+  local properties, rules = {}, {}
+  for _, screen in ipairs(screens) do
+    local monitor = assert(ids[screen.screen_id], 'Display topology is changing')
+    local uuid = monitor.uuid
+    assert(uuid:match('^[%x%-]+$'), 'Invalid display UUID')
+    seen[screen.screen_id] = true
+    local height = math.floor(heights[screen.notch and 'notch' or 'plain'])
+    -- Rift already subtracts its native menu/notch inset from the display frame.
+    local inset = monitor.frame.origin.y - screen.raw_top
+    local top = math.ceil(math.max(0, height - inset) + 5)
+    rules[#rules+1] = ('[settings.layout.gaps.per_display."%s".outer]\ntop = %s\nleft = 5\nright = 5\nbottom = 5'):format(uuid, top)
+  end
+  for id in pairs(ids) do assert(seen[id], 'Display topology is changing') end
+  for kind, height in pairs(heights) do
+    properties[kind == 'notch' and 'notch_display_height' or 'height'] = math.floor(height)
+  end
+  table.sort(rules)
+  return properties, '# BEGIN managed display gaps\n' .. table.concat(rules, '\n') .. '\n# END managed display gaps'
+end
+local function sync_rift(screens, finish)
+  util.exec('rift-cli query displays', function(monitors, code)
+    if code ~= 0 or type(monitors) ~= 'table' or #monitors == 0 then finish('Cannot list Rift displays'); return end
+    local ok, properties, gaps = pcall(M.rift_plan, screens, monitors)
+    if not ok then finish(properties); return end
+    local path = uv.fs_realpath(os.getenv('HOME') .. '/.config/rift/config.toml')
+    if not path then finish('Cannot resolve Rift config'); return end
+    local success, original, updated = pcall(function()
+      local source = read(path)
+      local result, count = source:gsub('# BEGIN managed display gaps.-# END managed display gaps', function() return gaps end)
+      assert(count == 1, 'Expected one managed Rift gaps block')
+      return source, result
+    end)
+    if not success then finish(original); return end
+    sbar.bar(properties)
+    if updated == original then finish(); return end
+    local written, err = pcall(replace, path, updated)
+    if not written then finish(err); return end
+    util.exec('rift-cli execute config reload', function(_, reload_code)
+      if reload_code == 0 then finish(); return end
+      if read(path) == updated then replace(path, original) end
+      util.exec('rift-cli execute config reload', function() finish('Rift rejected new gaps') end)
+    end)
+  end)
+end
 function M.setup()
   local item = sbar.add('item', 'bar.height', {position='left', drawing=false})
   local busy, dirty = false, false
@@ -105,6 +160,9 @@ function M.setup()
     end
     util.macos(metrics, function(screens, code)
       if code ~= 0 or type(screens) ~= 'table' then finish('Cannot measure menus'); return end
+      if require('plugins.window_manager').selected() == 'rift' then
+        sync_rift(screens, finish); return
+      end
       util.exec("aerospace list-monitors --format '%{monitor-id} %{monitor-appkit-nsscreen-screens-id}' --json", function(monitors, monitor_code)
         if monitor_code ~= 0 or type(monitors) ~= 'table' then finish('Cannot list monitors'); return end
         local ok, properties, gap_line = pcall(M.plan, screens, monitors)
