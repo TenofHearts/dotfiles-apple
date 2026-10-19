@@ -109,7 +109,7 @@ esc = "mode move"
 enter = "mode move"
 
 # Native resizing in 25-point steps.
-# Space toggles floating without an added centering helper.
+# Space switches the workspace root between accordion and tiled tree layouts.
 [mode.adjust.binding]
 # Toggle the focused container (group, or workspace root) without flattening.
 a = "layout accordion tiles"
@@ -119,7 +119,7 @@ k = "resize height -25"
 l = "resize width +25"
 t = "layout tiling"
 f = "fullscreen --no-outer-gaps"
-space = "layout floating tiling"
+space = "layout --root accordion tiles"
 m = "macos-native-minimize"
 esc = "mode main"
 enter = "mode main"
