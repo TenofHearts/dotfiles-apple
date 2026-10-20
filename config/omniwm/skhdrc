@@ -65,6 +65,11 @@ adjust < h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize horizontal shri
 adjust < l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize horizontal grow
 adjust < j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize vertical grow
 adjust < k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize vertical shrink
+# Bounded Niri percentages: 25, 33, 50, 100. Other layouts are unchanged.
+adjust < shift - h : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize-step horizontal shrink
+adjust < shift - l : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize-step horizontal grow
+adjust < shift - j : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize-step vertical grow
+adjust < shift - k : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" resize-step vertical shrink
 adjust < f : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" fullscreen
 adjust < t : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" tile
 adjust < w : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" floating

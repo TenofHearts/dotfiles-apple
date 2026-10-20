@@ -62,9 +62,9 @@ case "$action" in
     if [[ "$2" == grow ]]; then delta=+25; else delta=-25; fi
     exec "$omniwmctl" command "$dimension" "$delta"
     ;;
-  tile|floating|fullscreen)
+  tile|floating|fullscreen|resize-step)
     helper=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-    exec python3 "$helper/wm-window.py" "$action" ;;
+    exec python3 "$helper/wm-window.py" "$action" "$@" ;;
   quake) exec "$omniwmctl" command toggle-quake-terminal ;;
   # Released 0.7.6: Dwindle <-> Niri is the complete workspace-layout cycle.
   # "default" inherits a layout; floating/fullscreen are window states.
