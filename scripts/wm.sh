@@ -72,7 +72,7 @@ case "$action" in
   reload)
     helper=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
     lua "$helper/wm-config.lua" omniwm
-    exec skhd --reload ;; # OmniWM live-reloads the generated settings.toml.
+    exec skhd --reload ;; # OmniWM live-reloads its native settings.toml.
   pause) exec osascript -e 'tell application "OmniWM" to quit' ;;
   *) echo "Unsupported OmniWM action: $action" >&2; exit 2 ;;
 esac

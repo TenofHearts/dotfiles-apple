@@ -51,22 +51,100 @@ function M.plan(screens, envelope)
   return properties, table.concat(lines, '\n')
 end
 function M.update(source, block)
-  -- OmniWM's GUI serializer removes comments and may reorder tables. Own the
-  -- gap override array, as AeroSpace's plugin owns its entire outer.top line;
-  -- recognize the canonical tables even after markers have disappeared.
-  local lines, skipping, opened, closed = {}, false, 0, 0
-  for line in (source .. '\n'):gmatch('(.-)\n') do
-    if line == first then opened = opened + 1
-    elseif line == last then closed = closed + 1
-    elseif line:match('^monitorGapOverrides%s*=') then
-      assert(line:match('=%s*%[.*%]%s*$'), 'Expected a single-line monitorGapOverrides array')
-    else
-      if line:match('^%s*%[') then skipping = line:match('^%s*%[%[monitorGapOverrides%]%]') ~= nil end
-      if not skipping then lines[#lines+1] = line end
+  -- Patch only measured top gaps in the native file. Preserve all other GUI
+  -- settings, including other edges and disconnected displays' overrides.
+  local targets, order, current = {}, {}, nil
+  local function target()
+    if not current then return end
+    local uuid, top
+    for _, line in ipairs(current) do
+      uuid = line:match('^%s*monitorDisplayUUID%s*=%s*"([^"]+)"') or uuid
+      top = line:match('^%s*outerGapTop%s*=%s*([%d.]+)') or top
+    end
+    assert(uuid and top and not targets[uuid], 'Invalid measured gap override')
+    targets[uuid] = {lines=current, top=tonumber(top)}
+    order[#order+1] = uuid
+  end
+  for line in (block .. '\n'):gmatch('(.-)\n') do
+    if line:match('^%s*%[%[monitorGapOverrides%]%]%s*$') then
+      target(); current = {line}
+    elseif line ~= first and line ~= last and current then
+      current[#current+1] = line
     end
   end
-  assert(opened == closed and opened <= 1, 'Invalid managed gaps markers')
-  return table.concat(lines, '\n'):gsub('%s*$', '') .. '\n\n' .. block .. '\n'
+  target()
+  assert(#order > 0, 'No measured gap overrides')
+
+  local lines, section, changed = {}, nil, false
+  local function flush()
+    if not section then return end
+    local uuid
+    for _, line in ipairs(section) do
+      uuid = line:match('^%s*monitorDisplayUUID%s*=%s*"([^"]+)"') or uuid
+    end
+    local measured = targets[uuid]
+    if measured then
+      assert(not measured.applied, 'Duplicate display gap override: ' .. uuid)
+      measured.applied = true
+      local found = false
+      for index, line in ipairs(section) do
+        if line:match('^%s*outerGapTop%s*=') then
+          assert(not found, 'Duplicate outerGapTop'); found = true
+          if tonumber(line:match('=%s*([%d.]+)')) ~= measured.top then
+            section[index] = ('outerGapTop = %.1f'):format(measured.top)
+            changed = true
+          end
+        end
+      end
+      if not found then
+        section[#section+1] = ('outerGapTop = %.1f'):format(measured.top)
+        changed = true
+      end
+    end
+    for _, line in ipairs(section) do lines[#lines+1] = line end
+    section = nil
+  end
+  for line in (source .. '\n'):gmatch('(.-)\n') do
+    -- Old composition can drop the opening marker while retaining the closing
+    -- one. These are comments, not table boundaries; native tables identify gaps.
+    if line == first or line == last then
+    elseif line:match('^%s*monitorGapOverrides%s*=') then
+      assert(line:match('=%s*%[%]%s*$') or line:match('=%s*%[%]%s*#'),
+        'Expected empty monitorGapOverrides or override tables')
+      changed = true
+    else
+      if line:match('^%s*%[') then
+        flush()
+        if line:match('^%s*%[%[monitorGapOverrides%]%]%s*$') then section = {} end
+      end
+      local destination = section or lines
+      destination[#destination+1] = line
+    end
+  end
+  flush()
+  for _, uuid in ipairs(order) do
+    if not targets[uuid].applied then
+      changed = true
+      lines[#lines+1] = ''
+      for _, line in ipairs(targets[uuid].lines) do lines[#lines+1] = line end
+    end
+  end
+  -- In particular, do not reload OmniWM just to normalize comments/whitespace
+  -- after waking with unchanged menu measurements.
+  if not changed then return source end
+  return table.concat(lines, '\n'):gsub('%s*$', '') .. '\n'
+end
+function M.save(runtime_path, block)
+  local directory = assert(runtime_path:match('^(.*)/'))
+  local _, local_path = config_files.paths('omniwm', directory)
+  local file = io.open(local_path, 'r')
+  local local_settings = file and file:read('*a') or ''
+  if file then file:close() end
+  local runtime = M.update(config_files.read(runtime_path), block)
+  config_files.write(local_path, M.update(local_settings, block))
+  -- Do not regenerate from shared defaults: this file is OmniWM's persisted
+  -- source of truth for GUI preferences, layouts, rules, and workspace IDs.
+  return config_files.write(runtime_path, runtime)
 end
 function M.setup()
   local item = sbar.add('item', 'bar.height', {position='left', drawing=false})
@@ -98,14 +176,8 @@ function M.setup()
         local config = os.getenv('XDG_CONFIG_HOME') or os.getenv('HOME') .. '/.config'
         local runtime_path = uv.fs_realpath(config .. '/omniwm/settings.toml')
         if not runtime_path then finish('Cannot resolve OmniWM config'); return end
-        local directory = runtime_path:match('^(.*)/')
-        local shared_path, path = config_files.paths('omniwm', directory)
-        if not uv.fs_stat(shared_path) then finish('Run install.sh to install shared/local configs'); return end
         local success, error_message = pcall(function()
-          local original = config_files.read(path)
-          local updated = M.update(original, block)
-          config_files.write(path, updated)
-          config_files.generate('omniwm', directory)
+          M.save(runtime_path, block)
         end)
         finish(not success and error_message or nil)
       end)

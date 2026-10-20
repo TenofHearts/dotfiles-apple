@@ -7,7 +7,9 @@ local root = assert(script:match('^(.*)/scripts/wm%-config.lua$'))
 local config = dofile(root .. '/config/sketchybar/plugins/wm/config.lua')
 local backend = arg[1] or 'all'
 assert(backend == 'all' or backend == 'aerospace' or backend == 'omniwm', 'Expected aerospace, omniwm, or all')
+assert(not arg[2] or arg[2] == '--rebuild', 'Expected --rebuild or no second argument')
+assert(not arg[3], 'Too many arguments')
 for _, name in ipairs(backend == 'all' and {'aerospace', 'omniwm'} or {backend}) do
-  local path = config.generate(name)
+  local path = config.generate(name, nil, arg[2] == '--rebuild')
   print(path)
 end

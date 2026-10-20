@@ -1,4 +1,4 @@
--- Shared settings stay in Git; local monitor settings and composed files do not.
+-- Shared defaults stay in Git; native OmniWM settings and local screens do not.
 local M = {}
 local source = assert(require('luv').fs_realpath(debug.getinfo(1, 'S').source:sub(2)))
 local root = assert(source:match('^(.*)/config/sketchybar/plugins/wm/config.lua$'))
@@ -73,7 +73,9 @@ function M.paths(backend, directory)
     directory .. '/' .. stem .. '.toml'
 end
 function M.compose(backend, shared, local_settings)
-  local header = '# Generated from the shared config and monitors.local.toml; edit those files.\n'
+  local header = backend == 'omniwm'
+    and '# Seeded from shared/local defaults; GUI and CLI changes are saved here.\n'
+    or '# Generated from the shared config and monitors.local.toml; edit those files.\n'
   if backend == 'omniwm' then
     shared, local_settings = omniwm_assignments(shared, local_settings)
     local prefix, suffix, found, in_table = {}, {}, {}, false
@@ -127,8 +129,14 @@ function M.compose(backend, shared, local_settings)
   end
   return header .. shared
 end
-function M.generate(backend, directory)
+function M.generate(backend, directory, rebuild)
   local shared, local_path, runtime = M.paths(backend, directory)
+  -- OmniWM saves GUI and CLI changes here itself. Recomposition would replace
+  -- those choices with the shared defaults on installation, reload, or startup.
+  if backend == 'omniwm' and not rebuild then
+    local existing = io.open(runtime, 'r')
+    if existing then existing:close(); return runtime, false end
+  end
   local file = io.open(local_path, 'r')
   if file then file:close() else
     local defaults = '# Machine-specific screen settings; ignored by Git.\n'

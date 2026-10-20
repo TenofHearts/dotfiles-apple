@@ -29,7 +29,7 @@ function M.rows(envelope, screens)
   for _, workspace in ipairs(assert(M.payload(envelope).workspaces)) do
     local display = workspace.display and ids[workspace.display.id]
     assert(display, 'Display topology is changing')
-    rows[#rows+1] = {workspace=workspace.rawName, ['workspace-is-visible']=workspace.isVisible,
+    rows[#rows+1] = {workspace=workspace.rawName, id=workspace.id, ['workspace-is-visible']=workspace.isVisible,
       ['monitor-appkit-nsscreen-screens-id']=display}
     if workspace.counts and workspace.counts.total > 0 then
       occupied[#occupied+1] = {workspace=workspace.rawName}

@@ -55,6 +55,7 @@ highlight = function(workspace)
       style(row.workspace, active, display)
     end
   end
+  require('plugins.omniwm.windows').set_workspaces(rows)
   return changed
 end
 refresh = function()
@@ -87,6 +88,7 @@ refresh = function()
     for workspace, item in pairs(items) do
       if not desired[workspace] then sbar.remove(item); items[workspace] = nil end
     end
+    require('plugins.omniwm.windows').set_workspaces(rows)
     -- Keep workspaces together before the mode indicator in OmniWM's order.
     -- Reorder only permutes existing slots, so move items in one CLI batch.
     local order = {}
