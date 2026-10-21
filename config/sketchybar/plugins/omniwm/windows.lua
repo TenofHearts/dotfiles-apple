@@ -156,6 +156,9 @@ listener:subscribe('omniwm_windows', function(env)
     local live = {}
     for _, w in ipairs(windows) do live[w.id] = true end
     for id in pairs(positions) do if not live[id] then positions[id] = nil end end
+    for _, g in pairs(groups) do
+      for id in pairs(g.names) do if not live[id] then g.names[id] = nil end end
+    end
   elseif env.EVENT == 'active-workspace' then
     workspace = payload.workspace
   else

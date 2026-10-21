@@ -1,4 +1,4 @@
 #!/bin/bash
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 export CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
-exec lua "$CONFIG_DIR/init.lua"
+exec python3 "$CONFIG_DIR/owner.py" "$CONFIG_DIR/init.lua"

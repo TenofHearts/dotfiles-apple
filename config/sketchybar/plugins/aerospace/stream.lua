@@ -11,16 +11,14 @@ local function selected()
 end
 if not selected() then return end
 local sbar = require('sketchybar')
-local uv, lfs, json = require('luv'), require('lfs'), require('dkjson')
+local uv, json = require('luv'), require('dkjson')
+local lifecycle = require('plugins.lifecycle')
 -- SbarLua ignores SIGCHLD for its own forks. The stream uses libuv child
 -- handles, which need exit status to remain available for reaping.
 local child_signal = uv.new_signal()
 child_signal:start('sigchld', function() end)
-local state = '/tmp/sketchybar-aerospace-' .. uv.os_get_passwd().uid
+local state = lifecycle.directory('aerospace')
 local socket_path = state .. '/events.sock'
-local function write(path, value)
-  local file = assert(io.open(path, 'w')); file:write(value); file:close()
-end
 local function forward(event)
   sbar.trigger('aerospace_event', {EVENT=event._event,
     WORKSPACE=event.workspace or '', MODE=event.mode or ''})
@@ -31,7 +29,7 @@ if arg[1] == 'ensure' then
     if not err then
       client:write('initial', function() client:close() end)
     else
-      client:close(); uv.fs_mkdir(state, 448)
+      client:close()
       local log = assert(uv.fs_open(state .. '/stream.log', 'w', 384))
       local process = assert(uv.spawn(uv.exepath(), {
         args={arg[0], 'listen'}, detached=true, stdio={nil, log, log}
@@ -43,15 +41,18 @@ if arg[1] == 'ensure' then
   child_signal:unref()
   uv.run(); child_signal:stop(); child_signal:close(); return
 end
-uv.fs_mkdir(state, 448)
-local lock = assert(io.open(state .. '/stream.lock', 'w'))
-if not lfs.lock(lock, 'w') then return end
-write(state .. '/stream.pid', ('%d'):format(uv.os_getpid()))
-uv.fs_unlink(socket_path)
 local latest = {}
 local process, output
 local stopping = false
-local shutdown
+local server = uv.new_pipe(false)
+local function close_child_signal() child_signal:stop(); child_signal:close() end
+local guard = lifecycle.guard(state, 'aerospace', function()
+  stopping = true
+  server:close(); uv.fs_unlink(socket_path)
+  if process then process:kill('sigterm') else close_child_signal() end
+end)
+if not guard then server:close(); close_child_signal(); uv.run(); return end
+uv.fs_unlink(socket_path)
 local function subscribe()
   local buffer = ''
   output = uv.new_pipe(false)
@@ -62,7 +63,7 @@ local function subscribe()
     process:close(); process = nil
     -- AeroSpace closes the subscription when its server exits. Finish this
     -- helper with that event instead of retrying against a stopped app.
-    shutdown()
+    if stopping then close_child_signal() else guard.stop() end
   end))
   output:read_start(function(err, chunk)
     if not chunk then output:close(); return end
@@ -82,7 +83,6 @@ local function subscribe()
     end
   end)
 end
-local server = uv.new_pipe(false)
 assert(server:bind(socket_path))
 assert(server:listen(16, function(err)
   assert(not err, err)
@@ -92,23 +92,6 @@ assert(server:listen(16, function(err)
     client:read_stop(); client:close()
   end)
 end))
-local signal = uv.new_signal()
-local selection = uv.new_fs_event()
-shutdown = function()
-  if stopping then return end
-  stopping = true
-  signal:stop(); signal:close()
-  selection:stop(); selection:close()
-  child_signal:stop(); child_signal:close()
-  server:close(); uv.fs_unlink(socket_path)
-  if process then process:kill('sigterm') end
-end
-signal:start('sigterm', shutdown)
--- Watch the directory because selecting a backend replaces its symlink.
-assert(selection:start(config .. '/wm', {}, function()
-  if not selected() then shutdown() end
-end))
-subscribe()
+if guard.selected() then subscribe() else guard.stop() end
 uv.run()
-uv.fs_unlink(state .. '/stream.pid')
-lock:close()
+guard.release()

@@ -11,8 +11,8 @@ for dependency in 'luv 1.52.1-0' 'luafilesystem 1.9.0-1' 'dkjson 2.11-1'; do
     "${ROCKS[@]}" install "$package" "$version"
   fi
 done
-if ! "${ROCKS[@]}" show sbarlua 0.1.0-1 >/dev/null 2>&1; then
-  "${ROCKS[@]}" build "$ROOT/scripts/rocks/sbarlua-0.1.0-1.rockspec" \
+if ! "${ROCKS[@]}" show sbarlua 0.1.0-2 >/dev/null 2>&1; then
+  "${ROCKS[@]}" build "$ROOT/scripts/rocks/sbarlua-0.1.0-2.rockspec" \
     LDFLAGS='-bundle -undefined dynamic_lookup -framework CoreFoundation'
 fi
 DOTFILES_LUA_TREE="$TREE" "$LUA_PREFIX/bin/lua" -e '

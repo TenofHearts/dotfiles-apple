@@ -23,8 +23,13 @@ require('plugins.' .. backend .. '.display').setup()
 -- macOS posts this distributed notification for both manual and scheduled changes.
 sbar.add('event', 'appearance_changed', 'AppleInterfaceThemeChangedNotification')
 local appearance = sbar.add('item', 'appearance.listener', {drawing=false})
+local appearance_generation = 0
 appearance:subscribe('appearance_changed', function()
-  sbar.delay(0.2, function() sbar.exec('sketchybar --reload') end)
+  appearance_generation = appearance_generation + 1
+  local generation = appearance_generation
+  sbar.delay(0.2, function()
+    if generation == appearance_generation then sbar.exec('sketchybar --reload') end
+  end)
 end)
 sbar.end_config()
 sbar.event_loop()

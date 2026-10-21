@@ -3,16 +3,14 @@ local directory = arg[0]:match('^(.*)/plugins/') or os.getenv('CONFIG_DIR')
 package.path = directory .. '/?.lua;' .. package.path
 require('runtime')
 local sbar = require('sketchybar')
-local uv, lfs, json = require('luv'), require('lfs'), require('dkjson')
+local uv, json = require('luv'), require('dkjson')
+local lifecycle = require('plugins.lifecycle')
 -- SbarLua ignores SIGCHLD for its own forks. The stream uses libuv child
 -- handles, which need exit status to remain available for reaping.
 local child_signal = uv.new_signal()
 child_signal:start('sigchld', function() end)
-local state = '/tmp/sketchybar-omniwm-' .. uv.os_get_passwd().uid
+local state = lifecycle.directory('omniwm')
 local socket_path = state .. '/events.sock'
-local function write(path, value)
-  local file = assert(io.open(path, 'w')); file:write(value); file:close()
-end
 local state_api = require('plugins.omniwm.state')
 local previous_display
 local fingerprints = {}
@@ -55,7 +53,7 @@ if arg[1] == 'ensure' then
     if not err then
       client:write(arg[2] == 'replay' and 'initial' or 'check', function() client:close() end)
     else
-      client:close(); uv.fs_mkdir(state, 448)
+      client:close()
       local log = assert(uv.fs_open(state .. '/stream.log', 'w', 384))
       local process = assert(uv.spawn(uv.exepath(), {
         args={arg[0], 'listen'}, detached=true, stdio={nil, log, log}
@@ -67,15 +65,22 @@ if arg[1] == 'ensure' then
   child_signal:unref()
   uv.run(); child_signal:stop(); child_signal:close(); return
 end
-uv.fs_mkdir(state, 448)
-local lock = assert(io.open(state .. '/stream.lock', 'w'))
-if not lfs.lock(lock, 'w') then return end
-write(state .. '/stream.pid', ('%d'):format(uv.os_getpid()))
-uv.fs_unlink(socket_path)
 local latest = {}
 local process, output
 local stopping = false
 local reconnect = uv.new_timer()
+local server = uv.new_pipe(false)
+local function close_child_signal() child_signal:stop(); child_signal:close() end
+local guard = lifecycle.guard(state, 'omniwm', function()
+  stopping = true
+  reconnect:stop(); reconnect:close()
+  server:close(); uv.fs_unlink(socket_path)
+  if process then process:kill('sigterm') else close_child_signal() end
+end)
+if not guard then
+  reconnect:close(); server:close(); close_child_signal(); uv.run(); return
+end
+uv.fs_unlink(socket_path)
 local function subscribe()
   local buffer = ''
   output = uv.new_pipe(false)
@@ -84,7 +89,7 @@ local function subscribe()
     stdio={nil, output, 2}
   }, function()
     process:close(); process = nil
-    if not stopping then reconnect:start(2000, 0, subscribe) end
+    if stopping then close_child_signal() else reconnect:start(2000, 0, subscribe) end
   end))
   output:read_start(function(err, chunk)
     if not chunk then output:close(); return end
@@ -104,7 +109,6 @@ local function subscribe()
     end
   end)
 end
-local server = uv.new_pipe(false)
 assert(server:bind(socket_path))
 assert(server:listen(16, function(err)
   assert(not err, err)
@@ -118,14 +122,6 @@ assert(server:listen(16, function(err)
     client:read_stop(); client:close()
   end)
 end))
-local signal = uv.new_signal()
-signal:start('sigterm', function()
-  stopping = true
-  signal:stop(); signal:close(); reconnect:stop(); reconnect:close()
-  child_signal:stop(); child_signal:close()
-  server:close(); uv.fs_unlink(socket_path)
-  if process then process:kill('sigterm') end
-end)
-subscribe()
+if guard.selected() then subscribe() else guard.stop() end
 uv.run()
-lock:close()
+guard.release()
