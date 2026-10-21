@@ -14,14 +14,14 @@ local function style(workspace, active, monitor)
   if not item then return end
   util.set(item, {display=monitor, drawing=active or occupied[workspace] or false,
     icon={color=active and theme.on_accent or theme.workspace_text},
-    label={drawing=active}, background={color=active and theme.active_workspace or theme.workspace}})
+    background={color=active and theme.active_workspace or theme.workspace}})
 end
 local function add(workspace)
   local item = sbar.add('item', name(workspace), {position='left', drawing=false,
     icon={string=workspace,
       font={family='Menlo', style=theme.workspace_font_style or 'Regular', size=12.0, typographical_width=true},
       width='dynamic', align='center', padding_left=8, padding_right=8},
-    label={string='●', drawing=false, font='SF Pro:Regular:8.0', color=theme.on_accent, padding_left=0, padding_right=7},
+    label={drawing=false},
     padding_left=spacing.inside/2, padding_right=spacing.inside/2,
     background={drawing=true, height=22, color=theme.workspace, corner_radius=11}})
   item:subscribe('mouse.clicked', function()
