@@ -2,6 +2,14 @@
 local directory = arg[0]:match('^(.*)/plugins/') or os.getenv('CONFIG_DIR')
 package.path = directory .. '/?.lua;' .. package.path
 require('runtime')
+local config = os.getenv('XDG_CONFIG_HOME') or os.getenv('HOME') .. '/.config'
+local function selected()
+  local file = io.open(config .. '/wm/backend', 'r')
+  local backend = file and file:read('*l') or 'aerospace'
+  if file then file:close() end
+  return backend == 'aerospace'
+end
+if not selected() then return end
 local sbar = require('sketchybar')
 local uv, lfs, json = require('luv'), require('lfs'), require('dkjson')
 -- SbarLua ignores SIGCHLD for its own forks. The stream uses libuv child
@@ -43,7 +51,7 @@ uv.fs_unlink(socket_path)
 local latest = {}
 local process, output
 local stopping = false
-local reconnect = uv.new_timer()
+local shutdown
 local function subscribe()
   local buffer = ''
   output = uv.new_pipe(false)
@@ -52,7 +60,9 @@ local function subscribe()
     stdio={nil, output, 2}
   }, function()
     process:close(); process = nil
-    if not stopping then reconnect:start(2000, 0, subscribe) end
+    -- AeroSpace closes the subscription when its server exits. Finish this
+    -- helper with that event instead of retrying against a stopped app.
+    shutdown()
   end))
   output:read_start(function(err, chunk)
     if not chunk then output:close(); return end
@@ -83,13 +93,22 @@ assert(server:listen(16, function(err)
   end)
 end))
 local signal = uv.new_signal()
-signal:start('sigterm', function()
+local selection = uv.new_fs_event()
+shutdown = function()
+  if stopping then return end
   stopping = true
-  signal:stop(); signal:close(); reconnect:stop(); reconnect:close()
+  signal:stop(); signal:close()
+  selection:stop(); selection:close()
   child_signal:stop(); child_signal:close()
   server:close(); uv.fs_unlink(socket_path)
   if process then process:kill('sigterm') end
-end)
+end
+signal:start('sigterm', shutdown)
+-- Watch the directory because selecting a backend replaces its symlink.
+assert(selection:start(config .. '/wm', {}, function()
+  if not selected() then shutdown() end
+end))
 subscribe()
 uv.run()
+uv.fs_unlink(state .. '/stream.pid')
 lock:close()

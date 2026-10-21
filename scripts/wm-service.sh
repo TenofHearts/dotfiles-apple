@@ -13,6 +13,17 @@ esac
 backend=$(cat "$config/wm/backend")
 case "$backend" in aerospace|omniwm) ;; *) echo "Unknown backend: $backend" >&2; exit 2 ;; esac
 app_name() { if [[ "$1" == aerospace ]]; then echo AeroSpace; else echo OmniWM; fi; }
+stop_stream() {
+  local pid executable
+  # Include legacy helper paths, whose detached processes may have no PID file.
+  while read -r pid; do
+    [[ "$pid" =~ ^[0-9]+$ ]] || continue
+    executable=$(ps -p "$pid" -o comm=) || continue
+    if [[ "${executable##*/}" == lua ]]; then
+      kill -TERM "$pid" 2>/dev/null || true
+    fi
+  done < <(pgrep -u "$(id -u)" -f "/plugins/$1(/stream|-stream)\.lua[[:space:]]+listen([[:space:]]|$)" || true)
+}
 stop() {
   local app
   app=$(app_name "$1")
@@ -20,12 +31,13 @@ stop() {
   if pgrep -x "$app" >/dev/null; then
     osascript -e "tell application \"$app\" to quit" || return
     for ((i=0; i<50; i++)); do
-      if ! pgrep -x "$app" >/dev/null; then return; fi
+      if ! pgrep -x "$app" >/dev/null; then stop_stream "$1"; return; fi
       sleep 0.1
     done
     echo "$app did not quit; refusing to start a competing manager." >&2
     return 1
   fi
+  stop_stream "$1"
 }
 check() {
   local app
@@ -65,15 +77,6 @@ case "$action" in
       start "$backend"
       refresh
       exit 1
-    fi
-    if [[ "$backend" != "$target" ]]; then
-      pid_file="/tmp/sketchybar-$backend-$(id -u)/stream.pid"
-      if [[ -f "$pid_file" ]]; then
-        pid=$(cat "$pid_file")
-        if [[ "$pid" =~ ^[0-9]+$ ]] && ps -p "$pid" -o command= | /usr/bin/grep -Eq "/plugins/$backend(/stream|-stream)\.lua"; then
-          kill -TERM "$pid" || true
-        fi
-      fi
     fi
     refresh
     echo "Selected $target. Complete its macOS permissions if prompted."

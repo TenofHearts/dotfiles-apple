@@ -59,7 +59,7 @@ case "$action" in
       horizontal:horizontal|vertical:vertical) dimension=set-container-primary-span ;;
       *) dimension=set-window-secondary-span ;;
     esac
-    if [[ "$2" == grow ]]; then delta=+25; else delta=-25; fi
+    if [[ "$2" == grow ]]; then delta=+5%; else delta=-5%; fi
     exec "$omniwmctl" command "$dimension" "$delta"
     ;;
   tile|floating|fullscreen|resize-step)
