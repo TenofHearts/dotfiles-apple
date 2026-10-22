@@ -12,7 +12,6 @@ child_signal:start('sigchld', function() end)
 local state = lifecycle.directory('omniwm')
 local socket_path = state .. '/events.sock'
 local state_api = require('plugins.omniwm.state')
-local previous_display
 local fingerprints = {}
 local window_fingerprints = {}
 local window_state = require('plugins.omniwm.window-state')
@@ -44,11 +43,6 @@ local function forward(event, replay)
   local workspace = payload.workspace or payload.activeWorkspace
   sbar.trigger('omniwm_event', {EVENT=event.channel,
     WORKSPACE=type(workspace) == 'table' and workspace.rawName or ''})
-  if event.channel == 'focused-monitor' and type(payload.display) == 'table' then
-    local id = payload.display.id
-    if previous_display and id ~= previous_display then state_api.center_mouse(id) end
-    previous_display = id
-  end
 end
 if arg[1] == 'ensure' then
   local client = uv.new_pipe(false)
@@ -90,7 +84,7 @@ uv.fs_unlink(socket_path)
 local function subscribe()
   subscription_generation = subscription_generation + 1
   local version = subscription_generation
-  latest, fingerprints, window_fingerprints, previous_display = {}, {}, {}, nil
+  latest, fingerprints, window_fingerprints = {}, {}, {}
   local buffer = ''
   local output = uv.new_pipe(false)
   process = assert(uv.spawn(state_api.executable, {

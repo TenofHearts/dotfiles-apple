@@ -66,32 +66,4 @@ function M.event_key(event)
       'x', 'y', 'width', 'height'}})
   end
 end
-function M.center_mouse(display)
-  local id = assert(display:match('^display:(%d+)$'), 'Invalid display ID')
-  local script = [=[
-ObjC.import('AppKit'); ObjC.import('CoreGraphics');
-$.NSApplication.sharedApplication;
-var screens = $.NSScreen.screens;
-var ceiling = screens.objectAtIndex(0).frame.origin.y + screens.objectAtIndex(0).frame.size.height;
-for (var i = 0; i < screens.count; i++) {
-    var screen = screens.objectAtIndex(i), frame = screen.frame;
-    if (Number(ObjC.unwrap(screen.deviceDescription.objectForKey('NSScreenNumber'))) === ]=] .. id .. [=[) {
-        var mouse = $.NSEvent.mouseLocation;
-        if (mouse.x < frame.origin.x || mouse.x >= frame.origin.x + frame.size.width ||
-            mouse.y < frame.origin.y || mouse.y >= frame.origin.y + frame.size.height) {
-            $.CGWarpMouseCursorPosition({x: frame.origin.x + frame.size.width / 2,
-                y: ceiling - frame.origin.y - frame.size.height / 2});
-        }
-    }
-}
-'ok';
-]=]
-  -- This helper also runs in the libuv-only stream, where SbarLua's callback
-  -- event loop is absent. Reap the bridge through libuv just like the CLI.
-  local uv = require('luv')
-  local process
-  process = uv.spawn('/usr/bin/osascript', {args={'-l', 'JavaScript', '-e', script},
-    stdio={nil, nil, 2}}, function() if process then process:close() end end)
-  if not process then io.stderr:write('Cannot center mouse on focused monitor\n') end
-end
 return M
