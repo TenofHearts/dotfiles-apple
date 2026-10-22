@@ -29,6 +29,9 @@ local function forward(event, replay)
       sbar.trigger('omniwm_windows', {EVENT=event.channel, DATA=data})
     end
   end
+  -- Replaying independent channel snapshots must not change workspace pills:
+  -- their timestamps differ. The controller queries authoritative workspaces.
+  if replay then return end
   -- Focus updates must not run workspace queries or JXA display measurements.
   if event.channel == 'focus' then
     local workspace = payload.window and payload.window.workspace
@@ -51,7 +54,8 @@ if arg[1] == 'ensure' then
   local client = uv.new_pipe(false)
   client:connect(socket_path, function(err)
     if not err then
-      client:write(arg[2] == 'replay' and 'initial' or 'check', function() client:close() end)
+      local action = arg[2] == 'replay' and 'initial' or arg[2] == 'refresh' and 'refresh' or 'check'
+      client:write(action, function() client:close() end)
     else
       client:close()
       local log = assert(uv.fs_open(state .. '/stream.log', 'w', 384))
@@ -66,8 +70,10 @@ if arg[1] == 'ensure' then
   uv.run(); child_signal:stop(); child_signal:close(); return
 end
 local latest = {}
-local process, output
+local process
 local stopping = false
+local refreshing = false
+local subscription_generation = 0
 local reconnect = uv.new_timer()
 local server = uv.new_pipe(false)
 local function close_child_signal() child_signal:stop(); child_signal:close() end
@@ -82,18 +88,26 @@ if not guard then
 end
 uv.fs_unlink(socket_path)
 local function subscribe()
+  subscription_generation = subscription_generation + 1
+  local version = subscription_generation
+  latest, fingerprints, window_fingerprints, previous_display = {}, {}, {}, nil
   local buffer = ''
-  output = uv.new_pipe(false)
+  local output = uv.new_pipe(false)
   process = assert(uv.spawn(state_api.executable, {
     args={'subscribe', 'focus,active-workspace,focused-monitor,windows-changed,display-changed', '--format', 'ndjson'},
     stdio={nil, output, 2}
   }, function()
     process:close(); process = nil
-    if stopping then close_child_signal() else reconnect:start(2000, 0, subscribe) end
+    if stopping then close_child_signal()
+    else
+      reconnect:start(refreshing and 0 or 2000, 0, subscribe)
+      refreshing = false
+    end
   end))
   output:read_start(function(err, chunk)
     if not chunk then output:close(); return end
     if err then io.stderr:write(err, '\n'); return end
+    if version ~= subscription_generation then return end -- Discard old subscription data.
     buffer = buffer .. chunk
     while true do
       local stop = buffer:find('\n', 1, true)
@@ -118,6 +132,11 @@ assert(server:listen(16, function(err)
       for _, channel in ipairs({'active-workspace', 'focused-monitor', 'windows-changed', 'focus', 'display-changed'}) do
         if latest[channel] then forward(latest[channel], true) end
       end
+    elseif chunk == 'refresh' then
+      -- Wake needs fresh native snapshots, not the pre-sleep channel cache.
+      subscription_generation = subscription_generation + 1
+      if process then refreshing = true; process:kill('sigterm')
+      else reconnect:start(0, 0, subscribe) end
     end
     client:read_stop(); client:close()
   end)

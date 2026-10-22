@@ -10,4 +10,4 @@ Run `lua scripts/wm-config.lua all` to create missing OmniWM settings and regene
 
 Run `lua scripts/wm-config.lua omniwm --rebuild` to replace saved OmniWM preferences with shared/local defaults. Back up `settings.toml` first if you want to retain GUI customizations.
 
-Run `lua scripts/wm-close.lua --dry-run` to inspect the planned close and successor IDs without changing windows.
+Option+Q uses OmniWM's native `close-focused-window` command. OmniWM and macOS determine focus after closing; the shortcut does not restore the previous workspace.

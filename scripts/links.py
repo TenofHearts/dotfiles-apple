@@ -22,7 +22,6 @@ FILES = {
     ".config/wm/wm-mode.py": "scripts/wm-mode.py",
     ".config/wm/wm-window.py": "scripts/wm-window.py",
     ".config/wm/wm-config.lua": "scripts/wm-config.lua",
-    ".config/wm/wm-close.lua": "scripts/wm-close.lua",
     ".config/wm/backend": "config/wm/aerospace",
     ".zprofile": "config/zsh/.zprofile",
     ".zshrc": "config/zsh/.zshrc",

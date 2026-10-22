@@ -98,13 +98,11 @@ local function render_group(g)
           background={drawing=true, color=theme.workspace, corner_radius=11, height=22,
             border_width=0}})
     end
-    local moves = {'sketchybar'}
     if #order > 0 then
       table.insert(order, 1, g.prefix .. '.start')
       order[#order+1] = g.prefix .. '.stop'
     end
-    for _, item_name in ipairs(order) do moves[#moves+1] = '--move ' .. util.quote(item_name) .. ' before omniwm.windows.end' end
-    if #moves > 1 then sbar.exec(table.concat(moves, ' ')) end
+    util.move_before(order, 'omniwm.windows.end')
     g.signature = membership
     g.pill = pill
   end

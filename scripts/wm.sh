@@ -44,9 +44,7 @@ case "$action" in
     if "$omniwmctl" workspace focus-name "$@"; then exit 0; fi
     sketchybar --trigger omniwm_event EVENT=workspace-request-failed >/dev/null 2>&1
     exit 1 ;;
-  close)
-    helper=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-    exec lua "$helper/wm-close.lua" ;;
+  close) exec "$omniwmctl" command close-focused-window ;;
   move) exec "$omniwmctl" command move "$@" ;;
   send) "$omniwmctl" command move-to-workspace "$@"; exec "$omniwmctl" workspace focus-name "$@" ;;
   resize)

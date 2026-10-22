@@ -6,6 +6,7 @@ local M = {}
 local items, rows, occupied = {}, {}, {}
 local mode, controller
 local generation, refreshing, pending = 0, false, false
+local settling, topology_generation = false, 0
 local refresh, highlight, schedule
 local screens_cache
 local function name(workspace) return 'omniwm.workspace.' .. util.hex(workspace) end
@@ -59,6 +60,7 @@ highlight = function(workspace)
   return changed
 end
 refresh = function()
+  if settling then pending = true; return end
   if refreshing then pending = true; return end
   refreshing, pending = true, false
   local version, results, remaining, failed = generation, {}, 2, false
@@ -72,6 +74,7 @@ refresh = function()
     if failed or type(results.rows) ~= 'table' or type(results.occupied) ~= 'table' then
       util.set(controller, {label='Unavailable'})
       -- A transient query/display failure must not blank the last valid pills.
+      screens_cache = nil -- A rejected topology must be measured again on retry.
       sbar.delay(2, refresh)
       return
     end
@@ -92,23 +95,19 @@ refresh = function()
     -- Keep workspaces together before the mode indicator in OmniWM's order.
     -- Reorder only permutes existing slots, so move items in one CLI batch.
     local order = {}
-    for _, row in ipairs(rows) do order[#order+1] = util.quote(name(row.workspace)) end
+    for _, row in ipairs(rows) do order[#order+1] = name(row.workspace) end
     local membership = table.concat(order, '\n')
     if M.membership ~= membership then
-      local moves = {'sketchybar'}
-      for _, item_name in ipairs(order) do
-        moves[#moves+1] = '--move ' .. item_name .. ' before omniwm.mode'
-      end
-      local command = table.concat(moves, ' ')
-      sbar.delay(0, function() sbar.exec(command) end)
+      util.move_before(order, 'omniwm.mode')
       M.membership = membership
     end
     if pending then schedule() end
   end
   local state = require('plugins.omniwm.state')
+  local topology = topology_generation
   local function query(screens, code)
     if code ~= 0 then received('rows', nil, code); received('occupied', nil, code); return end
-    screens_cache = screens
+    if topology == topology_generation then screens_cache = screens end
     util.exec(state.cli .. ' query workspaces --json', function(result, query_code)
       local ok, workspaces, filled = pcall(state.rows, result, screens)
       received('rows', ok and workspaces or nil, ok and query_code or 1)
@@ -133,27 +132,49 @@ function M.setup()
     if file then file:close() end
     util.set(mode, {label={string=current:upper(), color=current == 'main' and theme.text or theme.mode}})
   end
-  local function ensure(replay)
+  local function ensure(action)
     refresh_mode()
-    sbar.exec('lua ' .. util.quote(config .. '/plugins/omniwm/stream.lua') .. ' ensure' .. (replay and ' replay' or ''))
+    sbar.exec('lua ' .. util.quote(config .. '/plugins/omniwm/stream.lua') .. ' ensure ' .. (action or 'check'))
+  end
+  local function invalidate_screens()
+    topology_generation = topology_generation + 1
+    screens_cache = nil
+  end
+  local settle_generation = 0
+  local function settle()
+    invalidate_screens()
+    generation = generation + 1
+    settle_generation = settle_generation + 1
+    local version = settle_generation
+    settling = true
+    sbar.delay(3, function()
+      if version ~= settle_generation then return end
+      settling = false
+      ensure('refresh')
+      schedule()
+    end)
   end
   controller:subscribe('omniwm_event', function(env)
     if env.EVENT == 'mode-changed' then
       refresh_mode() -- Read authoritative state; callback notifications may arrive late.
       return
     end
-    local changed = env.WORKSPACE and env.WORKSPACE ~= '' and highlight(env.WORKSPACE)
-    if env.EVENT == 'focus' then
-      if changed then generation = generation + 1 end
-      return
+    -- A focused window can belong to the workspace being left, and replayed
+    -- focus snapshots can be older than the active-workspace snapshot.
+    if env.EVENT == 'focus' then return end
+    if env.EVENT == 'display-changed' then
+      if settling then settle(); return end
+      invalidate_screens()
     end
+    if not settling and env.WORKSPACE and env.WORKSPACE ~= '' then highlight(env.WORKSPACE) end
     generation = generation + 1
     if env.EVENT == 'workspace-requested' then return end
     schedule()
   end)
   controller:subscribe({'forced', 'routine', 'system_woke', 'display_change'}, function(env)
-    if env.SENDER ~= 'routine' then screens_cache = nil end
-    ensure(env.SENDER ~= 'routine')
+    if env.SENDER == 'system_woke' or (settling and env.SENDER == 'display_change') then settle(); return end
+    if env.SENDER ~= 'routine' then invalidate_screens() end
+    ensure(env.SENDER == 'forced' and 'replay' or 'check')
     -- Routine refresh catches occupancy changes that have no OmniWM event.
     generation = generation + 1
     schedule()

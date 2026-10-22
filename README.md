@@ -66,4 +66,4 @@ I use AeroSpace and OmniWM as alternative window managers, with a familiar keybo
 
 ## SketchyBar
 
-[SketchyBar](config/sketchybar) keeps my workspaces, active window-manager mode, and everyday system information visible in a compact desktop bar.
+[SketchyBar](config/sketchybar/README.md) keeps my workspaces, active window-manager mode, and everyday system information visible in a compact desktop bar.

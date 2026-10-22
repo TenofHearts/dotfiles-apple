@@ -20,6 +20,7 @@ require('plugins.bluetooth')
 require('plugins.network')
 require('plugins.volume')
 require('plugins.' .. backend .. '.display').setup()
+require('plugins.wake')
 -- macOS posts this distributed notification for both manual and scheduled changes.
 sbar.add('event', 'appearance_changed', 'AppleInterfaceThemeChangedNotification')
 local appearance = sbar.add('item', 'appearance.listener', {drawing=false})

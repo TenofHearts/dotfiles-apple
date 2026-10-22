@@ -80,15 +80,10 @@ refresh = function()
     -- Keep workspaces together before the mode indicator in AeroSpace's order.
     -- Reorder only permutes existing slots, so move items in one CLI batch.
     local order = {}
-    for _, row in ipairs(rows) do order[#order+1] = util.quote(name(row.workspace)) end
+    for _, row in ipairs(rows) do order[#order+1] = name(row.workspace) end
     local membership = table.concat(order, '\n')
     if M.membership ~= membership then
-      local moves = {'sketchybar'}
-      for _, item_name in ipairs(order) do
-        moves[#moves+1] = '--move ' .. item_name .. ' before aerospace.mode'
-      end
-      local command = table.concat(moves, ' ')
-      sbar.delay(0, function() sbar.exec(command) end)
+      util.move_before(order, 'aerospace.mode')
       M.membership = membership
     end
     if pending then schedule() end
