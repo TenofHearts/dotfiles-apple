@@ -9,10 +9,19 @@ import sys
 import time
 
 
-def configurations(parent, entry):
+def configurations(parent, entry, pids=None):
+    if pids is not None and not pids:
+        return {}
     entry = entry.resolve()
-    output = subprocess.check_output(
-        ['/bin/ps', '-axo', 'uid=,pid=,ppid=,lstart=,command='], text=True)
+    fields = 'uid=,pid=,ppid=,lstart=,command='
+    arguments = (['-axo', fields] if pids is None else
+                 ['-p', ','.join(map(str, pids)), '-o', fields])
+    try:
+        output = subprocess.check_output(['/bin/ps', *arguments], text=True)
+    except subprocess.CalledProcessError as error:
+        if pids is not None and error.returncode == 1 and not error.output:
+            return {}
+        raise
     result = {}
     for line in output.splitlines():
         fields = line.split(None, 8)
@@ -39,13 +48,18 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX)
         previous = configurations(parent, entry)
         for pid, identity in previous.items():
-            if configurations(parent, entry).get(pid) == identity:
+            if configurations(parent, entry, [pid]).get(pid) == identity:
                 try:
                     os.kill(pid, signal.SIGTERM)
                 except ProcessLookupError:
                     pass
         deadline = time.monotonic() + 3
-        while previous.keys() & configurations(parent, entry).keys():
+        while previous:
+            current = configurations(parent, entry, previous)
+            previous = {pid: identity for pid, identity in previous.items()
+                        if current.get(pid) == identity}
+            if not previous:
+                break
             if time.monotonic() >= deadline:
                 raise RuntimeError('Previous SketchyBar configuration did not exit')
             time.sleep(0.02)

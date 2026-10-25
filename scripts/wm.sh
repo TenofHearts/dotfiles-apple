@@ -47,20 +47,7 @@ case "$action" in
   close) exec "$omniwmctl" command close-focused-window ;;
   move) exec "$omniwmctl" command move "$@" ;;
   send) "$omniwmctl" command move-to-workspace "$@"; exec "$omniwmctl" workspace focus-name "$@" ;;
-  resize)
-    layout=$("$omniwmctl" query workspaces --current --fields layout --json |
-      python3 -c 'import json,sys; print(json.load(sys.stdin)["result"]["payload"]["workspaces"][0]["layout"])')
-    if [[ "$layout" != niri ]]; then exec "$omniwmctl" command resize "$@"; fi
-    orientation=$("$omniwmctl" query displays --current --fields orientation --json |
-      python3 -c 'import json,sys; print(json.load(sys.stdin)["result"]["payload"]["displays"][0]["orientation"])')
-    case "$1:$orientation" in
-      horizontal:horizontal|vertical:vertical) dimension=set-container-primary-span ;;
-      *) dimension=set-window-secondary-span ;;
-    esac
-    if [[ "$2" == grow ]]; then delta=+5%; else delta=-5%; fi
-    exec "$omniwmctl" command "$dimension" "$delta"
-    ;;
-  tile|floating|fullscreen|resize-step)
+  tile|floating|fullscreen|resize|resize-step)
     helper=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
     exec python3 "$helper/wm-window.py" "$action" "$@" ;;
   quake) exec "$omniwmctl" command toggle-quake-terminal ;;
