@@ -244,11 +244,12 @@ yOffset = 0.0
 
 [workspaceBar.iconOverrides]
 
+# Float secondary WeChat windows; preserve the main chat window.
 [[appRules]]
 bundleId = "com.tencent.xinWeChat"
 id = "4F019BBB-8EBB-457D-A7A0-B34AF16ACA37"
 layout = "float"
-titleRegex = "(?i)(视频通话|语音通话|视频聊天|语音聊天|video call|voice call)"
+titleRegex = "(?is)^(?!(?:微信|WeChat|Weixin)$).*$"
 
 [[appRules]]
 bundleId = "com.google.Chrome"
