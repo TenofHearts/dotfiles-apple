@@ -69,7 +69,7 @@ case "$action" in
   switch)
     target=$2
     check "$target"
-    # Backend links use the same backup/restore machinery as installation.
+    # Backend links use the same linking helper as installation.
     stop "$backend"
     if ! python3 "$ROOT/scripts/links.py" select-wm --wm "$target" || ! start "$target"; then
       stop "$target"

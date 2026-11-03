@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""Backed-up, idempotent links; no third-party Python dependencies."""
+"""Idempotent configuration links; no third-party Python dependencies."""
 import argparse
-from datetime import datetime
-import json
 import os
 from pathlib import Path
 import shutil
@@ -33,6 +31,7 @@ FILES = {
     ".Brewfile": "Brewfile",
     ".config/nvim": "config/nvim",
     ".tmux.conf": "config/tmux/.tmux.conf",
+    ".codex/dotfiles.config.toml": "config/codex/dotfiles.config.toml",
     ".config/karabiner": "config/karabiner",
     "Library/Keyboard Layouts/QWERTY no option.keylayout": "config/keyboard-layouts/QWERTY no option.keylayout",
 }
@@ -46,6 +45,11 @@ def exists(path):
 
 def linked(dest, source):
     return dest.is_symlink() and dest.resolve() == source.resolve()
+
+
+def selected_files(only=None):
+    return {name: source for name, source in FILES.items()
+            if only is None or source.startswith(f"config/{only}/")}
 
 
 def install(home, dry_run, files=None):
@@ -74,15 +78,11 @@ def install(home, dry_run, files=None):
         print("All configuration links are already installed.")
         return
     if migrate_skhd:
-        print(f"Back up {skhd} and replace its managed directory link with individual file links")
+        print(f"Replace {skhd} with individual file links")
     for dest, source in pending:
-        print(f"{'Back up and link' if exists(dest) else 'Link'} {dest} -> {source}")
+        print(f"{'Replace and link' if exists(dest) else 'Link'} {dest} -> {source}")
     if dry_run:
         return
-    backup = home / ".local/state/dotfiles/backups" / datetime.now().strftime("%Y%m%d-%H%M%S-%f")
-    backup.mkdir(parents=True, mode=0o700)
-    manifest = backup / "manifest.json"
-    records = []
     # Retain Karabiner assets and automatic backups through directory linking.
     old_karabiner = home / ".config/karabiner"
     if (".config/karabiner" in files and old_karabiner.is_dir()
@@ -94,74 +94,28 @@ def install(home, dry_run, files=None):
                 if dest.exists():
                     raise RuntimeError(f"Refusing to merge Karabiner runtime data: {dest}")
                 shutil.copytree(source, dest, symlinks=True)
-    try:
-        if migrate_skhd:
-            saved = backup / ".config/skhd-directory"
-            saved.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(skhd), str(saved))
-            records.append({"dest": str(skhd), "kind": "directory", "backup": str(saved)})
-            manifest.write_text(json.dumps(records, indent=2) + "\n")
-            skhd.mkdir()
-        for dest, source in pending:
-            saved = backup / dest.relative_to(home)
-            record = {"dest": str(dest), "source": str(source),
-                      "backup": str(saved) if exists(dest) else None}
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            if exists(dest):
-                saved.parent.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(dest), str(saved))
-            records.append(record)
-            manifest.write_text(json.dumps(records, indent=2) + "\n")
-            dest.symlink_to(os.path.relpath(source, dest.parent.resolve()), target_is_directory=source.is_dir())
-    except Exception:
-        for record in reversed(records):
-            dest = Path(record["dest"])
-            if record.get("kind") == "directory":
-                if dest.exists():
-                    dest.rmdir()
-            elif linked(dest, Path(record["source"])):
-                dest.unlink()
-            if record["backup"] and exists(Path(record["backup"])) and not exists(dest):
-                shutil.move(record["backup"], str(dest))
-        raise
-    print(f"Backup manifest: {manifest}")
+    if migrate_skhd:
+        skhd.unlink()
+        skhd.mkdir()
+    for dest, source in pending:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if dest.is_symlink() or dest.is_file():
+            dest.unlink()
+        elif dest.is_dir():
+            shutil.rmtree(dest)
+        elif exists(dest):
+            dest.unlink()
+        dest.symlink_to(os.path.relpath(source, dest.parent.resolve()), target_is_directory=source.is_dir())
     if ".config/karabiner" in files:
         print("Restart Karabiner.")
     if any(name.startswith("Library/Rime/") for name in files):
         print("Use Squirrel > Deploy.")
 
 
-def restore(manifest, dry_run):
-    records = json.loads(manifest.read_text())
-    # Check every entry before changing anything.
-    for record in records:
-        dest = Path(record["dest"])
-        if record.get("kind") == "directory":
-            children = {Path(child["dest"]) for child in records if Path(child["dest"]).parent == dest}
-            if exists(dest) and (dest.is_symlink() or not dest.is_dir()
-                                 or any(child not in children for child in dest.iterdir())):
-                raise RuntimeError(f"Refusing to overwrite a changed directory: {dest}")
-        elif exists(dest) and not linked(dest, Path(record["source"])):
-            raise RuntimeError(f"Refusing to overwrite a changed file: {dest}")
-        if record["backup"] and not exists(Path(record["backup"])):
-            raise RuntimeError(f"Backup missing: {record['backup']}")
-    for record in reversed(records):
-        dest = Path(record["dest"])
-        print(f"Restore {dest}")
-        if dry_run:
-            continue
-        if record.get("kind") == "directory":
-            if dest.exists():
-                dest.rmdir()
-        elif linked(dest, Path(record["source"])):
-            dest.unlink()
-        if record["backup"]:
-            shutil.move(record["backup"], str(dest))
-
-
-def status(home):
+def status(home, files=None):
+    files = FILES if files is None else files
     bad = False
-    for name, source in FILES.items():
+    for name, source in files.items():
         ok = linked(home / name, ROOT / source)
         print(f"{'OK' if ok else 'MISSING/CHANGED'} {home / name}")
         bad |= not ok
@@ -170,14 +124,19 @@ def status(home):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("install", "status", "restore", "select-wm"))
+    parser.add_argument("action", choices=("install", "status", "select-wm"))
     parser.add_argument("--wm", choices=("aerospace", "omniwm"), help="Window manager backend; defaults to the installed selection, then aerospace")
-    parser.add_argument("manifest", nargs="?", type=Path)
     parser.add_argument("--home", type=Path, default=Path.home(), help="Alternate home for testing")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--only", choices=("codex",),
+                        help="Install or inspect only the shared Codex profile")
     args = parser.parse_args()
+    if args.only and args.action not in ("install", "status"):
+        parser.error("--only applies to install and status")
+    if args.only and args.wm:
+        parser.error("--only cannot be combined with --wm")
     home = args.home.absolute()
-    if args.action != "restore":
+    if not args.only:
         backend = args.wm
         selected = home / ".config/wm/backend"
         if backend is None:
@@ -187,7 +146,7 @@ def main():
         FILES[".config/wm/backend"] = f"config/wm/{backend}"
         FILES[".config/skhd/wm"] = f"config/{backend}/skhdrc"
     if args.action == "install":
-        install(home, args.dry_run)
+        install(home, args.dry_run, selected_files(args.only))
     elif args.action == "select-wm":
         if not args.wm:
             parser.error("select-wm requires --wm aerospace|omniwm")
@@ -195,11 +154,7 @@ def main():
                                   (".config/wm/backend", ".config/skhd/skhdrc",
                                    ".config/skhd/apps", ".config/skhd/wm")})
     elif args.action == "status":
-        return status(home)
-    else:
-        if not args.manifest:
-            parser.error("restore requires a backup manifest")
-        restore(args.manifest, args.dry_run)
+        return status(home, selected_files(args.only))
     return 0
 
 
