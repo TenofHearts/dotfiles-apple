@@ -25,12 +25,12 @@ class LinkTests(unittest.TestCase):
 
     def test_replacement_idempotence_and_rime_isolation(self):
         original = self.home / ".zprofile"
-        original.write_text("original\n")
+        original.symlink_to("old-profile")
         rime = self.home / "Library/Rime"
         rime.mkdir(parents=True)
         learned = rime / "user.yaml"
         learned.write_text("local data\n")
-        links.install(self.home, False)
+        links.install(self.home, False, force=True)
         self.assertEqual(links.status(self.home), 0)
         links.install(self.home, False)
         self.assertFalse((self.home / ".local/state/dotfiles").exists())
@@ -47,7 +47,7 @@ class LinkTests(unittest.TestCase):
         codex = self.home / ".codex"
         codex.mkdir()
         profile = codex / "dotfiles.config.toml"
-        profile.write_text("original shared profile\n")
+        profile.symlink_to("old-shared-profile")
         local = codex / "config.toml"
         local.write_text('[projects."/local/project"]\ntrust_level = "trusted"\n')
         auth = codex / "auth.json"
@@ -60,8 +60,8 @@ class LinkTests(unittest.TestCase):
         files = links.selected_files("codex")
         links.install(self.home, True, files)
         self.assertFalse((self.home / ".local").exists())
-        self.assertFalse(profile.is_symlink())
-        links.install(self.home, False, files)
+        self.assertEqual(os.readlink(profile), "old-shared-profile")
+        links.install(self.home, False, files, force=True)
         self.assertEqual(links.status(self.home, files), 0)
         self.assertTrue(profile.is_symlink())
         self.assertEqual(profile.resolve(), links.ROOT / "config/codex/dotfiles.config.toml")
@@ -92,8 +92,12 @@ class LinkTests(unittest.TestCase):
         backend = self.home / ".config/wm/backend"
         backend.parent.mkdir(parents=True)
         backend.write_text("unknown local backend\n")
-        for option in (["--only", "codex"], ["--only=codex"]):
+        for option in (["--only", "codex"], ["--only=codex"], ["--only=codex", "--force"]):
             with self.subTest(option=option):
+                if "--force" in option:
+                    profile = self.home / ".codex/dotfiles.config.toml"
+                    profile.unlink()
+                    profile.symlink_to("missing-old-profile")
                 result = subprocess.run(["bash", str(links.ROOT / "install.sh"), *option,
                                          "--home", str(self.home)], env=env, capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -150,15 +154,19 @@ class LinkTests(unittest.TestCase):
             links.install(self.home, False)
         self.assertFalse((self.home / ".zprofile").exists())
 
-    def test_dangling_link_is_replaced(self):
+    def test_dangling_link_requires_force(self):
         dest = self.home / ".zshrc"
         dest.symlink_to("missing-original")
         links.install(self.home, False)
+        self.assertEqual(os.readlink(dest), "missing-original")
+        links.install(self.home, True, force=True)
+        self.assertEqual(os.readlink(dest), "missing-original")
+        links.install(self.home, False, force=True)
         self.assertTrue(dest.is_symlink())
         self.assertEqual(dest.resolve(), links.ROOT / "config/zsh/.zshrc")
         self.assertFalse((self.home / ".local").exists())
 
-    def test_conflicting_directory_is_replaced(self):
+    def test_conflicting_directory_requires_force(self):
         dest = self.home / ".config/nvim"
         dest.mkdir(parents=True)
         (dest / "local-config").write_text("old config\n")
@@ -168,6 +176,9 @@ class LinkTests(unittest.TestCase):
         retained.write_text("external data\n")
         (dest / "external-link").symlink_to(external, target_is_directory=True)
         links.install(self.home, False)
+        self.assertFalse(dest.is_symlink())
+        self.assertEqual((dest / "local-config").read_text(), "old config\n")
+        links.install(self.home, False, force=True)
         self.assertTrue(dest.is_symlink())
         self.assertEqual(dest.resolve(), links.ROOT / "config/nvim")
         self.assertEqual(retained.read_text(), "external data\n")
@@ -180,7 +191,7 @@ class LinkTests(unittest.TestCase):
         shared = (skhd / "skhdrc").resolve()
         files = {".config/skhd/wm": "config/omniwm/skhdrc",
                  ".config/wm/backend": "config/wm/omniwm"}
-        links.install(self.home, False, files)
+        links.install(self.home, False, files, force=True)
         self.assertEqual((skhd / "skhdrc").resolve(), shared)
         self.assertEqual((skhd / "wm").resolve(), links.ROOT / "config/omniwm/skhdrc")
         self.assertEqual((skhd / "apps").resolve(), links.ROOT / "config/skhd/apps")
@@ -194,6 +205,8 @@ class LinkTests(unittest.TestCase):
                 original = links.ROOT / "config" / backend
                 (config / "skhd").symlink_to(original, target_is_directory=True)
                 links.install(home, False)
+                self.assertTrue((config / "skhd").is_symlink())
+                links.install(home, False, force=True)
                 self.assertFalse((config / "skhd").is_symlink())
                 self.assertTrue((config / "skhd/skhdrc").is_file())
                 self.assertEqual(links.status(home), 0)
@@ -207,10 +220,23 @@ class LinkTests(unittest.TestCase):
         skhd = self.home / ".config/skhd"
         skhd.parent.mkdir()
         skhd.symlink_to(links.ROOT / "config/omniwm", target_is_directory=True)
-        links.install(self.home, False)
+        links.install(self.home, False, force=True)
         local = skhd / "local-shortcuts"
         local.write_text("keep this file\n")
         links.install(self.home, False)
         self.assertEqual(local.read_text(), "keep this file\n")
         self.assertTrue((skhd / "skhdrc").is_file())
         self.assertFalse((self.home / ".local").exists())
+
+    def test_existing_file_and_wrong_target_link_are_preserved(self):
+        original = self.home / ".zprofile"
+        original.write_text("local settings\n")
+        dest = self.home / ".zshrc"
+        dest.symlink_to(original)
+        files = {".zprofile": "config/zsh/.zprofile", ".zshrc": "config/zsh/.zshrc"}
+        links.install(self.home, False, files)
+        self.assertEqual(dest.resolve(), original.resolve())
+        links.install(self.home, False, files, force=True)
+        self.assertTrue(original.is_symlink())
+        self.assertEqual(original.resolve(), links.ROOT / "config/zsh/.zprofile")
+        self.assertEqual(dest.resolve(), links.ROOT / "config/zsh/.zshrc")

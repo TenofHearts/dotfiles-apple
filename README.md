@@ -37,7 +37,7 @@ python3 scripts/links.py status --only codex
 codex --profile dotfiles            # Also works before reloading Zsh
 ```
 
-Full installation also initializes submodules and installs the Codex profile. The installer replaces conflicting destinations directly without creating backups. Reload Zsh after installing the shell configuration to enable the alias.
+Full installation also initializes submodules and installs the Codex profile. Existing destinations are skipped by default. Use `./install.sh --force` (or `./install.sh --only codex --force`) to delete conflicting destinations and install fresh links, without backups. This includes stale or broken symlinks, regular files, and directories. Correct links are preserved. Add `--dry-run` to preview changes. Reload Zsh after installing the shell configuration to enable the alias.
 
 ## Git
 

@@ -2,8 +2,8 @@
 """Idempotent configuration links; no third-party Python dependencies."""
 import argparse
 import os
-from pathlib import Path
 import shutil
+from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,17 +52,28 @@ def selected_files(only=None):
             if only is None or source.startswith(f"config/{only}/")}
 
 
-def install(home, dry_run, files=None):
+def install(home, dry_run, files=None, force=False):
     files = FILES if files is None else files
     skhd = home / ".config/skhd"
-    migrate_skhd = skhd.is_symlink() and any(name.startswith(".config/skhd/") for name in files)
+    migrate_skhd = force and skhd.is_symlink() and any(name.startswith(".config/skhd/") for name in files)
     if migrate_skhd and skhd.resolve() not in {
         ROOT / "config/skhd", ROOT / "config/aerospace", ROOT / "config/omniwm"
     }:
         raise RuntimeError(f"Symlinked parent needs manual review: {skhd}")
-    pending = [(home / name, ROOT / src) for name, src in files.items()
-               if not linked(home / name, ROOT / src)
-               or (migrate_skhd and name.startswith(".config/skhd/"))]
+    pending = []
+    for name, src in files.items():
+        dest, source = home / name, ROOT / src
+        migrating = migrate_skhd and name.startswith(".config/skhd/")
+        # An existing skhd directory link owns all its children until forced migration.
+        if skhd.is_symlink() and name.startswith(".config/skhd/") and not migrating:
+            print(f"Skip existing parent link: {skhd}")
+            continue
+        if linked(dest, source) and not migrating:
+            continue
+        if exists(dest) and not migrating and not force:
+            print(f"Skip existing configuration: {dest} (use --force to replace)")
+            continue
+        pending.append((dest, source))
     # Never follow a parent directory link into an unrelated checkout.
     for dest, source in pending:
         if not source.exists():
@@ -75,7 +86,7 @@ def install(home, dry_run, files=None):
             if parent.is_symlink() and not (migrate_skhd and parent == skhd):
                 raise RuntimeError(f"Symlinked parent needs manual review: {parent}")
     if not pending:
-        print("All configuration links are already installed.")
+        print("No configuration links to install.")
         return
     if migrate_skhd:
         print(f"Replace {skhd} with individual file links")
@@ -85,7 +96,7 @@ def install(home, dry_run, files=None):
         return
     # Retain Karabiner assets and automatic backups through directory linking.
     old_karabiner = home / ".config/karabiner"
-    if (".config/karabiner" in files and old_karabiner.is_dir()
+    if (any(dest == old_karabiner for dest, _ in pending) and old_karabiner.is_dir()
             and not linked(old_karabiner, ROOT / "config/karabiner")):
         for name in ("assets", "automatic_backups"):
             source = old_karabiner / name
@@ -99,7 +110,7 @@ def install(home, dry_run, files=None):
         skhd.mkdir()
     for dest, source in pending:
         dest.parent.mkdir(parents=True, exist_ok=True)
-        if dest.is_symlink() or dest.is_file():
+        if dest.is_symlink():
             dest.unlink()
         elif dest.is_dir():
             shutil.rmtree(dest)
@@ -128,6 +139,8 @@ def main():
     parser.add_argument("--wm", choices=("aerospace", "omniwm"), help="Window manager backend; defaults to the installed selection, then aerospace")
     parser.add_argument("--home", type=Path, default=Path.home(), help="Alternate home for testing")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--force", action="store_true",
+                        help="Delete conflicting configurations before installing links; no backups")
     parser.add_argument("--only", choices=("codex",),
                         help="Install or inspect only the shared Codex profile")
     args = parser.parse_args()
@@ -135,6 +148,8 @@ def main():
         parser.error("--only applies to install and status")
     if args.only and args.wm:
         parser.error("--only cannot be combined with --wm")
+    if args.force and args.action != "install":
+        parser.error("--force applies only to install")
     home = args.home.absolute()
     if not args.only:
         backend = args.wm
@@ -146,13 +161,13 @@ def main():
         FILES[".config/wm/backend"] = f"config/wm/{backend}"
         FILES[".config/skhd/wm"] = f"config/{backend}/skhdrc"
     if args.action == "install":
-        install(home, args.dry_run, selected_files(args.only))
+        install(home, args.dry_run, selected_files(args.only), force=args.force)
     elif args.action == "select-wm":
         if not args.wm:
             parser.error("select-wm requires --wm aerospace|omniwm")
         install(home, args.dry_run, {name: FILES[name] for name in
                                   (".config/wm/backend", ".config/skhd/skhdrc",
-                                   ".config/skhd/apps", ".config/skhd/wm")})
+                                   ".config/skhd/apps", ".config/skhd/wm")}, force=True)
     elif args.action == "status":
         return status(home, selected_files(args.only))
     return 0
