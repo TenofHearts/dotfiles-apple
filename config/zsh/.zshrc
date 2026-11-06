@@ -52,7 +52,7 @@ alias l='ls -CFG'
 alias cls='clear'
 
 # Load the shared Codex profile alongside machine-local settings.
-alias codex='codex --profile dotfiles'
+alias cx='codex --profile dotfiles'
 
 if (( $+commands[git] )); then
   alias g='git'
