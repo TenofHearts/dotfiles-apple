@@ -32,7 +32,7 @@ if [[ $read_only == 1 || ( $only_set == 1 && "$only" != codex ) ]]; then
 fi
 if [[ $dry_run == 0 ]]; then
   if [[ $only == codex ]]; then
-    git -C "$ROOT" submodule update --init --recursive -- config/codex
+    git -C "$ROOT" submodule update --init --recursive -- config/ai
   else
     git -C "$ROOT" submodule update --init --recursive
   fi

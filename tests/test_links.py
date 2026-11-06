@@ -64,7 +64,7 @@ class LinkTests(unittest.TestCase):
         links.install(self.home, False, files, force=True)
         self.assertEqual(links.status(self.home, files), 0)
         self.assertTrue(profile.is_symlink())
-        self.assertEqual(profile.resolve(), links.ROOT / "config/codex/dotfiles.config.toml")
+        self.assertEqual(profile.resolve(), links.ROOT / "config/ai/codex/dotfiles.config.toml")
         links.install(self.home, False, files)
         self.assertFalse((self.home / ".local").exists())
         self.assertTrue(profile.is_symlink())
@@ -103,7 +103,7 @@ class LinkTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(log.read_text().splitlines(),
                                  ["-C", str(links.ROOT), "submodule", "update", "--init",
-                                  "--recursive", "--", "config/codex"])
+                                  "--recursive", "--", "config/ai"])
         self.assertTrue((self.home / ".codex/dotfiles.config.toml").is_symlink())
         self.assertFalse((self.home / ".zshrc").exists())
         result = subprocess.run(["python3", str(links.ROOT / "scripts/links.py"), "status",

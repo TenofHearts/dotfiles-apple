@@ -31,7 +31,7 @@ FILES = {
     ".Brewfile": "Brewfile",
     ".config/nvim": "config/nvim",
     ".tmux.conf": "config/tmux/.tmux.conf",
-    ".codex/dotfiles.config.toml": "config/codex/dotfiles.config.toml",
+    ".codex/dotfiles.config.toml": "config/ai/codex/dotfiles.config.toml",
     ".config/karabiner": "config/karabiner",
     "Library/Keyboard Layouts/QWERTY no option.keylayout": "config/keyboard-layouts/QWERTY no option.keylayout",
 }
@@ -49,7 +49,7 @@ def linked(dest, source):
 
 def selected_files(only=None):
     return {name: source for name, source in FILES.items()
-            if only is None or source.startswith(f"config/{only}/")}
+            if only is None or name.startswith(f".{only}/")}
 
 
 def install(home, dry_run, files=None, force=False):

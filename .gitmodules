@@ -4,6 +4,6 @@
 [submodule "config/tmux"]
 	path = config/tmux
 	url = https://github.com/TenofHearts/tmux-config.git
-[submodule "config/codex"]
-	path = config/codex
-	url = https://github.com/TenofHearts/codex-config.git
+[submodule "config/ai"]
+	path = config/ai
+	url = https://github.com/TenofHearts/ai-config.git

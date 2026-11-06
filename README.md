@@ -26,9 +26,9 @@ I use [tmux](config/tmux/README.md) to keep terminal sessions running and organi
 
 [Neovim](config/nvim/README.md) is my development editor. I maintain its configuration separately so I can use the same editing workflow across machines and platforms.
 
-## Codex
+## AI agents
 
-[Codex preferences](config/codex/README.md) are shared through the `TenofHearts/codex-config` submodule, pinned to the same revision as [TenofHearts/dotfiles](https://github.com/TenofHearts/dotfiles). The installer links `config/codex/dotfiles.config.toml` to `~/.codex/dotfiles.config.toml`. The Zsh `codex` alias selects this profile with `codex --profile dotfiles`; machine-specific settings and authentication remain in `~/.codex/`.
+[Codex preferences](config/ai/README.md#codex-setup) are shared through the `TenofHearts/ai-config` submodule at `config/ai`, with a separate directory for each agent (currently `codex/` only). The submodule revision is pinned by this repository. The installer links `config/ai/codex/dotfiles.config.toml` to `~/.codex/dotfiles.config.toml`. The Zsh `codex` alias selects this profile with `codex --profile dotfiles`; machine-specific settings and authentication remain in `~/.codex/`.
 
 ```sh
 ./install.sh --only codex --dry-run  # Preview the Codex link
