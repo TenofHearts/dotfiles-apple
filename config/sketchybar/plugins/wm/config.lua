@@ -118,11 +118,7 @@ function M.compose(backend, shared, local_settings)
       end
     end
   end
-  if top then
-    local count
-    shared, count = shared:gsub('outer%.top%s*=[^\n]*', function() return top end)
-    assert(count == 1, 'Expected one shared outer.top')
-  end
+  -- Ignore legacy measured top gaps; AeroSpace uses the shared fixed gap.
   if #assignments > 0 then
     assert(not shared:find('[workspace-to-monitor-force-assignment]', 1, true), 'Duplicate monitor assignments')
     shared = shared .. '\n[workspace-to-monitor-force-assignment]\n' .. table.concat(assignments, '\n') .. '\n'

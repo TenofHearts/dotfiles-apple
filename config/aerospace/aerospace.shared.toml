@@ -24,9 +24,8 @@ inner.horizontal = 2
 inner.vertical = 2
 outer.left = 5
 outer.right = 5
-# SketchyBar measures each display's menu bar, then reserves 5 points below it.
-# This fallback is replaced by per-display gaps in monitors.local.toml.
-outer.top = 38
+# Keep the original 5-point gap below macOS's usable screen area.
+outer.top = 5
 outer.bottom = 5
 
 # Browser picture-in-picture windows float; Windows process/class rules do not apply.
