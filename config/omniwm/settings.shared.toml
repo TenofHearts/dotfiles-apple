@@ -1,4 +1,4 @@
-# OmniWM 0.7.6; skhd + SketchyBar own the hotkeys and bar.
+# OmniWM 0.8.0 (schema 5); skhd + SketchyBar own the hotkeys and bar.
 # Overview stays disabled until its search bar respects the camera-notch safe area.
 hotkeys = []
 monitorBarOverrides = []
@@ -7,7 +7,7 @@ monitorDwindleOverrides = []
 monitorGapOverrides = []
 monitorNiriOverrides = []
 monitorOrientationOverrides = []
-schemaVersion = 4
+schemaVersion = 5
 
 [appearance]
 mode = "automatic"
