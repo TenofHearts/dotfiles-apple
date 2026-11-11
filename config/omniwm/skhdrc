@@ -1,5 +1,5 @@
 # Left Option is received after Karabiner remapping.
-# Native OmniWM hotkeys are disabled in settings.toml.
+# Native OmniWM input is enabled for the switcher; command bindings are unassigned.
 
 # Entry actions never synthesize keys. Action modes have complete Main bindings.
 # Pass the callback shell PID so delayed callbacks cannot overwrite a newer mode.
@@ -34,7 +34,7 @@ default, command, move, adjust, admin, help, reload, pause < lalt - q : "${XDG_C
 default, move, adjust, admin, help, reload, pause < lalt + shift - 0x29 ; command
 command < lalt + shift - 0x29 ; default
 # Visual features in Main; existing modal keys retain their behavior.
-# Overview is disabled: its search bar overlaps the camera notch in 0.7.6.
+# Overview uses the native four-finger gesture.
 default, help, reload, pause < lalt - 0x32 : "${XDG_CONFIG_HOME:-$HOME/.config}/wm/wm.sh" quake
 command < escape ; default
 command < return ; default
