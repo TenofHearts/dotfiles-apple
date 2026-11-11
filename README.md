@@ -28,7 +28,7 @@ I use [tmux](config/tmux/README.md) to keep terminal sessions running and organi
 
 ## AI agents
 
-[Codex preferences](config/ai/README.md#codex-setup) are shared through the `TenofHearts/ai-config` submodule at `config/ai`, with a separate directory for each agent (currently `codex/` only). The submodule revision is pinned by this repository. The installer links `config/ai/codex/dotfiles.config.toml` to `~/.codex/dotfiles.config.toml`. The Zsh `codex` alias selects this profile with `codex --profile dotfiles`; machine-specific settings and authentication remain in `~/.codex/`.
+[Codex preferences](config/ai/README.md#codex-setup) are shared through the `TenofHearts/ai-config` submodule at `config/ai`, with a separate directory for each agent (currently `codex/` only). The submodule revision is pinned by this repository. The installer links `config/ai/codex/dotfiles.config.toml` to `~/.codex/dotfiles.config.toml`. The Zsh `cx` alias selects this profile with `codex --profile dotfiles`; machine-specific settings and authentication remain in `~/.codex/`.
 
 ```sh
 ./install.sh --only codex --dry-run  # Preview the Codex link
@@ -36,6 +36,8 @@ I use [tmux](config/tmux/README.md) to keep terminal sessions running and organi
 python3 scripts/links.py status --only codex
 codex --profile dotfiles            # Also works before reloading Zsh
 ```
+
+`--only APP` also supports aerospace, omniwm, skhd, sketchybar, wm (shared WM helpers), zsh, oh-my-posh, cowsay, ghostty, git, homebrew (Brewfile), nvim, tmux, karabiner, keyboard-layouts, and rime. For example, `./install.sh --only ghostty --dry-run`. The same selections work with `scripts/links.py status`. Only the selected app's submodule is initialized; WM settings are generated only for WM-related selections. `--bootstrap` still installs the full dependency bundle.
 
 Full installation also initializes submodules and installs the Codex profile. Existing destinations are skipped by default. Use `./install.sh --force` (or `./install.sh --only codex --force`) to delete conflicting destinations and install fresh links, without backups. This includes stale or broken symlinks, regular files, and directories. Correct links are preserved. Add `--dry-run` to preview changes. Reload Zsh after installing the shell configuration to enable the alias.
 

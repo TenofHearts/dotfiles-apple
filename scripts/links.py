@@ -47,9 +47,23 @@ def linked(dest, source):
     return dest.is_symlink() and dest.resolve() == source.resolve()
 
 
+def app_for_source(source):
+    if source == "Brewfile":
+        return "homebrew"
+    if source.startswith("scripts/"):
+        return "wm"
+    parts = source.split("/")
+    return "codex" if parts[1] == "ai" else parts[1]
+
+
+APPS = sorted({app_for_source(source) for source in FILES.values()})
+
+
 def selected_files(only=None):
+    if only is not None and only not in APPS:
+        raise ValueError(f"Unknown app: {only}")
     return {name: source for name, source in FILES.items()
-            if only is None or name.startswith(f".{only}/")}
+            if only is None or app_for_source(source) == only}
 
 
 def install(home, dry_run, files=None, force=False):
@@ -141,8 +155,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--force", action="store_true",
                         help="Delete conflicting configurations before installing links; no backups")
-    parser.add_argument("--only", choices=("codex",),
-                        help="Install or inspect only the shared Codex profile")
+    parser.add_argument("--only", choices=APPS,
+                        help="Install or inspect only the selected app configuration")
     args = parser.parse_args()
     if args.only and args.action not in ("install", "status"):
         parser.error("--only applies to install and status")
@@ -151,7 +165,7 @@ def main():
     if args.force and args.action != "install":
         parser.error("--force applies only to install")
     home = args.home.absolute()
-    if not args.only:
+    if args.only in (None, "skhd", "wm"):
         backend = args.wm
         selected = home / ".config/wm/backend"
         if backend is None:

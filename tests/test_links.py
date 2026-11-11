@@ -135,6 +135,28 @@ class LinkTests(unittest.TestCase):
                 self.assertFalse(target.exists())
                 self.assertFalse(log.exists())
 
+    def test_every_app_selection_is_nonempty_and_partitioned(self):
+        selected = {}
+        for app in links.APPS:
+            files = links.selected_files(app)
+            self.assertTrue(files, app)
+            self.assertFalse(set(selected) & set(files), app)
+            selected.update(files)
+        self.assertEqual(selected, links.FILES)
+        self.assertIn("Library/Application Support/com.mitchellh.ghostty/config.ghostty",
+                      links.selected_files("ghostty"))
+        self.assertEqual(set(links.selected_files("zsh")), {".zprofile", ".zshrc"})
+
+    def test_each_app_installer_dry_run(self):
+        target = self.home / "target"
+        for app in links.APPS:
+            with self.subTest(app=app):
+                result = subprocess.run(
+                    ["bash", str(links.ROOT / "install.sh"), "--only", app,
+                     "--dry-run", "--home", str(target)], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertFalse(target.exists())
+
     def test_missing_source_is_rejected_before_replacing_files(self):
         original = self.home / ".zshrc"
         original.write_text("keep this file\n")
