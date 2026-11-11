@@ -362,7 +362,7 @@ enabled = true
 optionTab = "activeWorkspace"
 order = "lastUsed"
 scope = "allWorkspaces"
-showFooter = true
+showFooter = false
 
 # Keep native input enabled for the switcher without duplicating skhd bindings.
 
