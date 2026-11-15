@@ -37,7 +37,7 @@ python3 scripts/links.py status --only codex
 codex --profile dotfiles            # Also works before reloading Zsh
 ```
 
-`--only APP` also supports aerospace, omniwm, skhd, sketchybar, wm (shared WM helpers), zsh, oh-my-posh, cowsay, ghostty, git, homebrew (Brewfile), nvim, tmux, karabiner, keyboard-layouts, and rime. For example, `./install.sh --only ghostty --dry-run`. The same selections work with `scripts/links.py status`. Only the selected app's submodule is initialized; WM settings are generated only for WM-related selections. `--bootstrap` still installs the full dependency bundle.
+`--only APP` also supports aerospace, omniwm, skhd, sketchybar, wm (shared WM helpers), zsh, oh-my-posh, cowsay, ghostty, git, homebrew (Brewfile), nvim, tmux, freerdp, karabiner, keyboard-layouts, and rime. For example, `./install.sh --only ghostty --dry-run`. The same selections work with `scripts/links.py status`. Only the selected app's submodule is initialized; WM settings are generated only for WM-related selections. `--bootstrap` still installs the full dependency bundle.
 
 Full installation also initializes submodules and installs the Codex profile. Existing destinations are skipped by default. Use `./install.sh --force` (or `./install.sh --only codex --force`) to delete conflicting destinations and install fresh links, without backups. This includes stale or broken symlinks, regular files, and directories. Correct links are preserved. Add `--dry-run` to preview changes. Reload Zsh after installing the shell configuration to enable the alias.
 
@@ -82,3 +82,7 @@ I use AeroSpace and OmniWM as alternative window managers, with a familiar keybo
 ## SketchyBar
 
 [SketchyBar](config/sketchybar) keeps my workspaces, active window-manager mode, and everyday system information visible in a compact desktop bar.
+
+## FreeRDP
+
+[FreeRDP shortcuts](config/freerdp/README.md) provide saved-machine selection with `rdp`, shared launch flags, and fullscreen by default. The standalone Linux/macOS configuration lives in the `config/freerdp` submodule. Install with `./install.sh --only freerdp`.

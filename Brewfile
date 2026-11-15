@@ -39,3 +39,6 @@ brew "gcc"
 brew "rustup"
 brew "fzf"
 brew "htop"
+
+# SDL Remote Desktop client
+brew "freerdp"

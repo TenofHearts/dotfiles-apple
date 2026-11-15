@@ -12,3 +12,6 @@ config/aerospace/monitors.local.toml
 config/aerospace/monitors.local.toml.*
 config/aerospace/aerospace.toml
 config/aerospace/aerospace.toml.*
+
+# Local-only submodule remotes
+.local-repos/

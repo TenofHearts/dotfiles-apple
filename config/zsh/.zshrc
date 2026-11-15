@@ -134,6 +134,13 @@ fi
 if [[ -r $_dotfiles_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
   source "$_dotfiles_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
+
+# FreeRDP shortcuts; local settings below can override RDP_FLAGS.
+if (( $+commands[sdl-freerdp] )) &&
+   [[ -r ${XDG_CONFIG_HOME:-$HOME/.config}/freerdp/rdp.zsh ]]; then
+  source "${XDG_CONFIG_HOME:-$HOME/.config}/freerdp/rdp.zsh"
+fi
+
 [[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # Display the original welcome artwork only in an interactive terminal.

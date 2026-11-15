@@ -7,3 +7,6 @@
 [submodule "config/ai"]
 	path = config/ai
 	url = https://github.com/TenofHearts/ai-config.git
+[submodule "config/freerdp"]
+	path = config/freerdp
+	url = https://github.com/TenofHearts/freerdp-config.git

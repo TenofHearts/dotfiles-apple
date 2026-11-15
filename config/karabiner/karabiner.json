@@ -1,95 +1,255 @@
 {
-    "global": { "show_in_menu_bar": false },
+    "global": {
+        "show_in_menu_bar": false
+    },
     "profiles": [
         {
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Windows App: Left Option -> Right Option",
+                        "description": "Windows App / FreeRDP / Jump Desktop: Left Option -> Right Option",
                         "manipulators": [
                             {
                                 "conditions": [
                                     {
-                                        "bundle_identifiers": [
-                                            "^com\\.microsoft\\.rdc\\.macos$"
-                                        ],
-                                        "type": "frontmost_application_if"
-                                    },
-                                    {
-                                        "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
-                                        "type": "expression_if"
+                                        "type": "frontmost_application_if",
+                                        "file_paths": [
+                                            ".*/sdl-freerdp$"
+                                        ]
                                     }
                                 ],
                                 "from": {
                                     "key_code": "left_option",
-                                    "modifiers": { "optional": ["any"] }
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
-                                "to": [{ "key_code": "right_option" }],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Windows App RDP - Swap left Command and left Control",
-                        "manipulators": [
-                            {
-                                "conditions": [
+                                "to": [
                                     {
-                                        "identifiers": [{ "is_built_in_keyboard": true }],
-                                        "type": "device_if"
-                                    },
-                                    {
-                                        "bundle_identifiers": [
-                                            "^com\\.microsoft\\.rdc\\.macos$"
-                                        ],
-                                        "type": "frontmost_application_if"
-                                    },
-                                    {
-                                        "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
-                                        "type": "expression_if"
+                                        "key_code": "right_option"
                                     }
                                 ],
-                                "from": {
-                                    "key_code": "left_command",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "key_code": "left_control" }],
                                 "type": "basic"
                             },
                             {
                                 "conditions": [
                                     {
-                                        "identifiers": [{ "is_built_in_keyboard": true }],
-                                        "type": "device_if"
-                                    },
-                                    {
                                         "bundle_identifiers": [
-                                            "^com\\.microsoft\\.rdc\\.macos$"
+                                            "^com\\.microsoft\\.rdc\\.macos$",
+                                            "^com\\.p5sys\\.jump\\.mac\\.viewer(?:\\.web)?$",
+                                            "^com\\.freerdp(?:\\..*)?$"
+                                        ],
+                                        "file_paths": [
+                                            ".*/(?:xfreerdp|sdl-freerdp|MacFreeRDP)$"
                                         ],
                                         "type": "frontmost_application_if"
                                     },
                                     {
                                         "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
                                         "type": "expression_if"
+                                    },
+                                    {
+                                        "type": "frontmost_application_unless",
+                                        "file_paths": [
+                                            ".*/sdl-freerdp$"
+                                        ]
                                     }
                                 ],
                                 "from": {
-                                    "key_code": "left_control",
-                                    "modifiers": { "optional": ["any"] }
+                                    "key_code": "left_option",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
                                 },
-                                "to": [{ "key_code": "left_command" }],
+                                "to": [
+                                    {
+                                        "key_code": "right_option"
+                                    }
+                                ],
                                 "type": "basic"
                             }
                         ]
                     },
                     {
-                        "description": "Mapped Win + L -> Lock Mac, except active Windows App RDP",
+                        "description": "Windows App / FreeRDP / Jump Desktop - Swap left Command and left Control",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "is_built_in_keyboard": true
+                                            }
+                                        ],
+                                        "type": "device_if"
+                                    },
+                                    {
+                                        "type": "frontmost_application_if",
+                                        "file_paths": [
+                                            ".*/sdl-freerdp$"
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_control"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "is_built_in_keyboard": true
+                                            }
+                                        ],
+                                        "type": "device_if"
+                                    },
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.microsoft\\.rdc\\.macos$",
+                                            "^com\\.p5sys\\.jump\\.mac\\.viewer(?:\\.web)?$",
+                                            "^com\\.freerdp(?:\\..*)?$"
+                                        ],
+                                        "file_paths": [
+                                            ".*/(?:xfreerdp|sdl-freerdp|MacFreeRDP)$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
+                                        "type": "expression_if"
+                                    },
+                                    {
+                                        "type": "frontmost_application_unless",
+                                        "file_paths": [
+                                            ".*/sdl-freerdp$"
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_command",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_control"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "is_built_in_keyboard": true
+                                            }
+                                        ],
+                                        "type": "device_if"
+                                    },
+                                    {
+                                        "type": "frontmost_application_if",
+                                        "file_paths": [
+                                            ".*/sdl-freerdp$"
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_control",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_command"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "is_built_in_keyboard": true
+                                            }
+                                        ],
+                                        "type": "device_if"
+                                    },
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.microsoft\\.rdc\\.macos$",
+                                            "^com\\.p5sys\\.jump\\.mac\\.viewer(?:\\.web)?$",
+                                            "^com\\.freerdp(?:\\..*)?$"
+                                        ],
+                                        "file_paths": [
+                                            ".*/(?:xfreerdp|sdl-freerdp|MacFreeRDP)$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
+                                        "type": "expression_if"
+                                    },
+                                    {
+                                        "type": "frontmost_application_unless",
+                                        "file_paths": [
+                                            ".*/sdl-freerdp$"
+                                        ]
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_control",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_command"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Mapped Win + L -> Lock Mac, except active Windows App / FreeRDP / Jump Desktop",
                         "manipulators": [
                             {
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
-                                            "^com\\.microsoft\\.rdc\\.macos$"
+                                            "^com\\.microsoft\\.rdc\\.macos$",
+                                            "^com\\.p5sys\\.jump\\.mac\\.viewer(?:\\.web)?$",
+                                            "^com\\.freerdp(?:\\..*)?$"
+                                        ],
+                                        "file_paths": [
+                                            ".*/(?:xfreerdp|sdl-freerdp|MacFreeRDP)$"
                                         ],
                                         "type": "frontmost_application_unless"
                                     }
@@ -97,14 +257,21 @@
                                 "from": {
                                     "key_code": "l",
                                     "modifiers": {
-                                        "mandatory": ["left_control"],
-                                        "optional": ["any"]
+                                        "mandatory": [
+                                            "left_control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
                                     }
                                 },
                                 "to": [
                                     {
                                         "key_code": "q",
-                                        "modifiers": ["left_control", "left_command"]
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_command"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"
@@ -113,26 +280,44 @@
                                 "conditions": [
                                     {
                                         "bundle_identifiers": [
-                                            "^com\\.microsoft\\.rdc\\.macos$"
+                                            "^com\\.microsoft\\.rdc\\.macos$",
+                                            "^com\\.p5sys\\.jump\\.mac\\.viewer(?:\\.web)?$",
+                                            "^com\\.freerdp(?:\\..*)?$"
+                                        ],
+                                        "file_paths": [
+                                            ".*/(?:xfreerdp|sdl-freerdp|MacFreeRDP)$"
                                         ],
                                         "type": "frontmost_application_if"
                                     },
                                     {
                                         "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
                                         "type": "expression_unless"
+                                    },
+                                    {
+                                        "type": "frontmost_application_unless",
+                                        "file_paths": [
+                                            ".*/sdl-freerdp$"
+                                        ]
                                     }
                                 ],
                                 "from": {
                                     "key_code": "l",
                                     "modifiers": {
-                                        "mandatory": ["left_control"],
-                                        "optional": ["any"]
+                                        "mandatory": [
+                                            "left_control"
+                                        ],
+                                        "optional": [
+                                            "any"
+                                        ]
                                     }
                                 },
                                 "to": [
                                     {
                                         "key_code": "q",
-                                        "modifiers": ["left_control", "left_command"]
+                                        "modifiers": [
+                                            "left_control",
+                                            "left_command"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"
@@ -143,31 +328,69 @@
             },
             "devices": [
                 {
-                    "identifiers": { "is_keyboard": true },
+                    "identifiers": {
+                        "is_keyboard": true
+                    },
                     "simple_modifications": [
                         {
-                            "from": { "apple_vendor_top_case_key_code": "keyboard_fn" },
-                            "to": [{ "key_code": "left_command" }]
+                            "from": {
+                                "apple_vendor_top_case_key_code": "keyboard_fn"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_command"
+                                }
+                            ]
                         },
                         {
-                            "from": { "key_code": "left_command" },
-                            "to": [{ "key_code": "left_option" }]
+                            "from": {
+                                "key_code": "left_command"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_option"
+                                }
+                            ]
                         },
                         {
-                            "from": { "key_code": "left_control" },
-                            "to": [{ "apple_vendor_top_case_key_code": "keyboard_fn" }]
+                            "from": {
+                                "key_code": "left_control"
+                            },
+                            "to": [
+                                {
+                                    "apple_vendor_top_case_key_code": "keyboard_fn"
+                                }
+                            ]
                         },
                         {
-                            "from": { "key_code": "left_option" },
-                            "to": [{ "key_code": "left_control" }]
+                            "from": {
+                                "key_code": "left_option"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_control"
+                                }
+                            ]
                         },
                         {
-                            "from": { "key_code": "right_command" },
-                            "to": [{ "key_code": "right_option" }]
+                            "from": {
+                                "key_code": "right_command"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "right_option"
+                                }
+                            ]
                         },
                         {
-                            "from": { "key_code": "right_option" },
-                            "to": [{ "key_code": "right_command" }]
+                            "from": {
+                                "key_code": "right_option"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "right_command"
+                                }
+                            ]
                         }
                     ]
                 },
@@ -182,12 +405,24 @@
                     "ignore": false,
                     "simple_modifications": [
                         {
-                            "from": { "key_code": "left_command" },
-                            "to": [{ "key_code": "left_control" }]
+                            "from": {
+                                "key_code": "left_command"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_control"
+                                }
+                            ]
                         },
                         {
-                            "from": { "key_code": "left_control" },
-                            "to": [{ "key_code": "left_command" }]
+                            "from": {
+                                "key_code": "left_control"
+                            },
+                            "to": [
+                                {
+                                    "key_code": "left_command"
+                                }
+                            ]
                         }
                     ]
                 },
@@ -204,11 +439,19 @@
             "selected": true,
             "simple_modifications": [
                 {
-                    "from": { "key_code": "caps_lock" },
-                    "to": [{ "key_code": "escape" }]
+                    "from": {
+                        "key_code": "caps_lock"
+                    },
+                    "to": [
+                        {
+                            "key_code": "escape"
+                        }
+                    ]
                 }
             ],
-            "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
+            "virtual_hid_keyboard": {
+                "keyboard_type_v2": "ansi"
+            }
         }
     ]
 }

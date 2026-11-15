@@ -43,7 +43,7 @@ fi
 if [[ $dry_run == 0 ]]; then
   if [[ $only == codex ]]; then
     git -C "$ROOT" submodule update --init --recursive -- config/ai
-  elif [[ $only == nvim || $only == tmux ]]; then
+  elif [[ $only == nvim || $only == tmux || $only == freerdp ]]; then
     git -C "$ROOT" submodule update --init --recursive -- "config/$only"
   elif [[ -z "$only" ]]; then
     git -C "$ROOT" submodule update --init --recursive

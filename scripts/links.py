@@ -8,6 +8,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = {
+    ".config/freerdp/sdl-freerdp.json": "config/freerdp/sdl-freerdp.json",
+    ".config/freerdp/connection.rdp.example": "config/freerdp/connection.rdp.example",
+    ".config/freerdp/rdp.zsh": "config/freerdp/rdp.zsh",
     ".config/skhd/skhdrc": "config/skhd/skhdrc",
     ".config/skhd/apps": "config/skhd/apps",
     ".config/skhd/wm": "config/aerospace/skhdrc",
