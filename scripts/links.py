@@ -35,6 +35,8 @@ FILES = {
     ".config/nvim": "config/nvim",
     ".tmux.conf": "config/tmux/.tmux.conf",
     ".config/opencode/dotfiles.config.json": "config/ai/opencode/dotfiles.config.json",
+    ".config/opencode/personal-instructions.md": "config/ai/opencode/personal-instructions.md",
+    ".config/opencode/cli.json": "config/ai/opencode/cli.json",
     ".codex/dotfiles.config.toml": "config/ai/codex/dotfiles.config.toml",
     ".config/karabiner": "config/karabiner",
     "Library/Keyboard Layouts/QWERTY no option.keylayout": "config/keyboard-layouts/QWERTY no option.keylayout",
