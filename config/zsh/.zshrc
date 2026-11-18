@@ -53,6 +53,7 @@ alias cls='clear'
 
 # Load the shared Codex profile alongside machine-local settings.
 alias cx='codex --profile dotfiles'
+alias oc='OPENCODE_CONFIG_CONTENT="$(cat ~/.config/opencode/dotfiles.config.json)" opencode --standalone'
 
 if (( $+commands[git] )); then
   alias g='git'

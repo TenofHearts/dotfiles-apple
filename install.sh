@@ -41,7 +41,7 @@ if sys.argv[2] not in APPS:
 PYTHON
 fi
 if [[ $dry_run == 0 ]]; then
-  if [[ $only == codex ]]; then
+  if [[ $only == codex || $only == opencode ]]; then
     git -C "$ROOT" submodule update --init --recursive -- config/ai
   elif [[ $only == nvim || $only == tmux || $only == freerdp ]]; then
     git -C "$ROOT" submodule update --init --recursive -- "config/$only"

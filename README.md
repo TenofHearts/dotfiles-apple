@@ -28,7 +28,7 @@ I use [tmux](config/tmux/README.md) to keep terminal sessions running and organi
 
 ## AI agents
 
-[Codex preferences](config/ai/README.md#codex-setup) are shared through the `TenofHearts/ai-config` submodule at `config/ai`, with a separate directory for each agent (currently `codex/` only). The submodule revision is pinned by this repository. The installer links `config/ai/codex/dotfiles.config.toml` to `~/.codex/dotfiles.config.toml`. The Zsh `cx` alias selects this profile with `codex --profile dotfiles`; machine-specific settings and authentication remain in `~/.codex/`.
+[Codex preferences](config/ai/README.md#codex-setup) are shared through the `TenofHearts/ai-config` submodule at `config/ai`, with a separate directory for each agent (`codex/` and `opencode/`). The submodule revision is pinned by this repository. The installer links `config/ai/codex/dotfiles.config.toml` to `~/.codex/dotfiles.config.toml`. The Zsh `cx` alias selects this profile with `codex --profile dotfiles`; machine-specific settings and authentication remain in `~/.codex/`.
 
 ```sh
 ./install.sh --only codex --dry-run  # Preview the Codex link
@@ -86,3 +86,5 @@ I use AeroSpace and OmniWM as alternative window managers, with a familiar keybo
 ## FreeRDP
 
 [FreeRDP shortcuts](config/freerdp/README.md) provide saved-machine selection with `rdp`, shared launch flags, and fullscreen by default. The standalone Linux/macOS configuration lives in the `config/freerdp` submodule. Install with `./install.sh --only freerdp`.
+
+OpenCode: run `./install.sh --only opencode`, then reload Zsh and use `oc`. See [OpenCode setup](config/ai/README.md#opencode-setup) for the local API key and overlay behavior.

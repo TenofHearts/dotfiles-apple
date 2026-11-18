@@ -34,6 +34,7 @@ FILES = {
     ".Brewfile": "Brewfile",
     ".config/nvim": "config/nvim",
     ".tmux.conf": "config/tmux/.tmux.conf",
+    ".config/opencode/dotfiles.config.json": "config/ai/opencode/dotfiles.config.json",
     ".codex/dotfiles.config.toml": "config/ai/codex/dotfiles.config.toml",
     ".config/karabiner": "config/karabiner",
     "Library/Keyboard Layouts/QWERTY no option.keylayout": "config/keyboard-layouts/QWERTY no option.keylayout",
@@ -56,7 +57,7 @@ def app_for_source(source):
     if source.startswith("scripts/"):
         return "wm"
     parts = source.split("/")
-    return "codex" if parts[1] == "ai" else parts[1]
+    return parts[2] if parts[1] == "ai" else parts[1]
 
 
 APPS = sorted({app_for_source(source) for source in FILES.values()})
