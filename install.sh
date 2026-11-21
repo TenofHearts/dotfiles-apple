@@ -5,11 +5,6 @@ if [[ "$(uname -s)" != Darwin ]]; then
   echo 'This installer requires macOS.' >&2
   exit 1
 fi
-bootstrap=0
-if [[ ${1:-} == --bootstrap ]]; then
-  shift
-  bootstrap=1
-fi
 only=""
 only_set=0
 read_only=0
@@ -23,6 +18,10 @@ for arg in "$@"; do
       --only) only_set=1; read_only=1 ;;
       --only=*) only_set=1; only="${arg#--only=}" ;;
       --dry-run) dry_run=1 ;;
+      --bootstrap)
+        echo 'Use ./scripts/bootstrap.sh to install software, then ./install.sh to link configurations.' >&2
+        exit 2 ;;
+      -h|--help) exec python3 "$ROOT/scripts/links.py" install --help ;;
     esac
   fi
 done
@@ -31,7 +30,7 @@ if [[ $read_only == 1 || ( $only_set == 1 && -z "$only" ) ]]; then
   exit 2
 fi
 if [[ $only_set == 1 ]]; then
-  python3 - "$ROOT" "$only" <<'PYTHON'
+  python3 -B - "$ROOT" "$only" <<'PYTHON'
 import sys
 sys.path.insert(0, sys.argv[1] + "/scripts")
 from links import APPS
@@ -41,18 +40,15 @@ if sys.argv[2] not in APPS:
 PYTHON
 fi
 if [[ $dry_run == 0 ]]; then
-  if [[ $only == codex || $only == opencode ]]; then
-    git -C "$ROOT" submodule update --init --recursive -- config/ai
-  elif [[ $only == nvim || $only == tmux || $only == freerdp ]]; then
-    git -C "$ROOT" submodule update --init --recursive -- "config/$only"
-  elif [[ -z "$only" ]]; then
-    git -C "$ROOT" submodule update --init --recursive
-  fi
-  if [[ $bootstrap == 1 ]]; then "$ROOT/scripts/bootstrap.sh"; fi
+  case "$only" in
+    '') git -C "$ROOT" submodule update --init --recursive ;;
+    ghostty|kitty) git -C "$ROOT" submodule update --init --recursive -- config/tty ;;
+    codex|opencode) git -C "$ROOT" submodule update --init --recursive -- config/ai ;;
+    nvim|tmux|freerdp) git -C "$ROOT" submodule update --init --recursive -- "config/$only" ;;
+  esac
   case "$only" in
     ""|wm|skhd) lua "$ROOT/scripts/wm-config.lua" all ;;
     aerospace|omniwm) lua "$ROOT/scripts/wm-config.lua" "$only" ;;
   esac
 fi
 exec python3 "$ROOT/scripts/links.py" install "$@"
-

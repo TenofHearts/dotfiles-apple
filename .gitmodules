@@ -10,3 +10,6 @@
 [submodule "config/freerdp"]
 	path = config/freerdp
 	url = https://github.com/TenofHearts/freerdp-config.git
+[submodule "config/tty"]
+	path = config/tty
+	url = https://github.com/TenofHearts/tty-config.git

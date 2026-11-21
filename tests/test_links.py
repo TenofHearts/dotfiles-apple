@@ -125,7 +125,7 @@ class LinkTests(unittest.TestCase):
                "DOTFILES_TEST_LOG": str(log)}
         target = self.home / "target"
         for options, expected in ((["--only", "codex", "--dry-run"], 0),
-                                  (["--bootstrap", "--only=codex", "--dry-run"], 0),
+                                  (["--bootstrap", "--only=codex", "--dry-run"], 2),
                                   (["--only="], 2), (["--only", "unknown"], 2), (["--only"], 2)):
             with self.subTest(options=options):
                 result = subprocess.run(["bash", str(links.ROOT / "install.sh"),

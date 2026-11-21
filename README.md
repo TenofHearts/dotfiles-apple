@@ -2,9 +2,21 @@
 
 My macOS setup for terminal work, C/C++/Python/Rust development, keyboard-driven window management, and Chinese input. These configurations bring my everyday tools together into a consistent workflow.
 
-## Ghostty
+## Terminal configs
 
-I use [Ghostty](config/ghostty/config.ghostty) as my terminal, with a readable font and colors that fit the rest of my setup.
+[Ghostty](config/tty/ghostty/config.ghostty) and [Kitty](config/tty/kitty/kitty.conf) share the pinned `TenofHearts/tty-config` submodule at `config/tty`. Link the terminal you use:
+
+```sh
+./install.sh --only ghostty          # Keep the macOS colors and load the shared profile
+python3 scripts/links.py status --only ghostty
+ghostty +validate-config
+
+./install.sh --only kitty            # Link Kitty only; leave Ghostty alone
+```
+
+The [macOS Ghostty config](config/ghostty/config.ghostty) keeps the foreground and background colors. The shared profile sets the 12 pt 0xProto Nerd Font, cursor trail, and Ctrl-V paste. To reload an open Ghostty session, press `Cmd+Shift+,`.
+
+`./install.sh` links configurations; it does not install apps or fonts. Add `--dry-run` to preview links. Software installation is separate: `./scripts/bootstrap.sh --dry-run` previews the full setup, and `./scripts/bootstrap.sh` runs it using the [Brewfile](Brewfile).
 
 ## Zsh
 
@@ -37,7 +49,7 @@ python3 scripts/links.py status --only codex
 codex --profile dotfiles            # Also works before reloading Zsh
 ```
 
-`--only APP` also supports aerospace, omniwm, skhd, sketchybar, wm (shared WM helpers), zsh, oh-my-posh, cowsay, ghostty, git, homebrew (Brewfile), nvim, tmux, freerdp, karabiner, keyboard-layouts, and rime. For example, `./install.sh --only ghostty --dry-run`. The same selections work with `scripts/links.py status`. Only the selected app's submodule is initialized; WM settings are generated only for WM-related selections. `--bootstrap` still installs the full dependency bundle.
+`--only APP` also supports aerospace, omniwm, skhd, sketchybar, wm (shared WM helpers), zsh, oh-my-posh, cowsay, ghostty, kitty, git, homebrew (Brewfile), nvim, tmux, freerdp, karabiner, keyboard-layouts, and rime. For example, `./install.sh --only ghostty --dry-run`. The same selections work with `scripts/links.py status`. Only the selected app's submodule is initialized; WM settings are generated only for WM-related selections.
 
 Full installation also initializes submodules and installs the Codex profile. Existing destinations are skipped by default. Use `./install.sh --force` (or `./install.sh --only codex --force`) to delete conflicting destinations and install fresh links, without backups. This includes stale or broken symlinks, regular files, and directories. Correct links are preserved. Add `--dry-run` to preview changes. Reload Zsh after installing the shell configuration to enable the alias.
 

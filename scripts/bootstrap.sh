@@ -2,9 +2,31 @@
 # Install dependencies. Homebrew's installer may request administrator access.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+usage() {
+  echo 'Usage: ./scripts/bootstrap.sh [--dry-run]'
+  echo 'Install macOS software and its dependencies. Run ./install.sh separately to link configurations.'
+}
+dry_run=0
+for arg in "$@"; do
+  case "$arg" in
+    -h|--help) usage; exit 0 ;;
+    --dry-run) dry_run=1 ;;
+    *) echo "Unknown argument: $arg" >&2; usage >&2; exit 2 ;;
+  esac
+done
+if [[ $(uname -s) != Darwin ]]; then
+  echo 'This installer requires macOS.' >&2
+  exit 1
+fi
+if [[ $dry_run == 1 ]]; then
+  echo 'Install Xcode Command Line Tools and Homebrew if missing.'
+  echo "Run brew bundle install --file=\"$ROOT/Brewfile\" --no-upgrade."
+  echo 'Set up SketchyBar Lua modules, Rust tools and the pinned Rime Ice baseline.'
+  exit 0
+fi
 if ! xcode-select -p >/dev/null 2>&1; then
   xcode-select --install
-  echo 'Finish installing Command Line Tools, then rerun install.sh --bootstrap.'
+  echo 'Finish installing Command Line Tools, then rerun ./scripts/bootstrap.sh.'
   exit 1
 fi
 if [[ -x /opt/homebrew/bin/brew ]]; then

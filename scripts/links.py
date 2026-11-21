@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+GHOSTTY_DIR = "Library/Application Support/com.mitchellh.ghostty"
 FILES = {
     ".config/freerdp/sdl-freerdp.json": "config/freerdp/sdl-freerdp.json",
     ".config/freerdp/connection.rdp.example": "config/freerdp/connection.rdp.example",
@@ -28,7 +29,10 @@ FILES = {
     ".zshrc": "config/zsh/.zshrc",
     ".config/oh-my-posh/theme.omp.json": "config/oh-my-posh/theme.omp.json",
     ".config/cowsay/stegosaurus_and_cat.cow": "config/cowsay/stegosaurus_and_cat.cow",
-    "Library/Application Support/com.mitchellh.ghostty/config.ghostty": "config/ghostty/config.ghostty",
+    f"{GHOSTTY_DIR}/config.ghostty": "config/ghostty/config.ghostty",
+    f"{GHOSTTY_DIR}/tty.ghostty": "config/tty/ghostty/config.ghostty",
+    f"{GHOSTTY_DIR}/cursor_tail.glsl": "config/tty/ghostty/cursor_tail.glsl",
+    ".config/kitty/kitty.conf": "config/tty/kitty/kitty.conf",
     ".gitconfig": "config/git/.gitconfig",
     ".gitignore_global": "config/git/.gitignore_global",
     ".Brewfile": "Brewfile",
@@ -59,7 +63,7 @@ def app_for_source(source):
     if source.startswith("scripts/"):
         return "wm"
     parts = source.split("/")
-    return parts[2] if parts[1] == "ai" else parts[1]
+    return parts[2] if parts[1] in ("ai", "tty") else parts[1]
 
 
 APPS = sorted({app_for_source(source) for source in FILES.values()})
