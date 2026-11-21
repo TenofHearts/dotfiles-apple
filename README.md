@@ -7,14 +7,16 @@ My macOS setup for terminal work, C/C++/Python/Rust development, keyboard-driven
 [Ghostty](config/tty/ghostty/config.ghostty) and [Kitty](config/tty/kitty/kitty.conf) share the pinned `TenofHearts/tty-config` submodule at `config/tty`. Link the terminal you use:
 
 ```sh
-./install.sh --only ghostty          # Keep the macOS colors and load the shared profile
+./install.sh --only ghostty          # Link only the shared Ghostty profile and shader
 python3 scripts/links.py status --only ghostty
 ghostty +validate-config
 
 ./install.sh --only kitty            # Link Kitty only; leave Ghostty alone
 ```
 
-The [macOS Ghostty config](config/ghostty/config.ghostty) keeps the foreground and background colors. The shared profile sets the 12 pt 0xProto Nerd Font, cursor trail, and Ctrl-V paste. To reload an open Ghostty session, press `Cmd+Shift+,`.
+The shared Ghostty profile sets the 12 pt 0xProto Nerd Font, cursor trail, and Ctrl-V paste. To reload an open Ghostty session on macOS, press `Cmd+Shift+,`.
+
+Optional overrides: `~/Library/Application Support/com.mitchellh.ghostty/local.ghostty` for Ghostty and `~/.config/kitty/local.conf` for Kitty.
 
 `./install.sh` links configurations; it does not install apps or fonts. Add `--dry-run` to preview links. Software installation is separate: `./scripts/bootstrap.sh --dry-run` previews the full setup, and `./scripts/bootstrap.sh` runs it using the [Brewfile](Brewfile).
 

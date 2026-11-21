@@ -8,6 +8,10 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 GHOSTTY_DIR = "Library/Application Support/com.mitchellh.ghostty"
+LEGACY_TTY_LINKS = {
+    f"{GHOSTTY_DIR}/config.ghostty": ("config/ghostty/config.ghostty", "tty.ghostty"),
+    ".config/kitty/kitty.conf": ("config/kitty/kitty.conf", "tty.conf"),
+}
 FILES = {
     ".config/freerdp/sdl-freerdp.json": "config/freerdp/sdl-freerdp.json",
     ".config/freerdp/connection.rdp.example": "config/freerdp/connection.rdp.example",
@@ -29,8 +33,7 @@ FILES = {
     ".zshrc": "config/zsh/.zshrc",
     ".config/oh-my-posh/theme.omp.json": "config/oh-my-posh/theme.omp.json",
     ".config/cowsay/stegosaurus_and_cat.cow": "config/cowsay/stegosaurus_and_cat.cow",
-    f"{GHOSTTY_DIR}/config.ghostty": "config/ghostty/config.ghostty",
-    f"{GHOSTTY_DIR}/tty.ghostty": "config/tty/ghostty/config.ghostty",
+    f"{GHOSTTY_DIR}/config.ghostty": "config/tty/ghostty/config.ghostty",
     f"{GHOSTTY_DIR}/cursor_tail.glsl": "config/tty/ghostty/cursor_tail.glsl",
     ".config/kitty/kitty.conf": "config/tty/kitty/kitty.conf",
     ".gitconfig": "config/git/.gitconfig",
@@ -53,8 +56,14 @@ def exists(path):
     return os.path.lexists(path)
 
 
-def linked(dest, source):
-    return dest.is_symlink() and dest.resolve() == source.resolve()
+def linked(dest, source, *, direct=False):
+    if not dest.is_symlink():
+        return False
+    if direct:
+        # Identify the link itself, even when the wrapper has already been deleted.
+        target = dest.parent / os.readlink(dest)
+        return target.parent.resolve() / target.name == source
+    return dest.resolve() == source.resolve()
 
 
 def app_for_source(source):
@@ -85,6 +94,7 @@ def install(home, dry_run, files=None, force=False):
     }:
         raise RuntimeError(f"Symlinked parent needs manual review: {skhd}")
     pending = []
+    obsolete = []
     for name, src in files.items():
         dest, source = home / name, ROOT / src
         migrating = migrate_skhd and name.startswith(".config/skhd/")
@@ -92,30 +102,39 @@ def install(home, dry_run, files=None, force=False):
         if skhd.is_symlink() and name.startswith(".config/skhd/") and not migrating:
             print(f"Skip existing parent link: {skhd}")
             continue
-        if linked(dest, source) and not migrating:
-            continue
-        if exists(dest) and not migrating and not force:
-            print(f"Skip existing configuration: {dest} (use --force to replace)")
-            continue
-        pending.append((dest, source))
+        legacy = LEGACY_TTY_LINKS.get(name)
+        if legacy and linked(dest, ROOT / legacy[0], direct=True):
+            migrating = True
+        if migrating or not linked(dest, source, direct=bool(legacy)):
+            if exists(dest) and not migrating and not force:
+                print(f"Skip existing configuration: {dest} (use --force to replace)")
+                continue
+            pending.append((dest, source))
+        if legacy:
+            alias = dest.with_name(legacy[1])
+            if linked(alias, source, direct=True):
+                obsolete.append(alias)
     # Never follow a parent directory link into an unrelated checkout.
     for dest, source in pending:
         if not source.exists():
             shared = source.with_name(source.stem + ".shared.toml")
             if not (dry_run and source.suffix == ".toml" and shared.is_file()):
                 raise RuntimeError(f"Missing source: {source}")
+    for dest in [dest for dest, _ in pending] + obsolete:
         for parent in dest.parents:
             if parent == home:
                 break
             if parent.is_symlink() and not (migrate_skhd and parent == skhd):
                 raise RuntimeError(f"Symlinked parent needs manual review: {parent}")
-    if not pending:
+    if not pending and not obsolete:
         print("No configuration links to install.")
         return
     if migrate_skhd:
         print(f"Replace {skhd} with individual file links")
     for dest, source in pending:
         print(f"{'Replace and link' if exists(dest) else 'Link'} {dest} -> {source}")
+    for dest in obsolete:
+        print(f"Remove obsolete link: {dest}")
     if dry_run:
         return
     # Retain Karabiner assets and automatic backups through directory linking.
@@ -141,6 +160,8 @@ def install(home, dry_run, files=None, force=False):
         elif exists(dest):
             dest.unlink()
         dest.symlink_to(os.path.relpath(source, dest.parent.resolve()), target_is_directory=source.is_dir())
+    for dest in obsolete:
+        dest.unlink()
     if ".config/karabiner" in files:
         print("Restart Karabiner.")
     if any(name.startswith("Library/Rime/") for name in files):
@@ -151,7 +172,7 @@ def status(home, files=None):
     files = FILES if files is None else files
     bad = False
     for name, source in files.items():
-        ok = linked(home / name, ROOT / source)
+        ok = linked(home / name, ROOT / source, direct=name in LEGACY_TTY_LINKS)
         print(f"{'OK' if ok else 'MISSING/CHANGED'} {home / name}")
         bad |= not ok
     return int(bad)

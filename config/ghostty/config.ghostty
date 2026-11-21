@@ -1,4 +1,0 @@
-# The linker places the shared profile and its cursor shader beside this file.
-config-file = tty.ghostty
-background = #1e1e2e
-foreground = #e0d7c6
