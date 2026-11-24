@@ -36,6 +36,7 @@ FILES = {
     f"{GHOSTTY_DIR}/config.ghostty": "config/tty/ghostty/config.ghostty",
     f"{GHOSTTY_DIR}/cursor_tail.glsl": "config/tty/ghostty/cursor_tail.glsl",
     ".config/kitty/kitty.conf": "config/tty/kitty/kitty.conf",
+    "Library/Application Support/Code/User/keybindings.json": "config/vscode/keybindings.json",
     ".gitconfig": "config/git/.gitconfig",
     ".gitignore_global": "config/git/.gitignore_global",
     ".Brewfile": "Brewfile",

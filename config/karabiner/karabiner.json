@@ -50,88 +50,7 @@
                         ]
                     },
                     {
-                        "description": "Windows App RDP / FreeRDP - Swap left Command and left Control",
-                        "manipulators": [
-                            {
-                                "conditions": [
-                                    {
-                                        "file_paths": [".*/sdl-freerdp$"],
-                                        "type": "frontmost_application_if"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "left_command",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "key_code": "left_control" }],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "identifiers": [{ "is_built_in_keyboard": true }],
-                                        "type": "device_if"
-                                    },
-                                    {
-                                        "bundle_identifiers": [
-                                            "^com\\.microsoft\\.rdc\\.macos$"
-                                        ],
-                                        "type": "frontmost_application_if"
-                                    },
-                                    {
-                                        "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
-                                        "type": "expression_if"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "left_command",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "key_code": "left_control" }],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "file_paths": [".*/sdl-freerdp$"],
-                                        "type": "frontmost_application_if"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "left_control",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "key_code": "left_command" }],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "identifiers": [{ "is_built_in_keyboard": true }],
-                                        "type": "device_if"
-                                    },
-                                    {
-                                        "bundle_identifiers": [
-                                            "^com\\.microsoft\\.rdc\\.macos$"
-                                        ],
-                                        "type": "frontmost_application_if"
-                                    },
-                                    {
-                                        "expression": "accessibility.focused_ui_element.role_string == 'AXScrollArea'",
-                                        "type": "expression_if"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "left_control",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "key_code": "left_command" }],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
-                        "description": "Mapped Win + L -> Lock Mac, except active Windows App / FreeRDP",
+                        "description": "Cmd + L -> Lock Mac, except active Windows App / FreeRDP",
                         "manipulators": [
                             {
                                 "conditions": [
@@ -147,8 +66,8 @@
                                 "from": {
                                     "key_code": "l",
                                     "modifiers": {
-                                        "mandatory": ["left_control"],
-                                        "optional": ["any"]
+                                        "mandatory": ["command"],
+                                        "optional": ["caps_lock"]
                                     }
                                 },
                                 "to": [
@@ -181,14 +100,611 @@
                                 "from": {
                                     "key_code": "l",
                                     "modifiers": {
-                                        "mandatory": ["left_control"],
-                                        "optional": ["any"]
+                                        "mandatory": ["command"],
+                                        "optional": ["caps_lock"]
                                     }
                                 },
                                 "to": [
                                     {
                                         "key_code": "q",
                                         "modifiers": ["left_control", "left_command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Keep native keyboard input in remote clients after the RDP and lock rules",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^(com\\.microsoft\\.(rdc|windowsapp)|com\\.freerdp|com\\.apple\\.ScreenSharing|com\\.realvnc\\.vncviewer|com\\.teamviewer\\.TeamViewer|com\\.anydesk\\.AnyDesk|com\\.citrix\\.XenAppViewer|com\\.p5sys\\.jump\\.mac\\.viewer|com\\.jumpdesktop\\.JumpDesktop|com\\.vmware\\.(fusion|horizon|view)|com\\.parallels\\.(desktop|vm)|org\\.virtualbox\\.app\\.VirtualBoxVM|com\\.utmapp\\.UTM)([.-].*)?$"
+                                        ],
+                                        "file_paths": ["/(?:MacFreeRDP|(?:x|wl|w|sdl[0-9]*-)?freerdp[0-9]*)$", "/(?:Windows App|Microsoft Remote Desktop|Screen Sharing)(?: Beta)?\\.app(?:/|$)"],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "any": "key_code",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "from_event": true }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Cmd + V -> F18 for Raycast Clipboard History",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "v",
+                                    "modifiers": {
+                                        "mandatory": ["command"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "f18",
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Keep native keyboard input in terminals and Code variants",
+                        "description_notes": [
+                            "Standard com.microsoft.VSCode uses the GUI translations; its Code/User bindings restore raw Ctrl when terminalFocus is true."
+                        ],
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^(com\\.apple\\.Terminal|com\\.googlecode\\.iterm2|net\\.kovidgoyal\\.kitty|com\\.mitchellh\\.ghostty|dev\\.warp\\.Warp(Preview)?|com\\.github\\.wez\\.wezterm|(?:org|io)\\.alacritty|co\\.zeit\\.hyper(term)?|org\\.tabby)([.-].*)?$",
+                                            "^com\\.microsoft\\.VSCode.+$",
+                                            "^(com\\.visualstudio\\.code\\.oss|com\\.vscodium|com\\.todesktop\\.230313mzl4w4u92|com\\.exafunction\\.windsurf)([.-].*)?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "any": "key_code",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "from_event": true }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Finder file views: rename, open, go back and move to Trash",
+                        "description_notes": [
+                            "Require a file-view AX role. Unknown focus, dialogs, filename editors and search fields retain their native keys."
+                        ],
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.apple\\.finder$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "expression": "('|' + accessibility.focused_ui_element.role_string + '|') in '|AXList|AXOutline|AXBrowser|AXTable|AXGrid|AXScrollArea|'",
+                                        "type": "expression_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "f2",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "return_or_enter",
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.apple\\.finder$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "expression": "('|' + accessibility.focused_ui_element.role_string + '|') in '|AXList|AXOutline|AXBrowser|AXTable|AXGrid|AXScrollArea|'",
+                                        "type": "expression_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "return_or_enter",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "o",
+                                        "modifiers": ["command"],
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.apple\\.finder$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "expression": "('|' + accessibility.focused_ui_element.role_string + '|') in '|AXList|AXOutline|AXBrowser|AXTable|AXGrid|AXScrollArea|'",
+                                        "type": "expression_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "delete_or_backspace",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "open_bracket",
+                                        "modifiers": ["command"],
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.apple\\.finder$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    },
+                                    {
+                                        "expression": "('|' + accessibility.focused_ui_element.role_string + '|') in '|AXList|AXOutline|AXBrowser|AXTable|AXGrid|AXScrollArea|'",
+                                        "type": "expression_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "delete_forward",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "delete_or_backspace",
+                                        "modifiers": ["command"],
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Local GUI editing: logical Ctrl shortcuts use Command; Ctrl+Y redoes",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "a",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "a",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "c",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "c",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "x",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "x",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "v",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "v",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "z",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "z",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "y",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "z",
+                                        "modifiers": ["command", "shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "s",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "s",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "f",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "f",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "o",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "o",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "p",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "p",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^(com\\.apple\\.Terminal|com\\.googlecode\\.iterm2|net\\.kovidgoyal\\.kitty|com\\.mitchellh\\.ghostty|dev\\.warp\\.Warp(Preview)?|com\\.github\\.wez\\.wezterm|(?:org|io)\\.alacritty|co\\.zeit\\.hyper(term)?|org\\.tabby)([.-].*)?$",
+                                            "^(com\\.microsoft\\.(rdc|windowsapp)|com\\.freerdp|com\\.apple\\.ScreenSharing|com\\.realvnc\\.vncviewer|com\\.teamviewer\\.TeamViewer|com\\.anydesk\\.AnyDesk|com\\.citrix\\.XenAppViewer|com\\.p5sys\\.jump\\.mac\\.viewer|com\\.jumpdesktop\\.JumpDesktop|com\\.vmware\\.(fusion|horizon|view)|com\\.parallels\\.(desktop|vm)|org\\.virtualbox\\.app\\.VirtualBoxVM|com\\.utmapp\\.UTM)([.-].*)?$"
+                                        ],
+                                        "file_paths": ["/(?:MacFreeRDP|(?:x|wl|w|sdl[0-9]*-)?freerdp[0-9]*)$", "/(?:Windows App|Microsoft Remote Desktop|Screen Sharing)(?: Beta)?\\.app(?:/|$)"],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    },
+                                    "pointing_button": "button1"
+                                },
+                                "to": [
+                                    {
+                                        "modifiers": ["command"],
+                                        "pointing_button": "button1"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Browsers: tabs, location, reload, DevTools, history and back/forward",
+                        "description_notes": [
+                            "Ctrl+Tab and Ctrl+Shift+Tab already cycle tabs in Safari, Firefox and Chromium. Safari Web Inspector requires Show features for web developers."
+                        ],
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|org\\.mozilla\\.(firefox(developeredition)?|nightly)|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "t",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "t",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|org\\.mozilla\\.(firefox(developeredition)?|nightly)|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "w",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "w",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|org\\.mozilla\\.(firefox(developeredition)?|nightly)|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "l",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "l",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|org\\.mozilla\\.(firefox(developeredition)?|nightly)|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "f5",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "r",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|org\\.mozilla\\.(firefox(developeredition)?|nightly)|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "f12",
+                                    "modifiers": { "optional": ["caps_lock"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "i",
+                                        "modifiers": ["command", "option"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^org\\.mozilla\\.(firefox(developeredition)?|nightly)$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "h",
+                                        "modifiers": ["command", "shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "y",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|org\\.mozilla\\.(firefox(developeredition)?|nightly)|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_arrow",
+                                    "modifiers": {
+                                        "mandatory": ["option"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "open_bracket",
+                                        "modifiers": ["command"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^app\\.zen-browser\\.zen$",
+                                            "^(com\\.apple\\.Safari(TechnologyPreview)?|org\\.mozilla\\.(firefox(developeredition)?|nightly)|com\\.google\\.Chrome|org\\.chromium\\.Chromium|com\\.brave\\.Browser|com\\.microsoft\\.edgemac)(\\.(beta|dev|canary|Beta|Dev|Canary|nightly))?$"
+                                        ],
+                                        "type": "frontmost_application_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "right_arrow",
+                                    "modifiers": {
+                                        "mandatory": ["option"],
+                                        "optional": ["caps_lock"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "close_bracket",
+                                        "modifiers": ["command"]
                                     }
                                 ],
                                 "type": "basic"
@@ -203,7 +719,7 @@
                     "simple_modifications": [
                         {
                             "from": { "apple_vendor_top_case_key_code": "keyboard_fn" },
-                            "to": [{ "key_code": "left_command" }]
+                            "to": [{ "key_code": "left_control" }]
                         },
                         {
                             "from": { "key_code": "left_command" },
@@ -215,7 +731,7 @@
                         },
                         {
                             "from": { "key_code": "left_option" },
-                            "to": [{ "key_code": "left_control" }]
+                            "to": [{ "key_code": "left_command" }]
                         },
                         {
                             "from": { "key_code": "right_command" },

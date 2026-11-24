@@ -1,0 +1,21 @@
+[
+    { "key": "cmd+a", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0001" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+c", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0003" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+v", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0016" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+x", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0018" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+z", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u001a" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+shift+z", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0019" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+s", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0013" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+f", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0006" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+o", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u000f" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+p", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0010" }, "when": "terminalFocus && !terminalFindFocused" },
+
+    { "key": "ctrl+shift+c", "command": "workbench.action.terminal.copySelection", "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "ctrl+shift+v", "command": "workbench.action.terminal.paste", "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "ctrl+shift+a", "command": "workbench.action.terminal.selectAll", "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "ctrl+shift+f", "command": "workbench.action.terminal.focusFind", "when": "terminalFocus && !terminalFindFocused" },
+
+    { "key": "cmd+shift+v", "command": "noop", "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+alt+shift+v", "command": "noop", "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "shift+insert", "command": "runCommands", "args": { "commands": ["noop"] }, "when": "terminalFocus && !terminalFindFocused" }
+]
