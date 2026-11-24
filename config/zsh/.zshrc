@@ -137,7 +137,8 @@ if [[ -r $_dotfiles_brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zs
 fi
 
 # FreeRDP shortcuts; local settings below can override RDP_FLAGS.
-if (( $+commands[sdl-freerdp] )) &&
+export RDP_BIN="${RDP_BIN:-sdl-freerdp}"
+if whence -p -- "$RDP_BIN" >/dev/null &&
    [[ -r ${XDG_CONFIG_HOME:-$HOME/.config}/freerdp/rdp.zsh ]]; then
   source "${XDG_CONFIG_HOME:-$HOME/.config}/freerdp/rdp.zsh"
 fi
