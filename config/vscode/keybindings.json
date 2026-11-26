@@ -1,5 +1,7 @@
 [
     { "key": "cmd+a", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0001" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+b", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0002" }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+i", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0009" }, "when": "terminalFocus && !terminalFindFocused" },
     { "key": "cmd+c", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0003" }, "when": "terminalFocus && !terminalFindFocused" },
     { "key": "cmd+v", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0016" }, "when": "terminalFocus && !terminalFindFocused" },
     { "key": "cmd+x", "command": "workbench.action.terminal.sendSequence", "args": { "text": "\u0018" }, "when": "terminalFocus && !terminalFindFocused" },
@@ -14,6 +16,8 @@
     { "key": "ctrl+shift+v", "command": "workbench.action.terminal.paste", "when": "terminalFocus && !terminalFindFocused" },
     { "key": "ctrl+shift+a", "command": "workbench.action.terminal.selectAll", "when": "terminalFocus && !terminalFindFocused" },
     { "key": "ctrl+shift+f", "command": "workbench.action.terminal.focusFind", "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+-", "command": "runCommands", "args": { "commands": ["workbench.action.terminal.fontZoomOut"] }, "when": "terminalFocus && !terminalFindFocused" },
+    { "key": "cmd+=", "command": "runCommands", "args": { "commands": ["workbench.action.terminal.fontZoomIn"] }, "when": "terminalFocus && !terminalFindFocused" },
 
     { "key": "cmd+shift+v", "command": "noop", "when": "terminalFocus && !terminalFindFocused" },
     { "key": "cmd+alt+shift+v", "command": "noop", "when": "terminalFocus && !terminalFindFocused" },

@@ -65,6 +65,8 @@ My [Git configuration](config/git) keeps version-control behavior consistent acr
 
 [Karabiner-Elements](config/karabiner/karabiner.json) uses logical Ctrl (after per-keyboard modifier placement) for GUI editing. `Ctrl+C/X/V/A`, `Ctrl+Z/Y`, and `Ctrl+S/F/O/P` copy, cut, paste, select all, undo/redo, save, find, open, and print. Terminal apps and remote Windows sessions are excluded. Both Command keys still support the local `Cmd+L` screen lock outside an active remote session.
 
+`Ctrl+B` and `Ctrl+I` use the app's native Command shortcuts (usually bold and italic); terminal programs still receive Ctrl+B and Ctrl+I. Top-row `Ctrl+1` through `Ctrl+9` send `Cmd+1` through `Cmd+9` in GUI apps, including VS Code even when its integrated terminal is focused. Standalone terminals keep the original digit shortcuts. `Ctrl+-` and `Ctrl+=` zoom out and in. In Ghostty, Kitty, and the VS Code terminal pane they change the terminal font size, including while using tmux. Remote desktop clients keep the original chords.
+
 - Clipboard history: bind Raycast's **Clipboard History** command to `F18`. Press `Cmd+V` to open it in local apps, including terminals. `Ctrl+V` still pastes in GUI apps, `Ctrl+Shift+V` pastes in terminals, and remote clients keep their native keys.
 - Browsers: `Ctrl+T/W/L` for new tab, close tab, and address bar; `Ctrl+Tab` / `Ctrl+Shift+Tab` to cycle tabs; `F5`, `F12`, and `Ctrl+H` for reload, developer tools, and history; `Alt+Left/Right` for back/forward.
 - Finder: `F2` renames, `Enter` opens, `Backspace` goes back, and forward `Delete` moves items to Trash. To move files, copy them with `Ctrl+C`, then press `Option+Cmd+V` in the destination. Filename and search fields keep normal text editing.

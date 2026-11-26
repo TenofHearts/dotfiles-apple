@@ -158,6 +158,27 @@
                         ]
                     },
                     {
+                        "description": "Local apps and terminals: Ctrl+-/= -> Cmd+-/= for zoom",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "hyphen",
+                                    "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] }
+                                },
+                                "to": [{ "key_code": "hyphen", "modifiers": ["command"] }],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "equal_sign",
+                                    "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] }
+                                },
+                                "to": [{ "key_code": "equal_sign", "modifiers": ["command"] }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Keep native keyboard input in terminals and Code variants",
                         "description_notes": [
                             "Standard com.microsoft.VSCode uses the GUI translations; its Code/User bindings restore raw Ctrl when terminalFocus is true."
@@ -297,6 +318,22 @@
                     {
                         "description": "Local GUI editing: logical Ctrl shortcuts use Command; Ctrl+Y redoes",
                         "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "b",
+                                    "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] }
+                                },
+                                "to": [{ "key_code": "b", "modifiers": ["command"] }],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "i",
+                                    "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] }
+                                },
+                                "to": [{ "key_code": "i", "modifiers": ["command"] }],
+                                "type": "basic"
+                            },
                             {
                                 "from": {
                                     "key_code": "a",
@@ -482,6 +519,47 @@
                                     }
                                 ],
                                 "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "Local GUI: Ctrl+1 through Ctrl+9 use Command",
+                        "manipulators": [
+                            {
+                                "type": "basic", "from": { "key_code": "1", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "1", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "2", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "2", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "3", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "3", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "4", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "4", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "5", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "5", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "6", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "6", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "7", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "7", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "8", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "8", "modifiers": ["command"] }]
+                            },
+                            {
+                                "type": "basic", "from": { "key_code": "9", "modifiers": { "mandatory": ["control"], "optional": ["caps_lock"] } },
+                                "to": [{ "key_code": "9", "modifiers": ["command"] }]
                             }
                         ]
                     },
